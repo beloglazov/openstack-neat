@@ -1,6 +1,5 @@
 #! /usr/bin/env python2
 import sys
-import time
 import libvirt
 
 
@@ -20,6 +19,7 @@ def getCpuUtilization(numberOfPhysicalCpus, domain, previousTime, previousCpuTim
     #currCpuTime = getDomainTotalCpuTime(domain)
 
     return ((currentCpuTime - previousCpuTime) / ((currentTime - previousTime) * 1000000000 * numberOfPhysicalCpus))
+
 
 def collectCpuUtilization(numberOfPhysicalCpus, timeInterval, reportingFunction):
     pass
