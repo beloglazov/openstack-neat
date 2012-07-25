@@ -20,7 +20,7 @@ setup(
     platforms='any',
 
     packages=find_packages(),
-    tests_require=['nose', 'mocktest'],
+    tests_require=['nose'],  # 'mocktest'
 
     # Project uses reStructuredText, so ensure that the docutils get
     # installed or upgraded on the target machine
