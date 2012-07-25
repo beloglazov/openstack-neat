@@ -1,7 +1,8 @@
 # The OpenStack Neat Project
 
 This project is aimed to provide an extension to OpenStack implementing dynamic consolidation of
-virtual machine instances using live migration according to the current workload.
+virtual machine instances using live migration according to the actual real-time load on the virtual
+machines.
 
 [![Build Status](https://secure.travis-ci.org/beloglazov/openstack-neat.png)](http://travis-ci.org/beloglazov/openstack-neat)
 
