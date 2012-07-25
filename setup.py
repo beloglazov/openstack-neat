@@ -20,9 +20,5 @@ setup(
     platforms='any',
 
     packages=find_packages(),
-    tests_require=['pyqcy'],  # 'nose', 'mocktest'
-
-    # Project uses reStructuredText, so ensure that the docutils get
-    # installed or upgraded on the target machine
-    #install_requires = ['docutils>=0.3'],
+    tests_require=['pyqcy'],
 )
