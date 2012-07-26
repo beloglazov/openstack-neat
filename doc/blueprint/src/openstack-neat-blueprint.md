@@ -92,7 +92,7 @@ specifically targeted at OpenStack.
 
 # Assumptions
 
-Glance ''stores'' the server template and metadata map; Nova must ''implement'' the server template.
+Nova uses a *shared storage* for storing VM instance data, thus supporting *live migration* of VMs.
 
 
 # Design
