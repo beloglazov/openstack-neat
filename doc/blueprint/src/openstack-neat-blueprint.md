@@ -32,13 +32,15 @@ University of Melbourne. The problem of dynamic VM consolidation considering Qua
 (QoS) constraints has been studied from the theoretical perspective and algorithms addressing the
 sub-problems listed above have been proposed [@beloglazov2012optimal; @beloglazov2012overload]. The
 algorithms have been evaluated using [CloudSim](http://code.google.com/p/cloudsim/) and real-world
-workload traces from [PlanetLab](https://www.planet-lab.org/).
+workload traces collected from more than a thousand [PlanetLab](https://www.planet-lab.org/) VMs
+hosted on servers located in more than 500 places around the world.
 
 The aim of the OpenStack Neat project is to provide an extensible framework for dynamic
 consolidation of VMs within OpenStack environments. The framework should provide an overall
 architecture and abstract interfaces of components implementing the 4 decision-making algorithms
 listed above. The framework should allow configuration-driven plugging in particular implementations
-of the decision-making algorithms.
+of the decision-making algorithms. The implementation of the framework will include the algorithms
+proposed in our previous works [@beloglazov2012optimal; @beloglazov2012overload].
 
 
 
