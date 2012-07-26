@@ -20,6 +20,6 @@ setup(
     platforms='any',
 
     packages=find_packages(),
-    test_suite='tests',
+#    test_suite='tests',
     tests_require=['pyqcy'],
 )
