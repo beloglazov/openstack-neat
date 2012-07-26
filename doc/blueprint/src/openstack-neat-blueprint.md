@@ -77,25 +77,18 @@ specifically targeted at OpenStack.
 
 # User stories
 
+- As a Cloud Administrator or Systems Integrator, I want to support dynamic VM consolidation to
+  improve the utilization of physical resources and reduce the energy consumption.
+- As a Cloud Administrator, I want to provide QoS guarantees to the consumers.
+- As a Cloud Administrator, I want to minimize the price of the service provided for the consumers
+  by reducing the operating costs through the reduced energy consumption.
+- As a Cloud Administrator, I want to decrease the carbon dioxide emissions into the environment by
+  reducing the energy consumption by the data center's resources.
+- As a Cloud Service Consumer, I want to pay the minimum price for the service provided through the
+  minimized energy consumption of the computing resources.
+- As a Cloud Service Consumer, I want to use Green Cloud resources, whose provider strives to reduce
+  the impact on the environment.
 
-
-- As a Cloud Administrator or Systems Integrator, I want to support timely updates of usage data and
-  disperse them to various customers (both internal and external) for billing, decision support, and
-  analytic purposes.
-- As a Cloud Administrator, I want to support improved scheduling to make decisions for provisioning
-  new instances to a Cluster or Resource pool based on their respective usage.
-- As a Cloud Administrator, I want to support capacity planning.
-- As a Cloud Administrator, I want to receive threshold-based notifications derived from utilization
-  data. See also Resource Monitor Alerts and Notifications.
-- As an Cloud User, I want to see a graph of my server's CPU utilization over the last hour.
-
-- As a systems integrator, I need to retrieve usage data so that I can properly bill my customers.
-- As a systems integrator or enterprise cloud administrator, I want to monitor usage data over time
-  so that I can optimize the utilization of my resources.
-- As an business or agency that supports multiple projects, I need to account for the resources
-  consumed by each project so that I can properly meet accounting and budget standards.
-- As a systems integrator, I need to provide usage data to multiple third-party systems without
-  building custom interfaces to each one so that I can efficiently utilize my manpower.
 
 # Assumptions
 
