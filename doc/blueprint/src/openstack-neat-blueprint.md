@@ -2,20 +2,45 @@
 % Anton Beloglazov
 % 26th of July 2012
 
+
 # Summary
 
-A server template consists of a base image plus the definitions of configuration metadata. For
-example, a server template might include an Apache HTTP server; the metadata would include the
-server name, location of the HTML root directory, and tuning parameters. Glance stores the template
-in its registry; Nova, when creating a new server from the template, would validate the required
-metadata and configure the internal applications directly.
+OpenStack Neat is a project intended to provide an extension to OpenStack implementing dynamic
+consolidation of Virtual Machines (VMs) using live migration. The major objective of dynamic VM
+consolidation is to improve the utilization of physical resources and reduce energy consumption by
+re-allocating VMs using live migration according to their real-time resource demand and switching
+idle hosts to the sleep mode. For example, assume that two VMs are placed on two different hosts,
+but the combined resource capacity required by the VMs to serve the current load can be provided by
+just one the hosts. Then, one of the VMs can be migrated to the host serving the other VM, and the
+idle host can be switched to the sleep mode to save energy.
 
-The metadata could also be used to drive automatically-generated web interfaces to solicit the
-configuration metadata.
+Apart from consolidating VMs, the system should be able to react to increases in the resource demand
+and deconsolidate VMs when necessary to avoid performance degradation. In general, the problem of
+dynamic VM consolidation can be split into 4 sub-problems:
 
-Server templates could greatly increase the flexibility and usability of compute clouds; rather than
-creating a "bare" server and configuring it manually, this could allow users to prepopulate
-applications in a server image and configure them automatically.
+1. Deciding when a host is considered to be underloaded, so that all the VMs should be migrated out,
+and the host should be switched to a low-power mode, such as the sleep mode.
+2. Deciding when a host is considered to be overloaded, so that some VMs should be migrated from the
+host to other hosts to avoid performance degradation.
+3. Selecting VMs, which should be migrated from an overloaded host out of the full set of the VMs
+currently served by the host.
+4. Placing VMs selected for migration to other active or re-activated hosts.
+
+This work is a part of PhD research conducted within the
+[Cloud Computing and Distributed Systems (CLOUDS) Laboratory](http://www.cloudbus.org/) at the
+University of Melbourne. The problem of dynamic VM consolidation considering Quality of Service
+(QoS) constraints has been studied from the theoretical perspective and algorithms addressing the
+sub-problems listed above have been proposed [@beloglazov2012optimal; @beloglazov2012overload]. The
+algorithms have been evaluated using [CloudSim](http://code.google.com/p/cloudsim/) and real-world
+workload traces from [PlanetLab](https://www.planet-lab.org/).
+
+The aim of the OpenStack Neat project is to provide an extensible framework for dynamic
+consolidation of VMs within OpenStack environments. The framework should provide an overall
+architecture and abstract interfaces of components implementing the 4 decision-making algorithms
+listed above. The framework should allow configuration-driven plugging in particular implementations
+of the decision-making algorithms.
+
+
 
 # Release Note
 
@@ -26,13 +51,17 @@ writing them is a useful exercise.)
 
 It is mandatory.
 
+
 # Rationale
 
+
 # User stories
+
 
 # Assumptions
 
 Glance ''stores'' the server template and metadata map; Nova must ''implement'' the server template.
+
 
 # Design
 
@@ -80,14 +109,17 @@ section and replace metadata tokens with the defined values. For example, the fi
 This section should describe a plan of action (the "how") to implement the changes discussed. Could
 include subsections like:
 
+
 ## UI Changes
 
 Should cover changes required to the UI, or specific UI that is required to implement this
+
 
 ## Code Changes
 
 Code changes should include an overview of what needs to change, and in some cases even the specific
 details.
+
 
 ## Migration
 
@@ -97,16 +129,22 @@ Include:
 - redirects from old URLs to new ones, if any
 - how users will be pointed to the new way of doing things, if necessary.
 
+
 # Test/Demo Plan
 
 This need not be added or completed until the specification is nearing beta.
+
 
 # Unresolved issues
 
 This should highlight any issues that should be addressed in further specifications, and not
 problems with the specification itself; since any specification with problems cannot be approved.
 
+
 # BoF agenda and discussion
 
 Use this section to take notes during the BoF; if you keep it in the approved spec, use it for
 summarising what was discussed and note any options that were rejected.
+
+
+# References
