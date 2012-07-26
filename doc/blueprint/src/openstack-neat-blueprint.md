@@ -57,9 +57,45 @@ management and compute hosts.
 
 # Rationale
 
+The problem of data centers is high energy consumption, which has risen by 56% from 2005 to 2010,
+and in 2010 accounted to be between 1.1% and 1.5% of the global electricity use [@koomey2011growth].
+Apart from high operating costs, this results in substantial carbon dioxide (CO~2~) emissions, which
+are estimated to be 2% of the global emissions [@gartner2007co2]. The problem has been partially
+addressed by improvements in the physical infrastructure of modern data centers. As reported by
+[the Open Compute Project](http://opencompute.org/), Facebook's Oregon data center achieves a Power
+Usage Effectiveness (PUE) of 1.08, which means that approximately 93 of the data center's energy
+consumption are consumed by the computing resources. Therefore, now it is important to focus on the
+resource management aspect, i.e. ensuring that the computing resources are efficiently utilized to
+serve applications.
+
+Dynamic consolidation of VMs has been shown to be efficient in improving the utilization of data
+center resources, as demonstrated by numerous studies
+[@nathuji2007virtualpower; @verma2008pmapper; @zhu20081000; @gmach2008integrated; @gmach2009resource; @vmware2010distributed; @jung2010mistral; @jung2010mistral; @kumar2009vmanage; @guenter2011managing; @bobroff2007dynamic; @beloglazov2011taxonomy].
+In this project, we aim to implement an extensible framework for dynamic VM consolidation
+specifically targeted at OpenStack.
+
 
 # User stories
 
+
+
+- As a Cloud Administrator or Systems Integrator, I want to support timely updates of usage data and
+  disperse them to various customers (both internal and external) for billing, decision support, and
+  analytic purposes.
+- As a Cloud Administrator, I want to support improved scheduling to make decisions for provisioning
+  new instances to a Cluster or Resource pool based on their respective usage.
+- As a Cloud Administrator, I want to support capacity planning.
+- As a Cloud Administrator, I want to receive threshold-based notifications derived from utilization
+  data. See also Resource Monitor Alerts and Notifications.
+- As an Cloud User, I want to see a graph of my server's CPU utilization over the last hour.
+
+- As a systems integrator, I need to retrieve usage data so that I can properly bill my customers.
+- As a systems integrator or enterprise cloud administrator, I want to monitor usage data over time
+  so that I can optimize the utilization of my resources.
+- As an business or agency that supports multiple projects, I need to account for the resources
+  consumed by each project so that I can properly meet accounting and budget standards.
+- As a systems integrator, I need to provide usage data to multiple third-party systems without
+  building custom interfaces to each one so that I can efficiently utilize my manpower.
 
 # Assumptions
 
