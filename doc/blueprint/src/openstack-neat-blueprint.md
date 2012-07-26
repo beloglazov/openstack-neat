@@ -46,12 +46,13 @@ proposed in our previous works [@beloglazov2012optimal; @beloglazov2012overload]
 
 # Release Note
 
-This section should include a paragraph describing the end-user impact of this change. It is meant
-to be included in the release notes of the first release in which it is implemented. (Not all of
-these will actually be included in the release notes, at the release manager's discretion; but
-writing them is a useful exercise.)
-
-It is mandatory.
+The functionality covered by this project will be implemented in the form of services separate from
+the core OpenStack services. The services of this project will interact with the core OpenStack
+services using their public APIs. It will be required to create a new Keystone user within the
+`service` tenant. The project will also require a new MySQL database for storing information on the
+host configuration, VM placement, and CPU utilization by the VMs. The project will provide script
+for automated initialization of the database. The service of the project will need to be run on the
+management and compute hosts.
 
 
 # Rationale
