@@ -4,9 +4,8 @@ from pyqcy import *
 class Arithmetic(TestCase):
 
     @qc
-    def addition_on_ints(x=int, y=int):
-        assert isinstance(x + y, int)
-
-    @qc
-    def subtraction_on_ints(x=int, y=int):
-        assert isinstance(x - y, int)
+    def addition_actually_works(
+        x=int_(min=0), y=int_(min=0)
+    ):
+        the_sum = x + y
+        assert the_sum >= x and the_sum >= y
