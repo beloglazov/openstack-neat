@@ -97,43 +97,86 @@ Nova uses a *shared storage* for storing VM instance data, thus supporting *live
 
 # Design
 
-This is just one possible design for this feature (keep that in mind). At its simplest, a server
-template consists of a core image and a ''metadata map''. The metadata map defines metadata that
-must be collected during server creation and a list of files (on the server) that must be modified
-using the defined metadata.
+## Components
 
-Here is a simple example: let's assume that the server template has a Linux server with Apache HTTP
-installed. Apache needs to know the IP address of the server and the directory on the server that
-contains the HTML files.
+### Data Collector
 
-The metadata map would look something like this:
+- Runs on every Nova Compute host periodically (every X seconds)
+- Collects the CPU utilization data for every VM running on the host
+- Submits the collected data to the central database
+- Stores the collected data locally in a file
 
-```
-  metadata {
-   IP_ADDRESS;
-   HTML_ROOT : string(1,255) : "/var/www/";
-  }
-  map {
-   /etc/httpd/includes/server.inc
-  }
-```
 
-In this case, the {{{metadata}}} section defines the metadata components required; the {{{map}}}
-section defines the files that must be parsed and have the metadata configured. Within the
-{{{metadata}}} section, there are two defined items. {{{IP_ADDRESS}}} is a predefined (built-in)
-value, and {{{HTML_ROOT}}} is the root directory of the web server.
+### Local Manager
 
-For {{{HTML_ROOT}}}, there are three sub-fields: the name, the data type, and (in this case) the
-default value. The token {{{required}}} could be used for items that must be supplied by the user.
+- Runs on every Nova Compute host periodically (every X seconds)
+- Invokes decision making algorithm
+- Reads the data stored by the Data Collector
+- Invokes the Underload Detector
+    - If the host is underloaded, sends a request to the Global Manager to migrate all the VMs away
+      from the host and switch the host to the sleep mode, then exit
+    - If the host is not underloaded, continue with the next steps
+- Invokes the Overload Detector
+    - If the host is overloaded, invoke the VM Selector
+ 	    - Send a request to the Global Manager to migrate the VMs selected by the VM Selector
+	- Exit
+- Processes acknowledgment requests from the Global Manager about completion of VM migrations and
+  removes/adds records about the migrated VM
 
-When the server is created, a (as-yet-undefined) process would look at the files in the {{{map}}}
-section and replace metadata tokens with the defined values. For example, the file might contain:
 
-```
-<VirtualHost {{IP_ADDRESS}}:*>
-  DocumentRoot "{{HTML_ROOT}}";
-</VirtualHost>
-```
+### Underload Detector
+
+- Deployed on every Nova Compute host
+- Invoked by the Local Manager
+- Configured with a specific underload detection algorithm
+- Passed with the data read by the Local Manager as an argument
+- Invokes the specified underload detection algorithm and passes the data passed by the Local
+  Manager as an argument
+- Returns the decision of the underload detection algorithm of whether the host underloaded
+
+
+### Overload Detector
+
+- Deployed on every Nova Compute host
+- Invoked by the Local Manager
+- Configured with a specific overload detection algorithm
+- Passed with the data read by the Local Manager as an argument
+- Invokes the specified overload detection algorithm and passes the data passed by the Local
+  Manager as an argument
+- Returns the decision of the overload detection algorithm of whether the host overloaded
+
+### VM Selector
+
+- Deployed on every Nova Compute host
+- Invoked by the Local Manager if the host is overloaded
+- Configured with a specific VM selection algorithm
+- Invokes the specified VM selection algorithm and passes the data passed by the Local Manager as an
+  argument
+- Returns the set of VM to migrate returned by the invoked VM selection algorithm
+
+
+### Global Manager
+
+- Runs on the management host
+- Configured with a VM placement algorithm
+- Processes VM migration requests received from Local Managers
+- If required, switches hosts on or off
+- Invokes the specified VM placement algorithm to determine destination hosts for VM migrations
+	- VM placement algorithm can directly query the database to obtain the required information, such
+      as the current VM placement, and resource utilization
+- Once destination hosts are determines, call the Nova API to migrate VMs
+- Once a migration is completed, send an acknowledgment request to the Local Managers of the source
+  and destination hosts
+
+
+## TODO
+
+- What data should be stored locally by the Data Collector?
+- What is the format of the data?
+- What data should be submitted to the database?
+- What is the database schema?
+- Define REST APIs for the Global and Local Managers
+- Find out how to remotely switch hosts on or off
 
 
 # Implementation
