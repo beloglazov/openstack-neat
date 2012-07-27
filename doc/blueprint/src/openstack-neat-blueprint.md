@@ -98,6 +98,9 @@ Nova uses a *shared storage* for storing VM instance data, thus supporting *live
 
 # Design
 
+The system is composed of a number of components, some of which are deployed on the compute hosts,
+and some on the management host.
+
 ## Components
 
 ### Data Collector
@@ -111,7 +114,6 @@ Nova uses a *shared storage* for storing VM instance data, thus supporting *live
 ### Local Manager
 
 - Runs on every Nova Compute host periodically (every X seconds)
-- Invokes decision making algorithm
 - Reads the data stored by the Data Collector
 - Invokes the Underload Detector
     - If the host is underloaded, sends a request to the Global Manager to migrate all the VMs away
@@ -133,7 +135,7 @@ Nova uses a *shared storage* for storing VM instance data, thus supporting *live
 - Passed with the data read by the Local Manager as an argument
 - Invokes the specified underload detection algorithm and passes the data passed by the Local
   Manager as an argument
-- Returns the decision of the underload detection algorithm of whether the host underloaded
+- Returns the decision of the underload detection algorithm of whether the host is underloaded
 
 
 ### Overload Detector
@@ -144,7 +146,7 @@ Nova uses a *shared storage* for storing VM instance data, thus supporting *live
 - Passed with the data read by the Local Manager as an argument
 - Invokes the specified overload detection algorithm and passes the data passed by the Local
   Manager as an argument
-- Returns the decision of the overload detection algorithm of whether the host overloaded
+- Returns the decision of the overload detection algorithm of whether the host is overloaded
 
 ### VM Selector
 
@@ -172,6 +174,7 @@ Nova uses a *shared storage* for storing VM instance data, thus supporting *live
 
 ## TODO
 
+- What data should be collected by the Data Collector?
 - What data should be stored locally by the Data Collector?
 - What is the format of the data?
 - What data should be submitted to the database?
