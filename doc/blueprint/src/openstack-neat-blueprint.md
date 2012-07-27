@@ -11,8 +11,8 @@ consolidation is to improve the utilization of physical resources and reduce ene
 re-allocating VMs using live migration according to their real-time resource demand and switching
 idle hosts to the sleep mode. For example, assume that two VMs are placed on two different hosts,
 but the combined resource capacity required by the VMs to serve the current load can be provided by
-just one the hosts. Then, one of the VMs can be migrated to the host serving the other VM, and the
-idle host can be switched to the sleep mode to save energy.
+just one of the hosts. Then, one of the VMs can be migrated to the host serving the other VM, and
+the idle host can be switched to the sleep mode to save energy.
 
 Apart from consolidating VMs, the system should be able to react to increases in the resource demand
 and deconsolidate VMs when necessary to avoid performance degradation. In general, the problem of
@@ -36,11 +36,11 @@ workload traces collected from more than a thousand [PlanetLab](https://www.plan
 hosted on servers located in more than 500 places around the world.
 
 The aim of the OpenStack Neat project is to provide an extensible framework for dynamic
-consolidation of VMs within OpenStack environments. The framework should provide an overall
-architecture and abstract interfaces of components implementing the 4 decision-making algorithms
-listed above. The framework should allow configuration-driven plugging in particular implementations
-of the decision-making algorithms. The implementation of the framework will include the algorithms
-proposed in our previous works [@beloglazov2012optimal; @beloglazov2012overload].
+consolidation of VMs within OpenStack environments. The framework should provide an infrastructure
+enabling the interaction of components implementing the 4 decision-making algorithms listed above.
+The framework should allow configuration-driven switching of implementations of the decision-making
+algorithms. The implementation of the framework will include the algorithms proposed in our previous
+works [@beloglazov2012optimal; @beloglazov2012overload].
 
 
 
@@ -49,10 +49,10 @@ proposed in our previous works [@beloglazov2012optimal; @beloglazov2012overload]
 The functionality covered by this project will be implemented in the form of services separate from
 the core OpenStack services. The services of this project will interact with the core OpenStack
 services using their public APIs. It will be required to create a new Keystone user within the
-`service` tenant. The project will also require a new MySQL database for storing information on the
-host configuration, VM placement, and CPU utilization by the VMs. The project will provide script
-for automated initialization of the database. The service of the project will need to be run on the
-management and compute hosts.
+`service` tenant. The project will also require a new MySQL database for storing information about
+the host configuration, VM placement, and CPU utilization by the VMs. The project will provide a
+script for automated initialization of the database. The services provided by the project will need
+to be run on the management as well as compute hosts.
 
 
 # Rationale
@@ -69,25 +69,26 @@ resource management aspect, i.e. ensuring that the computing resources are effic
 serve applications.
 
 Dynamic consolidation of VMs has been shown to be efficient in improving the utilization of data
-center resources, as demonstrated by numerous studies
-[@nathuji2007virtualpower; @verma2008pmapper; @zhu20081000; @gmach2008integrated; @gmach2009resource; @vmware2010distributed; @jung2010mistral; @jung2010mistral; @kumar2009vmanage; @guenter2011managing; @bobroff2007dynamic; @beloglazov2011taxonomy].
+center resources and reducing energy consumption, as demonstrated by numerous studies
+[@nathuji2007virtualpower; @verma2008pmapper; @zhu20081000; @gmach2008integrated; @gmach2009resource; @vmware2010distributed; @jung2010mistral; @zheng2009justrunit; @kumar2009vmanage; @guenter2011managing; @bobroff2007dynamic; @beloglazov2011taxonomy].
 In this project, we aim to implement an extensible framework for dynamic VM consolidation
-specifically targeted at OpenStack.
+specifically targeted at the OpenStack platform.
 
 
 # User stories
 
 - As a Cloud Administrator or Systems Integrator, I want to support dynamic VM consolidation to
-  improve the utilization of physical resources and reduce the energy consumption.
-- As a Cloud Administrator, I want to provide QoS guarantees to the consumers.
-- As a Cloud Administrator, I want to minimize the price of the service provided for the consumers
-  by reducing the operating costs through the reduced energy consumption.
+  improve the utilization of the data center's resources and reduce the energy consumption.
+- As a Cloud Administrator, I want to provide QoS guarantees to the consumers, while applying
+  dynamic VM consolidation.
+- As a Cloud Administrator, I want to minimize the price of the service provided to the consumers by
+  reducing the operating costs through the reduced energy consumption.
 - As a Cloud Administrator, I want to decrease the carbon dioxide emissions into the environment by
   reducing the energy consumption by the data center's resources.
 - As a Cloud Service Consumer, I want to pay the minimum price for the service provided through the
   minimized energy consumption of the computing resources.
 - As a Cloud Service Consumer, I want to use Green Cloud resources, whose provider strives to reduce
-  the impact on the environment.
+  the impact on the environment in terms of carbon dioxide emissions.
 
 
 # Assumptions
