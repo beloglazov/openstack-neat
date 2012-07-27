@@ -110,6 +110,30 @@ and some on the management host.
 - Submits the collected data to the central database
 - Stores the collected data locally in a file
 
+The data collector collects the CPU utilization data for each VM and stores it in MHz as integers.
+These values are portable and can be converted to the CPU utilization for any host or VM type,
+supporting heterogeneous hosts and VMs. The actual data obtained from Libvirt is the CPU time, which
+should be converted into MHz using the information about the host's CPU.
+
+Only the CPU utilization is both stored locally and submitted to the database. VM placement
+algorithms need information about the mapping between VMs and hosts; however, this information can
+be obtain directly from Nova using its API. The information about host characteristics can also be
+obtained from Nova. Then the data on the CPU usage by VMs can be converted into the required overall
+values of CPU usage for hosts.
+
+The database schema contains only one table for now `vm_resource_usage`. The table contains the
+following fields:
+
+- `id` (string) -- the UUID of a VM;
+- `timestamp` (datetime) -- the time of the data collection;
+- `cpu_mhz` (integer) -- the collected average CPU usage in MHz from the last measurement to the
+  current time stamp.
+
+The data collector stores the resource usage information locally in files in the
+`<local_data_directory>/vm`. The data collector stores the data in separate files for each VM. The
+UUIDs of the VMs are used as the file names for storing data from the respective VMs. The format of
+files is a new line separated list of integers representing the CPU consumption by the VMs in MHz.
+
 
 ### Local Manager
 
@@ -170,6 +194,18 @@ and some on the management host.
 - Once destination hosts are determines, call the Nova API to migrate VMs
 - Once a migration is completed, send an acknowledgment request to the Local Managers of the source
   and destination hosts
+
+
+## Configuration File
+
+The configuration of OpenStack Neat is stored in `/etc/neat/neat.conf` in the standard ini format.
+The configuration includes the following options:
+
+- `sql_connection` -- the host and credentials for connecting to the MySQL database;
+- `global_manager_host` -- the host name of the global manager;
+- `global_magager_port` -- the port of the global manager's REST interface;
+- `local_data_directory` -- the directory, where the data collector stores the data on the resource
+  usage by the VMs running on the host, the default is `/var/lib/neat`;
 
 
 ## TODO
