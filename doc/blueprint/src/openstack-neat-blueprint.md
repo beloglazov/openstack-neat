@@ -224,6 +224,15 @@ The configuration includes the following options:
 This section should describe a plan of action (the "how") to implement the changes discussed. Could
 include subsections like:
 
+## Libraries
+
+- [pyqcy](https://github.com/Xion/pyqcy) -- a QuickCheck-like testing framework for Python.
+- [PyContracts](http://andreacensi.github.com/contracts/) -- a Python library for Design by Contract
+  (DbC).
+- [SQLAlchemy](http://www.sqlalchemy.org/) -- a Python SQL toolkit and Object Relational Mapper.
+- [Sphinx](http://sphinx.pocoo.org/) -- a documentation generator for Python.
+- [Bottle](http://bottlepy.org/) -- a micro web-framework for Python.
+
 
 ## UI Changes
 
