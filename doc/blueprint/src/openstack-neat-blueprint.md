@@ -202,6 +202,9 @@ The configuration of OpenStack Neat is stored in `/etc/neat/neat.conf` in the st
 The configuration includes the following options:
 
 - `sql_connection` -- the host and credentials for connecting to the MySQL database;
+- `admin_tenant_name` -- the admin tenant name for authentication with Nova using Keystone;
+- `admin_user` -- the admin user name for authentication with Nova using Keystone;
+- `admin_password` -- the admin password for authentication with Nova using Keystone;
 - `global_manager_host` -- the host name of the global manager;
 - `global_magager_port` -- the port of the global manager's REST interface;
 - `local_data_directory` -- the directory, where the data collector stores the data on the resource
@@ -229,9 +232,12 @@ include subsections like:
 - [pyqcy](https://github.com/Xion/pyqcy) -- a QuickCheck-like testing framework for Python.
 - [PyContracts](http://andreacensi.github.com/contracts/) -- a Python library for Design by Contract
   (DbC).
-- [SQLAlchemy](http://www.sqlalchemy.org/) -- a Python SQL toolkit and Object Relational Mapper.
+- [SQLAlchemy](http://www.sqlalchemy.org/) -- a Python SQL toolkit and Object Relational Mapper, it
+  is used by OpenStack.
+- [Bottle](http://bottlepy.org/) -- a micro web-framework for Python, authentication using the same
+  credentials using for Nova.
+- [python-novaclient](https://github.com/openstack/python-novaclient) -- a python client API to Nova.
 - [Sphinx](http://sphinx.pocoo.org/) -- a documentation generator for Python.
-- [Bottle](http://bottlepy.org/) -- a micro web-framework for Python.
 
 
 ## UI Changes
