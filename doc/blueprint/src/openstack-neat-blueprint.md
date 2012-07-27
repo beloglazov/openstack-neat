@@ -103,6 +103,9 @@ and some on the management host.
 
 ## Components
 
+![The deployment diagram](openstack-neat-component-interaction.png)
+
+
 ### Data Collector
 
 - Runs on every Nova Compute host periodically (every X seconds)
@@ -121,21 +124,52 @@ be obtain directly from Nova using its API. The information about host character
 obtained from Nova. Then the data on the CPU usage by VMs can be converted into the required overall
 values of CPU usage for hosts.
 
-The database schema contains only one table for now `vm_resource_usage`. The table contains the
-following fields:
-
-- `id` (string) -- the UUID of a VM;
-- `timestamp` (datetime) -- the time of the data collection;
-- `cpu_mhz` (integer) -- the collected average CPU usage in MHz from the last measurement to the
-  current time stamp.
-
 The data collector stores the resource usage information locally in files in the
 `<local_data_directory>/vm`. The data collector stores the data in separate files for each VM. The
 UUIDs of the VMs are used as the file names for storing data from the respective VMs. The format of
 files is a new line separated list of integers representing the CPU consumption by the VMs in MHz.
 
 
+### Database Schema
+
+The `vms` table for storing the mapping between UUIDs of VMs and the internal IDs:
+
+```
+CREATE TABLE vm_resource_usage (
+     id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+     uuid CHAR(36) NOT NULL,
+     PRIMARY KEY (id)
+) ENGINE=MyISAM;
+```
+
+- `id` -- the auto incremented ID of the VM;
+- `uuid` -- the UUID of the VM.
+
+
+The `vm_resource_usage` table is for storing the data about resource usage by VMs:
+
+```
+CREATE TABLE vm_resource_usage (
+     id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+     vm_id BIGINT UNSIGNED NOT NULL,
+     timestamp TIMESTAMP NOT NULL,
+     cpu_mhz MEDIUMINT UNSIGNED NOT NULL,
+     PRIMARY KEY (id)
+) ENGINE=MyISAM;
+```
+
+- `id` -- the auto incremented record ID;
+- `vm_id` -- the foreign key referring the `vms` table;
+- `timestamp` -- the time of the data collection;
+- `cpu_mhz` -- the collected average CPU usage in MHz from the last measurement to the
+  current time stamp.
+
+
+
 ### Local Manager
+
+![The local manager activity diagram](openstack-neat-local-manager.png)
+
 
 - Runs on every Nova Compute host periodically (every X seconds)
 - Reads the data stored by the Data Collector
