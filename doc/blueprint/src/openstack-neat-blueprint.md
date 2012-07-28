@@ -192,6 +192,7 @@ error codes are used:
 Once the requested VM migrations are completed, the global manager sends an acknowledgment request
 to the local manager that has originated the VM migration using its REST API described later.
 
+
 ### Local Manager
 
 ![The local manager: an activity diagram](openstack-neat-local-manager.png)
@@ -385,12 +386,13 @@ using the `#` character for denoting comments. The configuration includes the fo
 - `global_manager_port` -- the port of the REST web service exposed by the global manager;
 - `local_manager_port` -- the port of the REST web service exposed by the local manager;
 - `local_data_directory` -- the directory used by the data collector to store the data on the resource
-  usage by the VMs running on the host, the default value is `/var/lib/neat`.
+  usage by the VMs running on the host, the default value is `/var/lib/neat`;
+- `local_manager_interval` -- the time interval between subsequent invocations of the local manager;
+- `data_collector_interval` -- the time interval between subsequent invocations of the data collector.
 
 
 ## TODO
 
-- Define REST APIs for the Global and Local Managers
 - Find out how to remotely switch hosts on or off
 
 
