@@ -170,36 +170,32 @@ detection, overload detection, and VM selection algorithm using the configuratio
 further in the paper.
 
 
-#### Underload Detector
+#### Underload Detection.
 
-- Deployed on every Nova Compute host
-- Invoked by the Local Manager
-- Configured with a specific underload detection algorithm
-- Passed with the data read by the Local Manager as an argument
-- Invokes the specified underload detection algorithm and passes the data passed by the Local
-  Manager as an argument
-- Returns the decision of the underload detection algorithm of whether the host is underloaded
+Underload detection is done by a specified in the configuration underload detection algorithm. The
+algorithm has a pre-defined interface, which allows substituting different implementations of the
+algorithm. The configured algorithm is invoked by the local manager and accepts the historical data
+about the resource usage by the VMs running on the host as an input. An underload detection
+algorithm returns a decision of whether the host is underloaded.
 
 
-#### Overload Detector
+#### Overload Detection.
 
-- Deployed on every Nova Compute host
-- Invoked by the Local Manager
-- Configured with a specific overload detection algorithm
-- Passed with the data read by the Local Manager as an argument
-- Invokes the specified overload detection algorithm and passes the data passed by the Local
-  Manager as an argument
-- Returns the decision of the overload detection algorithm of whether the host is overloaded
+Overload detection is done by a specified in the configuration overload detection algorithm.
+Similarly to underload detection, all overload detection algorithms implement a pre-defined
+interface to enable configuration-driven substitution of difference implementations. The configured
+algorithm is invoked by the local manager and accepts the historical data about the resource usage
+by the VMs running on the host as an input. An overload detection algorithm returns a decision of
+whether the host is overloaded.
 
-#### VM Selector
 
-- Deployed on every Nova Compute host
-- Invoked by the Local Manager if the host is overloaded
-- Configured with a specific VM selection algorithm
-- Invokes the specified VM selection algorithm and passes the data passed by the Local Manager as an
-  argument
-- Returns the set of VM to migrate returned by the invoked VM selection algorithm
+#### VM Selection.
 
+If a host is overloaded, it is necessary to select VMs to migrate from the host to avoid performance
+degradation. This is done by a specified in the configuration VM selection algorithm. Similarly to
+underload and overload detection algorithms, different VM selection algorithm can plugged in
+according to configuration. A VM selection algorithm accepts the historical data about the resource
+usage the VMs running on the host and returns a set of VMs to migrate from the host.
 
 
 ### Data Collector
