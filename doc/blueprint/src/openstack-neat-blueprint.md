@@ -99,11 +99,48 @@ Nova uses a *shared storage* for storing VM instance data, thus supporting *live
 # Design
 
 The system is composed of a number of components, some of which are deployed on the compute hosts,
-and some on the management host.
+and some on the management host. In this section, we discuss the system architecture and interaction
+of the components.
+
 
 ## Components
 
-![The deployment diagram](openstack-neat-component-interaction.png)
+![The deployment diagram](openstack-neat-deployment-diagram.png)
+
+As shown in Figure 1, the system is composed of three main components:
+
+- *Global manager* -- a component that is deployed on the management host and makes global
+   management decisions, such as mapping VM instances on hosts, and initiating VM migrations.
+- *Local manager* -- a component that is deployed on every compute host and makes local decisions,
+   such as deciding that the host is underloaded or overloaded, and selecting VMs to migrate to
+   other hosts.
+- *Data collector* -- a component that is deployed on every compute host and is responsible for
+   collecting data about resource usage by VM instances, as well as storing these data locally and
+   submitting the data to the central database.
+
+The system also contains two types of data stores:
+
+- *Central database* -- a database deployed on the management host.
+- *Local file-based data storage* -- a data store deployed on every compute host and used for
+   storing resource usage data to use by local managers.
+
+
+### Global Manager
+
+![The global manager: a sequence diagram](openstack-neat-sequence-diagram.png)
+
+
+
+- Runs on the management host
+- Configured with a VM placement algorithm
+- Processes VM migration requests received from Local Managers
+- If required, switches hosts on or off
+- Invokes the specified VM placement algorithm to determine destination hosts for VM migrations
+	- VM placement algorithm can directly query the database to obtain the required information, such
+      as the current VM placement, and resource utilization
+- Once destination hosts are determines, call the Nova API to migrate VMs
+- Once a migration is completed, send an acknowledgment request to the Local Managers of the source
+  and destination hosts
 
 
 ### Data Collector
@@ -168,7 +205,7 @@ CREATE TABLE vm_resource_usage (
 
 ### Local Manager
 
-![The local manager activity diagram](openstack-neat-local-manager.png)
+![The local manager: an activity diagram](openstack-neat-local-manager.png)
 
 
 - Runs on every Nova Compute host periodically (every X seconds)
@@ -216,18 +253,6 @@ CREATE TABLE vm_resource_usage (
 - Returns the set of VM to migrate returned by the invoked VM selection algorithm
 
 
-### Global Manager
-
-- Runs on the management host
-- Configured with a VM placement algorithm
-- Processes VM migration requests received from Local Managers
-- If required, switches hosts on or off
-- Invokes the specified VM placement algorithm to determine destination hosts for VM migrations
-	- VM placement algorithm can directly query the database to obtain the required information, such
-      as the current VM placement, and resource utilization
-- Once destination hosts are determines, call the Nova API to migrate VMs
-- Once a migration is completed, send an acknowledgment request to the Local Managers of the source
-  and destination hosts
 
 
 ## Configuration File
