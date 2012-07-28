@@ -1,6 +1,6 @@
-% OpenStack Neat -- Dynamic Consolidation of Virtual Machines: Blueprint
+% OpenStack Neat -- A Framework for Dynamic Consolidation of Virtual Machines: A Blueprint
 % Anton Beloglazov
-% 26th of July 2012
+% 28th of July 2012
 
 
 # Summary
@@ -70,9 +70,10 @@ serve applications.
 
 Dynamic consolidation of VMs has been shown to be efficient in improving the utilization of data
 center resources and reducing energy consumption, as demonstrated by numerous studies
-[@nathuji2007virtualpower; @verma2008pmapper; @zhu20081000; @gmach2008integrated; @gmach2009resource; @vmware2010distributed; @jung2010mistral; @zheng2009justrunit; @kumar2009vmanage; @guenter2011managing; @bobroff2007dynamic; @beloglazov2011taxonomy].
-In this project, we aim to implement an extensible framework for dynamic VM consolidation
-specifically targeted at the OpenStack platform.
+[@nathuji2007virtualpower; @verma2008pmapper; @zhu20081000; @gmach2008integrated; @gmach2009resource;
+@vmware2010distributed; @jung2010mistral; @zheng2009justrunit; @kumar2009vmanage; @guenter2011managing;
+@bobroff2007dynamic; @beloglazov2011taxonomy]. In this project, we aim to implement an extensible
+framework for dynamic VM consolidation specifically targeted at the OpenStack platform.
 
 
 # User stories
@@ -289,11 +290,6 @@ using the `#` character for denoting comments. The configuration includes the fo
 
 ## TODO
 
-- What data should be collected by the Data Collector?
-- What data should be stored locally by the Data Collector?
-- What is the format of the data?
-- What data should be submitted to the database?
-- What is the database schema?
 - Define REST APIs for the Global and Local Managers
 - Find out how to remotely switch hosts on or off
 
