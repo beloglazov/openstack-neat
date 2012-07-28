@@ -135,6 +135,9 @@ local managers of both source and destination hosts to update their VM metadata.
 is also responsible for switching idle hosts to the sleep mode, as well as re-activating hosts when
 necessary.
 
+
+#### VM Placement.
+
 The global manager is agnostic of a particular implementation of the VM placement algorithm in use.
 The VM placement algorithm to use can be specified in the configuration file described later. A VM
 placement algorithm can the Nova API to obtain the information about host characteristics and
