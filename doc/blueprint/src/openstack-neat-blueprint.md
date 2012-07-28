@@ -125,7 +125,7 @@ As shown in Figure 1, the system is composed of three main components:
 ![The global manager: a sequence diagram](openstack-neat-sequence-diagram.png)
 
 The global manager is deployed on the management host and is responsible for making VM placement
-decisions and initiating VM migrations. It exposes a REST interface, which accepts requests from
+decisions and initiating VM migrations. It exposes a REST web service, which accepts requests from
 local managers. The global manager processes only one type of requests -- reallocation of a set of
 VM instances. As shown in Figure 2, once a request is received, the global manager invokes a VM
 placement algorithm to determine destination hosts to migrate the VMs to. Once a VM placement is
@@ -143,6 +143,51 @@ The VM placement algorithm to use can be specified in the configuration file des
 placement algorithm can the Nova API to obtain the information about host characteristics and
 current VM placement. If necessary, it can also query the central database to obtain the historical
 information about the resource usage by the VMs.
+
+
+#### REST API.
+
+The global manager exposes a REST web service (REST API) for accepting VM migration requests from
+local managers. The service URL is defined according to the configuration options defined in
+`/etc/neat/neat.conf` and discuss further in the paper. The two relevant options are:
+
+- `global_manager_host` -- the name of the host running the global manager;
+- `global_manager_port` -- the port of the REST web service exposed by the global manager.
+
+The service URL is composed as follows:
+
+```
+http://<global_manager_host>:<global_manager_port>/
+```
+
+Since the global manager processing only a single type of requests, it exposes only
+one resource: `/`. The resource is accessed using the method `PUT`, which initiates the VM
+reallocation process. This service requires the following parameters:
+
+- `admin_tenant_name` -- the admin tenant name of Neat's admin user registered in Keystone. This
+  parameter is not used to authenticate in any OpenStack service, rather it is used to authenticate
+  the client making a request as being allowed to access the web service.
+- `admin_user` -- the admin user name of Neat's admin user registered in Keystone. This
+  parameter is not used to authenticate in any OpenStack service, rather it is used to authenticate
+  the client making a request as being allowed to access the web service.
+- `admin_password` -- the admin password of Neat's admin user registered in Keystone. This
+  parameter is not used to authenticate in any OpenStack service, rather it is used to authenticate
+  the client making a request as being allowed to access the web service.
+- `vm_uuids` -- a coma-separated list of UUIDs of the VMs required to be migrated.
+
+If the provided credentials are correct and the `vm_uuids` parameter includes a list of UUIDs of
+existing VMs in the correct format, the service responses with the HTTP status code `200 OK`.
+
+The service uses standard HTTP error codes to response in cases of errors detected. The following
+error codes are used:
+
+- `400` -- bad input parameter: incorrect or missing parameters;
+- `401` -- unauthorized: user credentials are missing;
+- `403` -- forbidden: user credentials do not much the ones specified in the configuration file;
+- `405` -- method not allowed: the request is made with a method other than the only supported
+  `PUT`;
+- `422` -- unprocessable entity: one or more VMs could not be found using the list of UUIDs
+  specified in the `vm_uuids` parameter.
 
 
 ### Local Manager
@@ -164,7 +209,7 @@ configured VM selection algorithm to select the VMs to migrate from the host. On
 migrate from the host are selected, the local manager sends a request to the global manager's REST
 interface to migrate the selected VMs from the host.
 
-The local manager also exposes a REST interface to receive acknowledgments from the global manager
+The local manager also exposes a REST web service to receive acknowledgments from the global manager
 when the requested VM migrations are completed. Upon receiving an acknowledgment, the local manager
 removes from the local data store the data about the resource usage of the VMs migrated from the
 host.
@@ -285,8 +330,8 @@ using the `#` character for denoting comments. The configuration includes the fo
 - `admin_user` -- the admin user name for authentication with Nova using Keystone;
 - `admin_password` -- the admin password for authentication with Nova using Keystone;
 - `global_manager_host` -- the name of the host running the global manager;
-- `global_magager_port` -- the port of the REST interface exposed by the global manager;
-- `local_magager_port` -- the port of the REST interface exposed by the local manager;
+- `global_manager_port` -- the port of the REST web service exposed by the global manager;
+- `local_manager_port` -- the port of the REST web service exposed by the local manager;
 - `local_data_directory` -- the directory used by the data collector to store the data on the resource
   usage by the VMs running on the host, the default value is `/var/lib/neat`.
 
