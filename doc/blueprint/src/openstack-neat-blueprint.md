@@ -130,10 +130,10 @@ local managers. The global manager processes only one type of requests -- reallo
 VM instances. As shown in Figure 2, once a request is received, the global manager invokes a VM
 placement algorithm to determine destination hosts to migrate the VMs to. Once a VM placement is
 determined, the global manager submits a request to the Nova API to migrate the VMs. When the
-required VM migrations are completed, the global manager sends an acknowledgment message to the
-local managers of both source and destination hosts to update their VM metadata. The global manager
-is also responsible for switching idle hosts to the sleep mode, as well as re-activating hosts when
-necessary.
+required VM migrations are completed, the global manager sends an acknowledgment request to the
+local manager that has originated the VM migration to update its local VM metadata. The global
+manager is also responsible for switching idle hosts to the sleep mode, as well as re-activating
+hosts when necessary.
 
 
 #### VM Placement.
@@ -148,8 +148,8 @@ information about the resource usage by the VMs.
 #### REST API.
 
 The global manager exposes a REST web service (REST API) for accepting VM migration requests from
-local managers. The service URL is defined according to the configuration options defined in
-`/etc/neat/neat.conf` and discuss further in the paper. The two relevant options are:
+local managers. The service URL is defined according to configuration options defined in
+`/etc/neat/neat.conf`, which is discussed further in the paper. The two relevant options are:
 
 - `global_manager_host` -- the name of the host running the global manager;
 - `global_manager_port` -- the port of the REST web service exposed by the global manager.
@@ -160,7 +160,7 @@ The service URL is composed as follows:
 http://<global_manager_host>:<global_manager_port>/
 ```
 
-Since the global manager processing only a single type of requests, it exposes only
+Since the global manager processes only a single type of requests, it exposes only
 one resource: `/`. The resource is accessed using the method `PUT`, which initiates the VM
 reallocation process. This service requires the following parameters:
 
@@ -189,6 +189,8 @@ error codes are used:
 - `422` -- unprocessable entity: one or more VMs could not be found using the list of UUIDs
   specified in the `vm_uuids` parameter.
 
+Once the requested VM migrations are completed, the global manager sends an acknowledgment request
+to the local manager that has originated the VM migration using its REST API described later.
 
 ### Local Manager
 
@@ -245,6 +247,56 @@ degradation. This is done by a specified in the configuration VM selection algor
 underload and overload detection algorithms, different VM selection algorithm can plugged in
 according to configuration. A VM selection algorithm accepts the historical data about the resource
 usage the VMs running on the host and returns a set of VMs to migrate from the host.
+
+
+#### REST API.
+
+The local manager exposes a REST web service (REST API) for accepting requests from the global
+manager that acknowledge the completion of a requested VM migration. The service URL is defined
+according to a configuration option defined in `/etc/neat/neat.conf`. The relevant option is:
+
+- `local_manager_port` -- the port of the REST web service exposed by the local manager.
+
+The service URL is composed as follows:
+
+```
+http://<ip>:<global_manager_port>/
+```
+
+Where `<ip>` is replaced by the IP address of the host, where the local manager is running.
+
+Since the local manager processes only a single type of requests, it exposes only one resource: `/`.
+The resource is accessed using the method `PUT`, which notifies the local manager that a number of
+VMs have been migrated from the host and the metadata needs to be updated. This service requires the
+following parameters:
+
+- `admin_tenant_name` -- the admin tenant name of Neat's admin user registered in Keystone. This
+  parameter is not used to authenticate in any OpenStack service, rather it is used to authenticate
+  the client making a request as being allowed to access the web service.
+- `admin_user` -- the admin user name of Neat's admin user registered in Keystone. This
+  parameter is not used to authenticate in any OpenStack service, rather it is used to authenticate
+  the client making a request as being allowed to access the web service.
+- `admin_password` -- the admin password of Neat's admin user registered in Keystone. This
+  parameter is not used to authenticate in any OpenStack service, rather it is used to authenticate
+  the client making a request as being allowed to access the web service.
+- `vm_uuids` -- a coma-separated list of UUIDs of the VMs required to be migrated.
+
+If the provided credentials are correct and the `vm_uuids` parameter includes a list of UUIDs of
+existing VMs in the correct format, the service responses with the HTTP status code `200 OK`.
+
+The service uses standard HTTP error codes to response in cases of errors detected. The following
+error codes are used:
+
+- `400` -- bad input parameter: incorrect or missing parameters;
+- `401` -- unauthorized: user credentials are missing;
+- `403` -- forbidden: user credentials do not much the ones specified in the configuration file;
+- `405` -- method not allowed: the request is made with a method other than the only supported
+  `PUT`;
+- `422` -- unprocessable entity: one or more VMs could not be found using the list of UUIDs
+  specified in the `vm_uuids` parameter.
+
+Once a request is received, the local manager deletes the files containing the historical data on
+the resource usage by the VMs specified by the provided list of UUIDs.
 
 
 ### Data Collector
