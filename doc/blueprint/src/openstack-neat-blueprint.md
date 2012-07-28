@@ -222,63 +222,69 @@ As shown in Figure 1, the system contains two types of data stores:
 - *Local file-based data storage* -- a data store deployed on every compute host and used for
    storing resource usage data to use by local managers.
 
+The details about the data stores are given in the following subsections.
+
 
 ### Central Database
 
-The `vms` table for storing the mapping between UUIDs of VMs and the internal IDs:
+The central database is used for storing historical data about the resource usage by the VMs running
+on all the compute hosts. The database is populated by data collectors deployed on the compute
+hosts. The data is consumed by VM placement algorithms. The database contains two tables: `vms` and
+`vm_resource_usage`.
+
+The `vms` table is used for storing the mapping between UUIDs of VMs and the internal database IDs:
 
 ```
-CREATE TABLE vm_resource_usage (
-     id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-     uuid CHAR(36) NOT NULL,
-     PRIMARY KEY (id)
+CREATE TABLE vms (
+	# the internal ID of a VM
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+	# the UUID of the VM
+    uuid CHAR(36) NOT NULL,
+    PRIMARY KEY (id)
 ) ENGINE=MyISAM;
 ```
 
-- `id` -- the auto incremented ID of the VM;
-- `uuid` -- the UUID of the VM.
-
-
-The `vm_resource_usage` table is for storing the data about resource usage by VMs:
+The `vm_resource_usage` table is used for storing the data about the resource usage by VMs:
 
 ```
 CREATE TABLE vm_resource_usage (
-     id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
-     vm_id BIGINT UNSIGNED NOT NULL,
-     timestamp TIMESTAMP NOT NULL,
-     cpu_mhz MEDIUMINT UNSIGNED NOT NULL,
-     PRIMARY KEY (id)
+	# the ID of the record
+    id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT,
+	# the id of the corresponding VM
+    vm_id BIGINT UNSIGNED NOT NULL,
+	# the time of the data collection
+	timestamp TIMESTAMP NOT NULL,
+	# the average CPU usage in MHz
+    cpu_mhz MEDIUMINT UNSIGNED NOT NULL,
+    PRIMARY KEY (id)
 ) ENGINE=MyISAM;
 ```
-
-- `id` -- the auto incremented record ID;
-- `vm_id` -- the foreign key referring the `vms` table;
-- `timestamp` -- the time of the data collection;
-- `cpu_mhz` -- the collected average CPU usage in MHz from the last measurement to the
-  current time stamp.
 
 
 ### Local File-Based Data Store
 
 The data collector stores the resource usage information locally in files in the
-`<local_data_directory>/vm`. The data collector stores the data in separate files for each VM. The
-UUIDs of the VMs are used as the file names for storing data from the respective VMs. The format of
-files is a new line separated list of integers representing the CPU consumption by the VMs in MHz.
+`<local_data_directory>/vm`, where `<local_data_directory>` is defined in the configuration file
+discussed further in the paper. The data for each VM is stored in a separate file named according to
+the UUID of the corresponding VM. The format of files is a new line separated list of integers
+representing the CPU consumption by the VMs in MHz.
 
 
 ## Configuration File
 
-The configuration of OpenStack Neat is stored in `/etc/neat/neat.conf` in the standard ini format.
-The configuration includes the following options:
+The configuration of OpenStack Neat is stored in `/etc/neat/neat.conf` in the standard INI format
+using the `#` character for denoting comments. The configuration includes the following options:
 
-- `sql_connection` -- the host and credentials for connecting to the MySQL database;
+- `sql_connection` -- the host name and credentials for connecting to the MySQL database specified
+  in the format supported by SQLAlchemy;
 - `admin_tenant_name` -- the admin tenant name for authentication with Nova using Keystone;
 - `admin_user` -- the admin user name for authentication with Nova using Keystone;
 - `admin_password` -- the admin password for authentication with Nova using Keystone;
-- `global_manager_host` -- the host name of the global manager;
-- `global_magager_port` -- the port of the global manager's REST interface;
-- `local_data_directory` -- the directory, where the data collector stores the data on the resource
-  usage by the VMs running on the host, the default is `/var/lib/neat`;
+- `global_manager_host` -- the name of the host running the global manager;
+- `global_magager_port` -- the port of the REST interface exposed by the global manager;
+- `local_magager_port` -- the port of the REST interface exposed by the local manager;
+- `local_data_directory` -- the directory used by the data collector to store the data on the resource
+  usage by the VMs running on the host, the default value is `/var/lib/neat`.
 
 
 ## TODO
