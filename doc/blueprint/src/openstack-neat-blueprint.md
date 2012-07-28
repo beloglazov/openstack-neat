@@ -193,6 +193,59 @@ Once the requested VM migrations are completed, the global manager sends an ackn
 to the local manager that has originated the VM migration using its REST API described later.
 
 
+#### Switching Hosts On and Off.
+
+One of the main features required to be supported by the hardware in order to take advantage of
+dynamic VM consolidation to save energy is [Wake-on-Lan](http://en.wikipedia.org/wiki/Wake-on-LAN).
+This technology allows a computer being in the sleep mode to be re-activated by sending a special
+packet over network. This technology has been introduced in 1997 by the Advanced Manageability
+Alliance (AMA) formed by Intel and IBM, and is currently supported by most of the modern hardware.
+
+Once the required VM migrations are completed, the global manager connects to the source host and
+switches into in the sleep mode. Switching to the sleep mode can be done, for example, using
+programs included in the `pm-utils` package. To check whether the sleep mode is supported:
+
+```Bash
+pm-is-supported --suspend
+```
+
+To switch the host into the sleep mode:
+
+```Bash
+pm-suspend
+```
+
+To re-activate a host using the Wake-on-Lan technology, it is necessary to send a special package,
+which can be done using the `ether-wake` program as follows:
+
+```Bash
+ether-wake <mac address>
+```
+
+Where `<mac address>` is replaced with the actual MAC address of the host.
+
+[1]	Configuration of the computer you'd like to turn on from remote machine.
+
+```Bash
+[root@dlp ~]# yum -y install ethtool
+[root@dlp ~]# ethtool -s eth0 wol g
+[root@dlp ~]# vi /etc/sysconfig/network-scripts/ifcfg-eth0
+# add at the last line
+ETHTOOL_OPTS="wol g"
+[root@dlp ~]# ifconfig eth0 | grep HWaddr | awk '{print $5}'
+00:22:68:5E:34:06# take a memo
+[root@dlp ~]# shutdown -h now
+```
+
+[2]	Operation on the computer at a remote place.
+
+```Bash
+[root@wol ~]# yum -y install net-tools
+# ether-wake [MAC address of the computer you'd like to turn on]
+[root@wol ~]# ether-wake 00:22:68:5E:34:06   # send magick packets
+```
+
+
 ### Local Manager
 
 ![The local manager: an activity diagram](openstack-neat-local-manager.png)
