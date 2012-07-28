@@ -94,7 +94,11 @@ framework for dynamic VM consolidation specifically targeted at the OpenStack pl
 
 # Assumptions
 
-Nova uses a *shared storage* for storing VM instance data, thus supporting *live migration* of VMs.
+- Nova uses a *shared storage* for storing VM instance data, thus supporting *live migration* of
+  VMs.
+- All the compute hosts must have a user, which is enabled to switch the machine into the sleep
+  mode, or "Suspend to RAM". This user is used by the global controller to connect to the compute
+  hosts using SSH and switch them into the sleep mode when necessary.
 
 
 # Design
@@ -442,11 +446,6 @@ using the `#` character for denoting comments. The configuration includes the fo
   usage by the VMs running on the host, the default value is `/var/lib/neat`;
 - `local_manager_interval` -- the time interval between subsequent invocations of the local manager;
 - `data_collector_interval` -- the time interval between subsequent invocations of the data collector.
-
-
-## TODO
-
-- Find out how to remotely switch hosts on or off
 
 
 # Implementation
