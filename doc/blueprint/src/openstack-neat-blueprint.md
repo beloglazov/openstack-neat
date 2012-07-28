@@ -98,14 +98,14 @@ Nova uses a *shared storage* for storing VM instance data, thus supporting *live
 
 # Design
 
-The system is composed of a number of components, some of which are deployed on the compute hosts,
-and some on the management host. In this section, we discuss the system architecture and interaction
-of the components.
+![The deployment diagram](openstack-neat-deployment-diagram.png)
+
+The system is composed of a number of components and data stores, some of which are deployed on the
+compute hosts, and some on the management host (Figure 1). In the following sections, we discuss the
+design and interaction of the components, as well as the specification of the data stores.
 
 
 ## Components
-
-![The deployment diagram](openstack-neat-deployment-diagram.png)
 
 As shown in Figure 1, the system is composed of three main components:
 
@@ -118,29 +118,56 @@ As shown in Figure 1, the system is composed of three main components:
    collecting data about resource usage by VM instances, as well as storing these data locally and
    submitting the data to the central database.
 
-The system also contains two types of data stores:
-
-- *Central database* -- a database deployed on the management host.
-- *Local file-based data storage* -- a data store deployed on every compute host and used for
-   storing resource usage data to use by local managers.
-
 
 ### Global Manager
 
 ![The global manager: a sequence diagram](openstack-neat-sequence-diagram.png)
 
+The global manager is deployed on the management host and is responsible for making VM placement
+decisions and initiating VM migrations. It exposes a REST interface, which accepts requests from
+local managers. The global manager processes only one type of requests -- reallocation of a set of
+VM instances. As shown in Figure 2, once a request is received, the global manager invokes a VM
+placement algorithm to determine destination hosts to migrate the VMs to. Once a VM placement is
+determined, the global manager submits a request to the Nova API to migrate the VMs. When the
+required VM migrations are completed, the global manager sends an acknowledgment message to the
+local managers of both source and destination hosts to update their VM metadata. The global manager
+is also responsible for switching idle hosts to the sleep mode, as well as re-activating hosts when
+necessary.
+
+The global manager is agnostic of a particular implementation of the VM placement algorithm in use.
+The VM placement algorithm to use can be specified in the configuration file described later. A VM
+placement algorithm can the Nova API to obtain the information about host characteristics and
+current VM placement. If necessary, it can also query the central database to obtain the historical
+information about the resource usage by the VMs.
 
 
-- Runs on the management host
-- Configured with a VM placement algorithm
-- Processes VM migration requests received from Local Managers
-- If required, switches hosts on or off
-- Invokes the specified VM placement algorithm to determine destination hosts for VM migrations
-	- VM placement algorithm can directly query the database to obtain the required information, such
-      as the current VM placement, and resource utilization
-- Once destination hosts are determines, call the Nova API to migrate VMs
-- Once a migration is completed, send an acknowledgment request to the Local Managers of the source
-  and destination hosts
+### Local Manager
+
+![The local manager: an activity diagram](openstack-neat-local-manager.png)
+
+The local manager component is deployed on every compute host and is invoked periodically to
+determine when it necessary to reallocate VM instances from the host. A high-level view of the
+workflow performed by the local manager is shown in Figure 3. First of all, it reads from the local
+storage the historical data about the resource usage by the VMs stored by the data collector
+described in the next section. Then, the local manager invokes the specified in the configuration
+underload detection algorithm to determine whether the host is underloaded. If the host is
+underloaded, the local manager sends a request to the global manager's REST interface to migrate all
+the VMs from the host and switch the host to the sleep mode.
+
+If the host is not underloaded, the local manager proceeds to invoking the specified in the
+configuration overload detection algorithm. If the host is overloaded, the local manager invokes the
+configured VM selection algorithm to select the VMs to migrate from the host. Once the VMs to
+migrate from the host are selected, the local manager sends a request to the global manager's REST
+interface to migrate the selected VMs from the host.
+
+The local manager also exposes a REST interface to receive acknowledgments from the global manager
+when the requested VM migrations are completed. Upon receiving an acknowledgment, the local manager
+removes from the local data store the data about the resource usage of the VMs migrated from the
+host.
+
+Similarly to the global manager, the local manager can be configured to use specific underload
+detection, overload detection, and VM selection algorithm using the configuration file discussed
+further in the paper.
 
 
 ### Data Collector
@@ -203,23 +230,6 @@ CREATE TABLE vm_resource_usage (
 
 
 
-### Local Manager
-
-![The local manager: an activity diagram](openstack-neat-local-manager.png)
-
-
-- Runs on every Nova Compute host periodically (every X seconds)
-- Reads the data stored by the Data Collector
-- Invokes the Underload Detector
-    - If the host is underloaded, sends a request to the Global Manager to migrate all the VMs away
-      from the host and switch the host to the sleep mode, then exit
-    - If the host is not underloaded, continue with the next steps
-- Invokes the Overload Detector
-    - If the host is overloaded, invoke the VM Selector
- 	    - Send a request to the Global Manager to migrate the VMs selected by the VM Selector
-	- Exit
-- Processes acknowledgment requests from the Global Manager about completion of VM migrations and
-  removes/adds records about the migrated VM
 
 
 ### Underload Detector
@@ -253,6 +263,13 @@ CREATE TABLE vm_resource_usage (
 - Returns the set of VM to migrate returned by the invoked VM selection algorithm
 
 
+## Data Stores
+
+As shown in Figure 1, the system contains two types of data stores:
+
+- *Central database* -- a database deployed on the management host.
+- *Local file-based data storage* -- a data store deployed on every compute host and used for
+   storing resource usage data to use by local managers.
 
 
 ## Configuration File
