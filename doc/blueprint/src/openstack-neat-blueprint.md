@@ -170,31 +170,64 @@ detection, overload detection, and VM selection algorithm using the configuratio
 further in the paper.
 
 
+#### Underload Detector
+
+- Deployed on every Nova Compute host
+- Invoked by the Local Manager
+- Configured with a specific underload detection algorithm
+- Passed with the data read by the Local Manager as an argument
+- Invokes the specified underload detection algorithm and passes the data passed by the Local
+  Manager as an argument
+- Returns the decision of the underload detection algorithm of whether the host is underloaded
+
+
+#### Overload Detector
+
+- Deployed on every Nova Compute host
+- Invoked by the Local Manager
+- Configured with a specific overload detection algorithm
+- Passed with the data read by the Local Manager as an argument
+- Invokes the specified overload detection algorithm and passes the data passed by the Local
+  Manager as an argument
+- Returns the decision of the overload detection algorithm of whether the host is overloaded
+
+#### VM Selector
+
+- Deployed on every Nova Compute host
+- Invoked by the Local Manager if the host is overloaded
+- Configured with a specific VM selection algorithm
+- Invokes the specified VM selection algorithm and passes the data passed by the Local Manager as an
+  argument
+- Returns the set of VM to migrate returned by the invoked VM selection algorithm
+
+
+
 ### Data Collector
 
-- Runs on every Nova Compute host periodically (every X seconds)
-- Collects the CPU utilization data for every VM running on the host
-- Submits the collected data to the central database
-- Stores the collected data locally in a file
+The data collector is deployed on every compute host and is executed periodically to collect the CPU
+utilization data for each VM running on the host and stores it in the local file-based data store.
+The data is collected in average number of MHz consumed by a VM during the last measurement
+interval. The CPU usage data are stored as integers. This data format is portable: the collected
+values can be converted to the CPU utilization for any host or VM type, supporting heterogeneous
+hosts and VMs.
 
-The data collector collects the CPU utilization data for each VM and stores it in MHz as integers.
-These values are portable and can be converted to the CPU utilization for any host or VM type,
-supporting heterogeneous hosts and VMs. The actual data obtained from Libvirt is the CPU time, which
-should be converted into MHz using the information about the host's CPU.
-
-Only the CPU utilization is both stored locally and submitted to the database. VM placement
-algorithms need information about the mapping between VMs and hosts; however, this information can
-be obtain directly from Nova using its API. The information about host characteristics can also be
-obtained from Nova. Then the data on the CPU usage by VMs can be converted into the required overall
-values of CPU usage for hosts.
-
-The data collector stores the resource usage information locally in files in the
-`<local_data_directory>/vm`. The data collector stores the data in separate files for each VM. The
-UUIDs of the VMs are used as the file names for storing data from the respective VMs. The format of
-files is a new line separated list of integers representing the CPU consumption by the VMs in MHz.
+The actual data is obtained from Libvirt in the form of the CPU time consumed by a VM to date. Using
+the CPU time collected at the previous time frame, the CPU time for the past time interval is
+calculated. According to the CPU frequency of the host and the length of the time interval, the CPU
+time is converted into the required average MHz consumed by the VM over the last time interval. The
+collected data are stored both locally and submitted to the central database.
 
 
-### Database Schema
+## Data Stores
+
+As shown in Figure 1, the system contains two types of data stores:
+
+- *Central database* -- a database deployed on the management host.
+- *Local file-based data storage* -- a data store deployed on every compute host and used for
+   storing resource usage data to use by local managers.
+
+
+### Central Database
 
 The `vms` table for storing the mapping between UUIDs of VMs and the internal IDs:
 
@@ -229,47 +262,12 @@ CREATE TABLE vm_resource_usage (
   current time stamp.
 
 
+### Local File-Based Data Store
 
-
-
-### Underload Detector
-
-- Deployed on every Nova Compute host
-- Invoked by the Local Manager
-- Configured with a specific underload detection algorithm
-- Passed with the data read by the Local Manager as an argument
-- Invokes the specified underload detection algorithm and passes the data passed by the Local
-  Manager as an argument
-- Returns the decision of the underload detection algorithm of whether the host is underloaded
-
-
-### Overload Detector
-
-- Deployed on every Nova Compute host
-- Invoked by the Local Manager
-- Configured with a specific overload detection algorithm
-- Passed with the data read by the Local Manager as an argument
-- Invokes the specified overload detection algorithm and passes the data passed by the Local
-  Manager as an argument
-- Returns the decision of the overload detection algorithm of whether the host is overloaded
-
-### VM Selector
-
-- Deployed on every Nova Compute host
-- Invoked by the Local Manager if the host is overloaded
-- Configured with a specific VM selection algorithm
-- Invokes the specified VM selection algorithm and passes the data passed by the Local Manager as an
-  argument
-- Returns the set of VM to migrate returned by the invoked VM selection algorithm
-
-
-## Data Stores
-
-As shown in Figure 1, the system contains two types of data stores:
-
-- *Central database* -- a database deployed on the management host.
-- *Local file-based data storage* -- a data store deployed on every compute host and used for
-   storing resource usage data to use by local managers.
+The data collector stores the resource usage information locally in files in the
+`<local_data_directory>/vm`. The data collector stores the data in separate files for each VM. The
+UUIDs of the VMs are used as the file names for storing data from the respective VMs. The format of
+files is a new line separated list of integers representing the CPU consumption by the VMs in MHz.
 
 
 ## Configuration File
