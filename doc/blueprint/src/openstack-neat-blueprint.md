@@ -319,9 +319,9 @@ The details about the data stores are given in the following subsections.
 
 ### Central Database
 
-The central database is used for storing historical data about the resource usage by the VMs running
-on all the compute hosts. The database is populated by data collectors deployed on the compute
-hosts. The data is consumed by VM placement algorithms. The database contains two tables: `vms` and
+The central database is used for storing historical data on the resource usage by VMs running on all
+the compute hosts. The database is populated by data collectors deployed on the compute hosts. The
+data is consumed by VM placement algorithms. The database contains two tables: `vms` and
 `vm_resource_usage`.
 
 The `vms` table is used for storing the mapping between UUIDs of VMs and the internal database IDs:
