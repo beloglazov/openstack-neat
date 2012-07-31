@@ -3,6 +3,7 @@
 pandoc \
     --smart \
     --bibliography=bibliography.bib --csl=ieee.csl \
+    --write=mediawiki \
     --output=../openstack-neat-blueprint.mediawiki \
     openstack-neat-blueprint.md
 
