@@ -376,9 +376,10 @@ using the `#` character for denoting comments. The configuration includes the fo
 - `global_manager_port` -- the port of the REST web service exposed by the global manager;
 - `local_data_directory` -- the directory used by the data collector to store the data on the resource
   usage by the VMs running on the host (the default value is `/var/lib/neat`);
-- `local_manager_interval` -- the time interval between subsequent invocations of the local manager;
+- `local_manager_interval` -- the time interval between subsequent invocations of the local manager
+  in seconds;
 - `data_collector_interval` -- the time interval between subsequent invocations of the data
-  collector;
+  collector in seconds;
 - `data_collector_data_length` -- the number of the latest data values stored locally by the data
   collector and passed to the underload / overload detection and VM placement algorithms;
 - `compute_user` -- the user name for connecting to the compute hosts to switch them into the sleep
@@ -399,8 +400,8 @@ using the `#` character for denoting comments. The configuration includes the fo
 
 # Implementation
 
-This section should describe a plan of action (the "how") to implement the changes discussed. Could
-include subsections like:
+This section describes a plan of how the components described above are going to be implemented.
+
 
 ## Libraries
 
@@ -415,24 +416,27 @@ include subsections like:
 - [Sphinx](http://sphinx.pocoo.org/) -- a documentation generator for Python.
 
 
-## UI Changes
+## Data Collector
 
-Should cover changes required to the UI, or specific UI that is required to implement this
+The data collect will be implemented as a Linux daemon running in the background and collecting data
+on the resource usage by VMs every `data_collector_interval` seconds. When the data collection phase
+is invoked, the component performs the following steps:
 
-
-## Code Changes
-
-Code changes should include an overview of what needs to change, and in some cases even the specific
-details.
-
-
-## Migration
-
-Include:
-
-- data migration, if any
-- redirects from old URLs to new ones, if any
-- how users will be pointed to the new way of doing things, if necessary.
+1. Read the names of the files from the `<local_data_directory>/vm` directory to determine the list
+   of VMs running on the host at the last data collection.
+2. Call the Nova API to obtain the list of VMs that are currently active on the host.
+3. Compare the old and new lists of VMs and determine the newly added or removed VMs.
+4. Delete the files from the `<local_data_directory>/vm` directory corresponding to the VMs that
+   have been removed from the host.
+5. Fetch the latest `data_collector_data_length` data values from the central database for each
+   newly added VM using the database connection information specified in the `sql_connection` option
+   and save the data in the `<local_data_directory>/vm` directory.
+6. Call the Libvirt API to obtain the CPU time for each VM active on the host.
+7. Transform the data obtained from the Libvirt API into the average MHz according to the frequency
+   of the host's CPU and time interval from the previous data collection.
+8. Store the converted data in the `<local_data_directory>/vm` directory in separate files for each
+   VM, and submit the data to the central database.
+9. Schedule the next execution after `data_collector_interval` seconds.
 
 
 # Test/Demo Plan
