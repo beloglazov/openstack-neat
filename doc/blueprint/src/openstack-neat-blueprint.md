@@ -127,8 +127,6 @@ As shown in Figure 1, the system is composed of three main components:
 
 ![The global manager: a sequence diagram](openstack-neat-sequence-diagram.png)
 
-TODO: remove the acknowledgment
-
 The global manager is deployed on the management host and is responsible for making VM placement
 decisions and initiating VM migrations. It exposes a REST web service, which accepts requests from
 local managers. The global manager processes only one type of requests -- reallocation of a set of
@@ -177,6 +175,7 @@ reallocation process. This service requires the following parameters:
   parameter is not used to authenticate in any OpenStack service, rather it is used to authenticate
   the client making a request as being allowed to access the web service.
 - `vm_uuids` -- a coma-separated list of UUIDs of the VMs required to be migrated.
+- `reason` -- a string specifying the resource for migration: "underload", or "overload".
 
 If the provided credentials are correct and the `vm_uuids` parameter includes a list of UUIDs of
 existing VMs in the correct format, the service responses with the HTTP status code `200 OK`.
@@ -417,6 +416,54 @@ The following third party libraries are planned to be used to implement the requ
 5. [python-novaclient](https://github.com/openstack/python-novaclient) -- a Python Nova API client
    implementation.
 6. [Sphinx](http://sphinx.pocoo.org/) -- a documentation generator for Python.
+
+
+## Global Manager
+
+The global manager component will provide a REST web service implemented using the Bottle framework.
+The authentication is going to be done using the admin credentials specified in the configuration
+file. Upon receiving a request from a local manager, the following steps will be performed:
+
+1. Parse the `vm_uuids` parameter and transform it into a list of UUIDs of the VMs to migrate.
+2. Call the Nova API to obtain the current placement of VMs on the hosts.
+3. Call the function specified in the `algorithm_vm_placement` configuration option and pass the
+   UUIDs of the VMs to migrate and the current VM placement as arguments.
+4. Call the Nova API to migrate the VMs according to the placement determined by the
+   `algorithm_vm_placement` algorithm.
+
+When a host needs to be switched to the sleep mode, the global manager will use the account
+credentials from the `compute_user` and `compute_password` configuration options to open an SSH
+connection with the target host and then invoke the command specified in the `sleep_command`, which
+defaults to `pm-suspend`.
+
+When a host needs to be re-activated from the sleep mode, the global manager will leverage the
+Wake-on-Lan technology and send a magic packet to the target host using the `ether-wake` program and
+passing the corresponding MAC address as an argument. The mapping between the IP addresses of the
+hosts and their MAC addresses is initialized in the beginning of the global manager's execution.
+
+
+## Local Manager
+
+The local manager will be implemented as a Linux daemon in the background and every
+`local_manager_interval` seconds checking whether some VMs should be migrated from the host. Every
+time interval, the local manager performs the following steps:
+
+1. Read the data on resource usage by the VMs running on the host from the
+   `<local_data_directory>/vm` directory.
+2. Call the function specified in the `algorithm_underload_detection` configuration option and pass
+   the data on the resource usage by the VMs, as well as the frequency of the CPU as arguments.
+3. If the host is underloaded, send a request to the REST web service of the global manager and pass
+   the list of the UUIDs of all the VMs currently running on the host in the `vm_uuids` paramter, as
+   well as the `reason` for migration as being "underload".
+4. If the host is not underloaded, call the function specified in the `algorithm_overload_detection`
+   configuration option and pass the data on the resource usage by the VMs, as well as the frequency
+   of the host's CPU as arguments.
+5. If the host is overloaded, call the function specified in the `algorithm_vm_selection`
+   configuration option and pass the data on the resource usage by the VMs, as well as the frequency
+   of the host's CPU as arguments
+6. If the host is overloaded, send a request to the REST web service of the global manager and pass
+   the list of the UUIDs of the VMs selected by the VM selection algorithm in the `vm_uuids`
+   paramter, as well as the `reason` for migration as being "overload".
 
 
 ## Data Collector
