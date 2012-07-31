@@ -1,5 +1,9 @@
 # OpenStack Neat -- A Framework for Dynamic Consolidation of Virtual Machines
 
+
+!(https://secure.travis-ci.org/beloglazov/openstack-neat.png)
+
+
 ![Build Status](https://secure.travis-ci.org/beloglazov/openstack-neat.png)
 
 
