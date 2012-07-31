@@ -127,6 +127,8 @@ As shown in Figure 1, the system is composed of three main components:
 
 ![The global manager: a sequence diagram](openstack-neat-sequence-diagram.png)
 
+TODO: remove the acknowledgment
+
 The global manager is deployed on the management host and is responsible for making VM placement
 decisions and initiating VM migrations. It exposes a REST web service, which accepts requests from
 local managers. The global manager processes only one type of requests -- reallocation of a set of
@@ -140,10 +142,10 @@ hosts when necessary.
 #### VM Placement.
 
 The global manager is agnostic of a particular implementation of the VM placement algorithm in use.
-The VM placement algorithm to use can be specified in the configuration file described later. A VM
-placement algorithm can call the Nova API to obtain the information about host characteristics and
-current VM placement. If necessary, it can also query the central database to obtain the historical
-information about the resource usage by the VMs.
+The VM placement algorithm to use can be specified in the configuration file described later using
+the `algorithm_vm_placement` option. A VM placement algorithm can call the Nova API to obtain the
+information about host characteristics and current VM placement. If necessary, it can also query the
+central database to obtain the historical information about the resource usage by the VMs.
 
 
 #### REST API.
@@ -253,30 +255,31 @@ further in the paper.
 
 #### Underload Detection.
 
-Underload detection is done by a specified in the configuration underload detection algorithm. The
-algorithm has a pre-defined interface, which allows substituting different implementations of the
-algorithm. The configured algorithm is invoked by the local manager and accepts the historical data
-about the resource usage by the VMs running on the host as an input. An underload detection
-algorithm returns a decision of whether the host is underloaded.
+Underload detection is done by a specified in the configuration underload detection algorithm
+(`algorithm_underload_detection`). The algorithm has a pre-defined interface, which allows
+substituting different implementations of the algorithm. The configured algorithm is invoked by the
+local manager and accepts historical data about the resource usage by the VMs running on the host as
+an input. An underload detection algorithm returns a decision of whether the host is underloaded.
 
 
 #### Overload Detection.
 
-Overload detection is done by a specified in the configuration overload detection algorithm.
-Similarly to underload detection, all overload detection algorithms implement a pre-defined
-interface to enable configuration-driven substitution of difference implementations. The configured
-algorithm is invoked by the local manager and accepts the historical data about the resource usage
-by the VMs running on the host as an input. An overload detection algorithm returns a decision of
-whether the host is overloaded.
+Overload detection is done by a specified in the configuration overload detection algorithm
+(`algorithm_overload_detection`). Similarly to underload detection, all overload detection
+algorithms implement a pre-defined interface to enable configuration-driven substitution of
+difference implementations. The configured algorithm is invoked by the local manager and accepts
+historical data about the resource usage by the VMs running on the host as an input. An overload
+detection algorithm returns a decision of whether the host is overloaded.
 
 
 #### VM Selection.
 
 If a host is overloaded, it is necessary to select VMs to migrate from the host to avoid performance
-degradation. This is done by a specified in the configuration VM selection algorithm. Similarly to
-underload and overload detection algorithms, different VM selection algorithm can plugged in
-according to configuration. A VM selection algorithm accepts the historical data about the resource
-usage the VMs running on the host and returns a set of VMs to migrate from the host.
+degradation. This is done by a specified in the configuration VM selection algorithm
+(`algorithm_vm_selection`). Similarly to underload and overload detection algorithms, different VM
+selection algorithm can plugged in according to the configuration. A VM selection algorithm accepts
+historical data about the resource usage the VMs running on the host and returns a set of VMs to
+migrate from the host.
 
 
 ### Data Collector
@@ -292,13 +295,15 @@ The actual data is obtained from Libvirt in the form of the CPU time consumed by
 the CPU time collected at the previous time frame, the CPU time for the past time interval is
 calculated. According to the CPU frequency of the host and the length of the time interval, the CPU
 time is converted into the required average MHz consumed by the VM over the last time interval. The
-collected data are stored both locally and submitted to the central database.
+collected data are stored both locally and submitted to the central database. The number of the
+latest data values stored locally and passed to the underload / overload detection and VM selection
+algorithms is defined using the `data_collector_data_length` option in the configuration file.
 
 At the beginning of every execution, the data collector obtains the set of VMs currently running on
-the host and compares them to the VMs running at the previous time step. If new VMs have been found,
-the data collector fetches the historical data about them from the central database and stores them
-in the local file-based data store. If some VMs have been removed, the data collector removes the
-data about these VMs from the local data store.
+the host using the Nova API and compares them to the VMs running on the host at the previous time
+step. If new VMs have been found, the data collector fetches the historical data about them from the
+central database and stores the data in the local file-based data store. If some VMs have been
+removed, the data collector removes the data about these VMs from the local data store.
 
 
 ## Data Stores
@@ -374,6 +379,8 @@ using the `#` character for denoting comments. The configuration includes the fo
 - `local_manager_interval` -- the time interval between subsequent invocations of the local manager;
 - `data_collector_interval` -- the time interval between subsequent invocations of the data
   collector;
+- `data_collector_data_length` -- the number of the latest data values stored locally by the data
+  collector and passed to the underload / overload detection and VM placement algorithms;
 - `compute_user` -- the user name for connecting to the compute hosts to switch them into the sleep
   mode;
 - `compute_password` -- the password of the user account used for connecting to the compute hosts to
