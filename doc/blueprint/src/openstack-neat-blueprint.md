@@ -132,9 +132,7 @@ decisions and initiating VM migrations. It exposes a REST web service, which acc
 local managers. The global manager processes only one type of requests -- reallocation of a set of
 VM instances. As shown in Figure 2, once a request is received, the global manager invokes a VM
 placement algorithm to determine destination hosts to migrate the VMs to. Once a VM placement is
-determined, the global manager submits a request to the Nova API to migrate the VMs. When the
-required VM migrations are completed, the global manager sends an acknowledgment request to the
-local manager that has originated the VM migration to update its local VM metadata. The global
+determined, the global manager submits a request to the Nova API to migrate the VMs. The global
 manager is also responsible for switching idle hosts to the sleep mode, as well as re-activating
 hosts when necessary.
 
@@ -192,9 +190,6 @@ error codes are used:
 - `422` -- unprocessable entity: one or more VMs could not be found using the list of UUIDs
   specified in the `vm_uuids` parameter.
 
-Once the requested VM migrations are completed, the global manager sends an acknowledgment request
-to the local manager that has originated the VM migration using its REST API described later.
-
 
 #### Switching Hosts On and Off.
 
@@ -251,11 +246,6 @@ configured VM selection algorithm to select the VMs to migrate from the host. On
 migrate from the host are selected, the local manager sends a request to the global manager's REST
 interface to migrate the selected VMs from the host.
 
-The local manager also exposes a REST web service to receive acknowledgments from the global manager
-when the requested VM migrations are completed. Upon receiving an acknowledgment, the local manager
-removes from the local data store the data about the resource usage of the VMs migrated from the
-host.
-
 Similarly to the global manager, the local manager can be configured to use specific underload
 detection, overload detection, and VM selection algorithm using the configuration file discussed
 further in the paper.
@@ -289,56 +279,6 @@ according to configuration. A VM selection algorithm accepts the historical data
 usage the VMs running on the host and returns a set of VMs to migrate from the host.
 
 
-#### REST API.
-
-The local manager exposes a REST web service (REST API) for accepting requests from the global
-manager that acknowledge the completion of a requested VM migration. The service URL is defined
-according to a configuration option defined in `/etc/neat/neat.conf`. The relevant option is:
-
-- `local_manager_port` -- the port of the REST web service exposed by the local manager.
-
-The service URL is composed as follows:
-
-```
-http://<ip>:<global_manager_port>/
-```
-
-Where `<ip>` is replaced by the IP address of the host, where the local manager is running.
-
-Since the local manager processes only a single type of requests, it exposes only one resource: `/`.
-The resource is accessed using the method `PUT`, which notifies the local manager that a number of
-VMs have been migrated from the host and the metadata needs to be updated. This service requires the
-following parameters:
-
-- `admin_tenant_name` -- the admin tenant name of Neat's admin user registered in Keystone. This
-  parameter is not used to authenticate in any OpenStack service, rather it is used to authenticate
-  the client making a request as being allowed to access the web service.
-- `admin_user` -- the admin user name of Neat's admin user registered in Keystone. This
-  parameter is not used to authenticate in any OpenStack service, rather it is used to authenticate
-  the client making a request as being allowed to access the web service.
-- `admin_password` -- the admin password of Neat's admin user registered in Keystone. This
-  parameter is not used to authenticate in any OpenStack service, rather it is used to authenticate
-  the client making a request as being allowed to access the web service.
-- `vm_uuids` -- a coma-separated list of UUIDs of the VMs required to be migrated.
-
-If the provided credentials are correct and the `vm_uuids` parameter includes a list of UUIDs of
-existing VMs in the correct format, the service responses with the HTTP status code `200 OK`.
-
-The service uses standard HTTP error codes to response in cases of errors detected. The following
-error codes are used:
-
-- `400` -- bad input parameter: incorrect or missing parameters;
-- `401` -- unauthorized: user credentials are missing;
-- `403` -- forbidden: user credentials do not much the ones specified in the configuration file;
-- `405` -- method not allowed: the request is made with a method other than the only supported
-  `PUT`;
-- `422` -- unprocessable entity: one or more VMs could not be found using the list of UUIDs
-  specified in the `vm_uuids` parameter.
-
-Once a request is received, the local manager deletes the files containing the historical data on
-the resource usage by the VMs specified by the provided list of UUIDs.
-
-
 ### Data Collector
 
 The data collector is deployed on every compute host and is executed periodically to collect the CPU
@@ -353,6 +293,12 @@ the CPU time collected at the previous time frame, the CPU time for the past tim
 calculated. According to the CPU frequency of the host and the length of the time interval, the CPU
 time is converted into the required average MHz consumed by the VM over the last time interval. The
 collected data are stored both locally and submitted to the central database.
+
+At the beginning of every execution, the data collector obtains the set of VMs currently running on
+the host and compares them to the VMs running at the previous time step. If new VMs have been found,
+the data collector fetches the historical data about them from the central database and stores them
+in the local file-based data store. If some VMs have been removed, the data collector removes the
+data about these VMs from the local data store.
 
 
 ## Data Stores
@@ -423,7 +369,6 @@ using the `#` character for denoting comments. The configuration includes the fo
 - `admin_password` -- the admin password for authentication with Nova using Keystone;
 - `global_manager_host` -- the name of the host running the global manager;
 - `global_manager_port` -- the port of the REST web service exposed by the global manager;
-- `local_manager_port` -- the port of the REST web service exposed by the local manager;
 - `local_data_directory` -- the directory used by the data collector to store the data on the resource
   usage by the VMs running on the host, the default value is `/var/lib/neat`;
 - `local_manager_interval` -- the time interval between subsequent invocations of the local manager;
