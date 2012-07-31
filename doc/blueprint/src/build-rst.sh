@@ -4,7 +4,7 @@ pandoc \
     --smart \
     --bibliography=bibliography.bib --csl=ieee.csl \
     --output=../../../README.rst \
-    readme-intro.rst \
+    readme-intro.md \
     openstack-neat-blueprint.md
 
 sed -i 's/openstack-neat-deployment-diagram.png/\/beloglazov\/openstack-neat\/raw\/master\/doc\/blueprint\/src\/openstack-neat-deployment-diagram.png/g' ../../../README.rst
