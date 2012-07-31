@@ -434,7 +434,15 @@ using the `#` character for denoting comments. The configuration includes the fo
 - `compute_password` -- the password of the user account used for connecting to the compute hosts to
   switch them into the sleep mode;
 - `sleep_command` -- a shell command used to switch a host into the sleep mode, the `compute_user`
-  must have permissions to execute this command (the default values is `pm-suspend`).
+  must have permissions to execute this command (the default values is `pm-suspend`);
+- `algorithm_underload_detection` -- the fully qualified name of a Python function to use as an
+  underload detection algorithm;
+- `algorithm_overload_detection` -- the fully qualified name of a Python function to use as an
+  overload detection algorithm;
+- `algorithm_vm_selection` -- the fully qualified name of a Python function to use as a VM selection
+  algorithm;
+- `algorithm_vm_placement` -- the fully qualified name of a Python function to use as a VM placement
+  algorithm.
 
 
 # Implementation
