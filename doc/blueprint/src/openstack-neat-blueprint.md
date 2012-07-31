@@ -12,18 +12,18 @@ re-allocating VMs using live migration according to their real-time resource dem
 idle hosts to the sleep mode. For example, assume that two VMs are placed on two different hosts,
 but the combined resource capacity required by the VMs to serve the current load can be provided by
 just one of the hosts. Then, one of the VMs can be migrated to the host serving the other VM, and
-the idle host can be switched to the sleep mode to save energy.
+the idle host can be switched to a low power mode to save energy.
 
 Apart from consolidating VMs, the system should be able to react to increases in the resource demand
 and deconsolidate VMs when necessary to avoid performance degradation. In general, the problem of
 dynamic VM consolidation can be split into 4 sub-problems:
 
-1. Deciding when a host is considered to be underloaded, so that all the VMs should be migrated out,
-and the host should be switched to a low-power mode, such as the sleep mode.
+1. Deciding when a host is considered to be underloaded, so that all the VMs should be migrated from
+it, and the host should be switched to a low power mode, such as the sleep mode.
 2. Deciding when a host is considered to be overloaded, so that some VMs should be migrated from the
 host to other hosts to avoid performance degradation.
-3. Selecting VMs, which should be migrated from an overloaded host out of the full set of the VMs
-currently served by the host.
+3. Selecting VMs to migrate from an overloaded host out of the full set of the VMs currently served
+by the host.
 4. Placing VMs selected for migration to other active or re-activated hosts.
 
 This work is a part of PhD research conducted within the
@@ -36,12 +36,11 @@ workload traces collected from more than a thousand [PlanetLab](https://www.plan
 hosted on servers located in more than 500 places around the world.
 
 The aim of the OpenStack Neat project is to provide an extensible framework for dynamic
-consolidation of VMs within OpenStack environments. The framework should provide an infrastructure
+consolidation of VMs based on the OpenStack platform. The framework should provide an infrastructure
 enabling the interaction of components implementing the 4 decision-making algorithms listed above.
-The framework should allow configuration-driven switching of implementations of the decision-making
-algorithms. The implementation of the framework will include the algorithms proposed in our previous
-works [@beloglazov2012optimal; @beloglazov2012overload].
-
+The framework should allow configuration-driven switching of different implementations of the
+decision-making algorithms. The implementation of the framework will include the algorithms proposed
+in our previous works [@beloglazov2012optimal; @beloglazov2012overload].
 
 
 # Release Note
@@ -49,24 +48,24 @@ works [@beloglazov2012optimal; @beloglazov2012overload].
 The functionality covered by this project will be implemented in the form of services separate from
 the core OpenStack services. The services of this project will interact with the core OpenStack
 services using their public APIs. It will be required to create a new Keystone user within the
-`service` tenant. The project will also require a new MySQL database for storing information about
-the host configuration, VM placement, and CPU utilization by the VMs. The project will provide a
-script for automated initialization of the database. The services provided by the project will need
-to be run on the management as well as compute hosts.
+`service` tenant. The project will also require a new MySQL database for storing historical data on
+the resource usage by VMs. The project will provide a script for automated initialization of the
+database. The services provided by the project will need to be run on the management as well as
+compute hosts.
 
 
 # Rationale
 
-The problem of data centers is high energy consumption, which has risen by 56% from 2005 to 2010,
-and in 2010 accounted to be between 1.1% and 1.5% of the global electricity use [@koomey2011growth].
-Apart from high operating costs, this results in substantial carbon dioxide (CO~2~) emissions, which
-are estimated to be 2% of the global emissions [@gartner2007co2]. The problem has been partially
-addressed by improvements in the physical infrastructure of modern data centers. As reported by
-[the Open Compute Project](http://opencompute.org/), Facebook's Oregon data center achieves a Power
-Usage Effectiveness (PUE) of 1.08, which means that approximately 93 of the data center's energy
-consumption are consumed by the computing resources. Therefore, now it is important to focus on the
-resource management aspect, i.e. ensuring that the computing resources are efficiently utilized to
-serve applications.
+The problem of data center operation is high energy consumption, which has risen by 56% from 2005 to
+2010, and in 2010 accounted to be between 1.1% and 1.5% of the global electricity use
+[@koomey2011growth]. Apart from high operating costs, this results in substantial carbon dioxide
+(CO~2~) emissions, which are estimated to be 2% of the global emissions [@gartner2007co2]. The
+problem has been partially addressed by improvements in the physical infrastructure of modern data
+centers. As reported by [the Open Compute Project](http://opencompute.org/), Facebook's Oregon data
+center achieves a Power Usage Effectiveness (PUE) of 1.08, which means that approximately 93% of the
+data center's energy consumption are consumed by the computing resources. Therefore, now it is
+important to focus on the resource management aspect, i.e. ensuring that the computing resources are
+efficiently utilized to serve applications.
 
 Dynamic consolidation of VMs has been shown to be efficient in improving the utilization of data
 center resources and reducing energy consumption, as demonstrated by numerous studies
@@ -79,13 +78,13 @@ framework for dynamic VM consolidation specifically targeted at the OpenStack pl
 # User stories
 
 - As a Cloud Administrator or Systems Integrator, I want to support dynamic VM consolidation to
-  improve the utilization of the data center's resources and reduce the energy consumption.
-- As a Cloud Administrator, I want to provide QoS guarantees to the consumers, while applying
-  dynamic VM consolidation.
+  improve the utilization of the data center's resources and reduce energy consumption.
 - As a Cloud Administrator, I want to minimize the price of the service provided to the consumers by
   reducing the operating costs through the reduced energy consumption.
 - As a Cloud Administrator, I want to decrease the carbon dioxide emissions into the environment by
   reducing the energy consumption by the data center's resources.
+- As a Cloud Administrator, I want to provide QoS guarantees to the consumers, while applying
+  dynamic VM consolidation.
 - As a Cloud Service Consumer, I want to pay the minimum price for the service provided through the
   minimized energy consumption of the computing resources.
 - As a Cloud Service Consumer, I want to use Green Cloud resources, whose provider strives to reduce
@@ -97,8 +96,8 @@ framework for dynamic VM consolidation specifically targeted at the OpenStack pl
 - Nova uses a *shared storage* for storing VM instance data, thus supporting *live migration* of
   VMs.
 - All the compute hosts must have a user, which is enabled to switch the machine into the sleep
-  mode, or "Suspend to RAM". This user is used by the global controller to connect to the compute
-  hosts using SSH and switch them into the sleep mode when necessary.
+  mode, which is also referred to as "Suspend to RAM". This user is used by the global controller to
+  connect to the compute hosts using SSH and switch them into the sleep mode when necessary.
 
 
 # Design
@@ -120,8 +119,8 @@ As shown in Figure 1, the system is composed of three main components:
    such as deciding that the host is underloaded or overloaded, and selecting VMs to migrate to
    other hosts.
 - *Data collector* -- a component that is deployed on every compute host and is responsible for
-   collecting data about resource usage by VM instances, as well as storing these data locally and
-   submitting the data to the central database.
+   collecting data about the resource usage by VM instances, as well as storing these data locally
+   and submitting the data to the central database.
 
 
 ### Global Manager
@@ -144,7 +143,7 @@ hosts when necessary.
 
 The global manager is agnostic of a particular implementation of the VM placement algorithm in use.
 The VM placement algorithm to use can be specified in the configuration file described later. A VM
-placement algorithm can the Nova API to obtain the information about host characteristics and
+placement algorithm can call the Nova API to obtain the information about host characteristics and
 current VM placement. If necessary, it can also query the central database to obtain the historical
 information about the resource usage by the VMs.
 
@@ -201,53 +200,36 @@ to the local manager that has originated the VM migration using its REST API des
 
 One of the main features required to be supported by the hardware in order to take advantage of
 dynamic VM consolidation to save energy is [Wake-on-Lan](http://en.wikipedia.org/wiki/Wake-on-LAN).
-This technology allows a computer being in the sleep mode to be re-activated by sending a special
-packet over network. This technology has been introduced in 1997 by the Advanced Manageability
-Alliance (AMA) formed by Intel and IBM, and is currently supported by most of the modern hardware.
+This technology allows a computer being in the sleep (Suspend to RAM) mode to be re-activated by
+sending a special packet over network. This technology has been introduced in 1997 by the Advanced
+Manageability Alliance (AMA) formed by Intel and IBM, and is currently supported by most of the
+modern hardware.
 
 Once the required VM migrations are completed, the global manager connects to the source host and
-switches into in the sleep mode. Switching to the sleep mode can be done, for example, using
-programs included in the `pm-utils` package. To check whether the sleep mode is supported:
+switches into in the Suspend to RAM mode. Switching to the Suspend to RAM mode can be done, for
+example, using programs included in the `pm-utils` package. To check whether the Suspend to RAM mode
+is supported:
 
 ```Bash
 pm-is-supported --suspend
 ```
 
-To switch the host into the sleep mode:
+The Suspend to RAM mode is supported if the command returns 0, otherwise it is not supported. In
+this case, the Suspend to RAM mode can be replaced with the Standby or Suspend to Disk (Hibernate)
+modes. The following command can be used to switch the host into the Suspend to RAM mode:
 
 ```Bash
 pm-suspend
 ```
 
-To re-activate a host using the Wake-on-Lan technology, it is necessary to send a special package,
-which can be done using the `ether-wake` program as follows:
+To re-activate a host using the Wake-on-Lan technology, it is necessary to send a special packet,
+called the *magic packet*. This can be done using the `ether-wake` program as follows:
 
 ```Bash
 ether-wake <mac address>
 ```
 
 Where `<mac address>` is replaced with the actual MAC address of the host.
-
-[1]	Configuration of the computer you'd like to turn on from remote machine.
-
-```Bash
-[root@dlp ~]# yum -y install ethtool
-[root@dlp ~]# ethtool -s eth0 wol g
-[root@dlp ~]# vi /etc/sysconfig/network-scripts/ifcfg-eth0
-# add at the last line
-ETHTOOL_OPTS="wol g"
-[root@dlp ~]# ifconfig eth0 | grep HWaddr | awk '{print $5}'
-00:22:68:5E:34:06# take a memo
-[root@dlp ~]# shutdown -h now
-```
-
-[2]	Operation on the computer at a remote place.
-
-```Bash
-[root@wol ~]# yum -y install net-tools
-# ether-wake [MAC address of the computer you'd like to turn on]
-[root@wol ~]# ether-wake 00:22:68:5E:34:06   # send magick packets
-```
 
 
 ### Local Manager
@@ -445,7 +427,14 @@ using the `#` character for denoting comments. The configuration includes the fo
 - `local_data_directory` -- the directory used by the data collector to store the data on the resource
   usage by the VMs running on the host, the default value is `/var/lib/neat`;
 - `local_manager_interval` -- the time interval between subsequent invocations of the local manager;
-- `data_collector_interval` -- the time interval between subsequent invocations of the data collector.
+- `data_collector_interval` -- the time interval between subsequent invocations of the data
+  collector;
+- `compute_user` -- the user name for connecting to the compute hosts to switch them into the sleep
+  mode;
+- `compute_password` -- the password of the user account used for connecting to the compute hosts to
+  switch them into the sleep mode;
+- `sleep_command` -- a shell command used to switch a host into the sleep mode, the `compute_user`
+  must have permissions to execute this command (the default values is `pm-suspend`).
 
 
 # Implementation
