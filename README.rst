@@ -11,9 +11,9 @@ history <http://travis-ci.org/beloglazov/openstack-neat>`_
 
 This blueprint is also available in the following formats:
 
--  `PDF <https://github.com/beloglazov/openstack-neat/raw/master/doc/openstack-neat-blueprint.pdf>`_
--  `EPUB <https://github.com/beloglazov/openstack-neat/raw/master/doc/openstack-neat-blueprint.epub>`_
--  `HTML <https://raw.github.com/beloglazov/openstack-neat/master/doc/openstack-neat-blueprint.html>`_
+-  `PDF <https://github.com/beloglazov/openstack-neat/raw/master/doc/blueprint/openstack-neat-blueprint.pdf>`_
+-  `EPUB <https://github.com/beloglazov/openstack-neat/raw/master/doc/blueprint/openstack-neat-blueprint.epub>`_
+-  `HTML <https://raw.github.com/beloglazov/openstack-neat/master/doc/blueprint/openstack-neat-blueprint.html>`_
 
 % OpenStack Neat – A Framework for Dynamic Consolidation of Virtual
 Machines: A Blueprint % Anton Beloglazov % 31st of July 2012
