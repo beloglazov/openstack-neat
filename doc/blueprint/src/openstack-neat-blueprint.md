@@ -1,6 +1,6 @@
 % OpenStack Neat -- A Framework for Dynamic Consolidation of Virtual Machines: A Blueprint
 % Anton Beloglazov
-% 28th of July 2012
+% 31st of July 2012
 
 
 # Summary
@@ -321,7 +321,7 @@ The details about the data stores are given in the following subsections.
 
 The central database is used for storing historical data on the resource usage by VMs running on all
 the compute hosts. The database is populated by data collectors deployed on the compute hosts. The
-data is consumed by VM placement algorithms. The database contains two tables: `vms` and
+data are consumed by VM placement algorithms. The database contains two tables: `vms` and
 `vm_resource_usage`.
 
 The `vms` table is used for storing the mapping between UUIDs of VMs and the internal database IDs:
@@ -356,10 +356,10 @@ CREATE TABLE vm_resource_usage (
 ### Local File-Based Data Store
 
 The data collector stores the resource usage information locally in files in the
-`<local_data_directory>/vm`, where `<local_data_directory>` is defined in the configuration file
-discussed further in the paper. The data for each VM is stored in a separate file named according to
-the UUID of the corresponding VM. The format of files is a new line separated list of integers
-representing the CPU consumption by the VMs in MHz.
+`<local_data_directory>/vm` directory, where `<local_data_directory>` is defined in the
+configuration file using the `local_data_directory` option. The data for each VM are stored in a
+separate file named according to the UUID of the corresponding VM. The format of the files is a new
+line separated list of integers representing the CPU consumption by the VMs in MHz.
 
 
 ## Configuration File
@@ -375,7 +375,7 @@ using the `#` character for denoting comments. The configuration includes the fo
 - `global_manager_host` -- the name of the host running the global manager;
 - `global_manager_port` -- the port of the REST web service exposed by the global manager;
 - `local_data_directory` -- the directory used by the data collector to store the data on the resource
-  usage by the VMs running on the host, the default value is `/var/lib/neat`;
+  usage by the VMs running on the host (the default value is `/var/lib/neat`);
 - `local_manager_interval` -- the time interval between subsequent invocations of the local manager;
 - `data_collector_interval` -- the time interval between subsequent invocations of the data
   collector;
