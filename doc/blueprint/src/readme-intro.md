@@ -1,6 +1,6 @@
 # OpenStack Neat -- A Framework for Dynamic Consolidation of Virtual Machines
 
-<a href="http://travis-ci.org/beloglazov/openstack-neat" title="Build Status"><img src="https://secure.travis-ci.org/beloglazov/openstack-neat.png" alt="Build Status"/></a>
+![Build Status](https://secure.travis-ci.org/beloglazov/openstack-neat.png)] -- [View the build history](http://travis-ci.org/beloglazov/openstack-neat)
 
 
 This blueprint is also available in the following formats:
