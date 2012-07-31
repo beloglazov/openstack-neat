@@ -4,4 +4,3 @@
 ./build-pdf.sh
 ./build-epub.sh
 ./build-html.sh
-./build-mediawiki.sh
