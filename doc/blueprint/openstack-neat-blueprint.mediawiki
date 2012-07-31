@@ -25,7 +25,7 @@
 </ul>
 <h1 id="assumptions">Assumptions</h1>
 <ul>
-<li>Nova uses a <em>shared storage</em> for storing VM instance data, thus supporting <em>live migration</em> of VMs.</li>
+<li>Nova uses a <em>shared storage</em> for storing VM instance data, thus supporting <em>live migration</em> of VMs. For example, a shared storage can be provided using Network File System (NFS), or GlusterFS as described in <span class="citation">[17]</span>.</li>
 <li>All the compute hosts must have a user, which is enabled to switch the machine into the sleep mode, which is also referred to as “Suspend to RAM”. This user is used by the global controller to connect to the compute hosts using SSH and switch them into the sleep mode when necessary.</li>
 </ul>
 <h1 id="design">Design</h1>
@@ -218,3 +218,4 @@
 <p>[14] B. Guenter, N. Jain, and C. Williams, “Managing Cost, Performance, and Reliability Tradeoffs for Energy-Aware Server Provisioning,” in <em>Proc. of the 30st Annual IEEE Intl. Conf. on Computer Communications (INFOCOM)</em>, 2011, pp. 1332–1340.</p>
 <p>[15] N. Bobroff, A. Kochut, and K. Beaty, “Dynamic placement of virtual machines for managing SLA violations,” in <em>Proc. of the 10th IFIP/IEEE Intl. Symp. on Integrated Network Management (IM)</em>, 2007, pp. 119–128.</p>
 <p>[16] A. Beloglazov, R. Buyya, Y. C. Lee, and A. Zomaya, “A Taxonomy and Survey of Energy-Efficient Data Centers and Cloud Computing Systems,” <em>Advances in Computers, M. Zelkowitz (ed.)</em>, vol. 82, pp. 47–111, 2011.</p>
+<p>[17] A. Beloglazov, S. F. Piraghaj, M. Alrokayan, and R. Buyya, “A Step-by-Step Guide to Installing OpenStack on CentOS Using the KVM Hypervisor and GlusterFS Distributed File System,” <em>Technical Report CLOUDS-TR-2012-3, Cloud Computing and Distributed Systems Laboratory, The University of Melbourne</em>, Jul. 2012.</p>

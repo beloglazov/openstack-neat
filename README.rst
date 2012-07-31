@@ -131,7 +131,9 @@ Assumptions
 ===========
 
 -  Nova uses a *shared storage* for storing VM instance data, thus
-   supporting *live migration* of VMs.
+   supporting *live migration* of VMs. For example, a shared storage can
+   be provided using Network File System (NFS), or GlusterFS as
+   described in [17].
 -  All the compute hosts must have a user, which is enabled to switch
    the machine into the sleep mode, which is also referred to as
    “Suspend to RAM”. This user is used by the global controller to
@@ -718,3 +720,9 @@ Intl. Symp. on Integrated Network Management (IM)*, 2007, pp. 119–128.
 [16] A. Beloglazov, R. Buyya, Y. C. Lee, and A. Zomaya, “A Taxonomy and
 Survey of Energy-Efficient Data Centers and Cloud Computing Systems,”
 *Advances in Computers, M. Zelkowitz (ed.)*, vol. 82, pp. 47–111, 2011.
+
+[17] A. Beloglazov, S. F. Piraghaj, M. Alrokayan, and R. Buyya, “A
+Step-by-Step Guide to Installing OpenStack on CentOS Using the KVM
+Hypervisor and GlusterFS Distributed File System,” *Technical Report
+CLOUDS-TR-2012-3, Cloud Computing and Distributed Systems Laboratory,
+The University of Melbourne*, Jul. 2012.
