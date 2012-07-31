@@ -3,5 +3,5 @@
 pandoc \
     --number-sections \
     --bibliography=bibliography.bib --csl=ieee.csl \
-    --output=../openstack-centos-kvm-glusterfs-guide.epub \
-    openstack-centos-kvm-glusterfs-guide.md
+    --output=../openstack-neat-blueprint.epub \
+    openstack-neat-blueprint.md
