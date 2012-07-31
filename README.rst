@@ -1,7 +1,12 @@
 OpenStack Neat – A Framework for Dynamic Consolidation of Virtual Machines
 ==========================================================================
 
-|Build Status| – `View the build
+.. figure:: https://secure.travis-ci.org/beloglazov/openstack-neat.png
+   :align: center
+   :alt: Build Status
+
+   Build Status
+`View the build
 history <http://travis-ci.org/beloglazov/openstack-neat>`_
 
 This blueprint is also available in the following formats:
@@ -713,6 +718,3 @@ Intl. Symp. on Integrated Network Management (IM)*, 2007, pp. 119–128.
 [16] A. Beloglazov, R. Buyya, Y. C. Lee, and A. Zomaya, “A Taxonomy and
 Survey of Energy-Efficient Data Centers and Cloud Computing Systems,”
 *Advances in Computers, M. Zelkowitz (ed.)*, vol. 82, pp. 47–111, 2011.
-
-.. |Build
-Status| image:: https://secure.travis-ci.org/beloglazov/openstack-neat.png
