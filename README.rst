@@ -16,7 +16,7 @@ This blueprint is also available in the following formats:
 -  `HTML <https://raw.github.com/beloglazov/openstack-neat/master/doc/blueprint/openstack-neat-blueprint.html>`_
 
 % OpenStack Neat – A Framework for Dynamic Consolidation of Virtual
-Machines: A Blueprint % Anton Beloglazov % 31st of July 2012
+Machines: A Blueprint % Anton Beloglazov % 1st of August 2012
 
 Summary
 =======
@@ -116,8 +116,8 @@ User stories
    provided to the consumers by reducing the operating costs through the
    reduced energy consumption.
 -  As a Cloud Administrator, I want to decrease the carbon dioxide
-   emissions into the environment by reducing the energy consumption by
-   the data center’s resources.
+   emissions into the environment by reducing energy consumption by the
+   data center’s resources.
 -  As a Cloud Administrator, I want to provide QoS guarantees to the
    consumers, while applying dynamic VM consolidation.
 -  As a Cloud Service Consumer, I want to pay the minimum price for the
@@ -152,7 +152,7 @@ The system is composed of a number of components and data stores, some
 of which are deployed on the compute hosts, and some on the management
 host (Figure 1). In the following sections, we discuss the design and
 interaction of the components, as well as the specification of the data
-stores.
+stores, and available configuration options.
 
 Components
 ----------
@@ -224,25 +224,28 @@ The service URL is composed as follows:
 
 Since the global manager processes only a single type of requests, it
 exposes only one resource: ``/``. The resource is accessed using the
-method ``PUT``, which initiates the VM reallocation process. This
-service requires the following parameters:
+``PUT`` method, which initiates a VM reallocation process. This service
+requires the following parameters:
 
 -  ``admin_tenant_name`` – the admin tenant name of Neat’s admin user
-   registered in Keystone. This parameter is not used to authenticate in
-   any OpenStack service, rather it is used to authenticate the client
-   making a request as being allowed to access the web service.
+   registered in Keystone. In this context, this parameter is not used
+   to authenticate in any OpenStack service, rather it is used to
+   authenticate the client making a request as being allowed to access
+   the web service.
 -  ``admin_user`` – the admin user name of Neat’s admin user registered
-   in Keystone. This parameter is not used to authenticate in any
-   OpenStack service, rather it is used to authenticate the client
-   making a request as being allowed to access the web service.
+   in Keystone. In this context, this parameter is not used to
+   authenticate in any OpenStack service, rather it is used to
+   authenticate the client making a request as being allowed to access
+   the web service.
 -  ``admin_password`` – the admin password of Neat’s admin user
-   registered in Keystone. This parameter is not used to authenticate in
-   any OpenStack service, rather it is used to authenticate the client
-   making a request as being allowed to access the web service.
+   registered in Keystone. In this context, this parameter is not used
+   to authenticate in any OpenStack service, rather it is used to
+   authenticate the client making a request as being allowed to access
+   the web service.
 -  ``vm_uuids`` – a coma-separated list of UUIDs of the VMs required to
    be migrated.
--  ``reason`` – a string specifying the resource for migration:
-   “underload”, or “overload”.
+-  ``reason`` – an integer specifying the resource for migration: 0 –
+   underload, 1 – overload.
 
 If the provided credentials are correct and the ``vm_uuids`` parameter
 includes a list of UUIDs of existing VMs in the correct format, the
@@ -265,7 +268,7 @@ Switching Hosts On and Off.
 
 One of the main features required to be supported by the hardware in
 order to take advantage of dynamic VM consolidation to save energy is
-`Wake-on-Lan <http://en.wikipedia.org/wiki/Wake-on-LAN>`_. This
+`Wake-on-LAN <http://en.wikipedia.org/wiki/Wake-on-LAN>`_. This
 technology allows a computer being in the sleep (Suspend to RAM) mode to
 be re-activated by sending a special packet over network. This
 technology has been introduced in 1997 by the Advanced Manageability
@@ -276,7 +279,7 @@ Once the required VM migrations are completed, the global manager
 connects to the source host and switches into in the Suspend to RAM
 mode. Switching to the Suspend to RAM mode can be done, for example,
 using programs included in the ``pm-utils`` package. To check whether
-the Suspend to RAM mode is supported:
+the Suspend to RAM mode is supported, the following command can be used:
 
 ::
 
@@ -292,7 +295,7 @@ mode:
 
     pm-suspend
 
-To re-activate a host using the Wake-on-Lan technology, it is necessary
+To re-activate a host using the Wake-on-LAN technology, it is necessary
 to send a special packet, called the *magic packet*. This can be done
 using the ``ether-wake`` program as follows:
 
@@ -315,21 +318,21 @@ The local manager component is deployed on every compute host and is
 invoked periodically to determine when it necessary to reallocate VM
 instances from the host. A high-level view of the workflow performed by
 the local manager is shown in Figure 3. First of all, it reads from the
-local storage the historical data about the resource usage by the VMs
-stored by the data collector described in the next section. Then, the
-local manager invokes the specified in the configuration underload
-detection algorithm to determine whether the host is underloaded. If the
-host is underloaded, the local manager sends a request to the global
-manager’s REST interface to migrate all the VMs from the host and switch
-the host to the sleep mode.
+local storage the historical data on the resource usage by VMs stored by
+the data collector described in the next section. Then, the local
+manager invokes the specified in the configuration underload detection
+algorithm to determine whether the host is underloaded. If the host is
+underloaded, the local manager sends a request to the global manager’s
+REST API to migrate all the VMs from the host and switch the host to the
+sleep mode.
 
 If the host is not underloaded, the local manager proceeds to invoking
 the specified in the configuration overload detection algorithm. If the
 host is overloaded, the local manager invokes the configured VM
 selection algorithm to select the VMs to migrate from the host. Once the
 VMs to migrate from the host are selected, the local manager sends a
-request to the global manager’s REST interface to migrate the selected
-VMs from the host.
+request to the global manager’s REST API to migrate the selected VMs
+from the host.
 
 Similarly to the global manager, the local manager can be configured to
 use specific underload detection, overload detection, and VM selection
@@ -342,10 +345,9 @@ Underload detection is done by a specified in the configuration
 underload detection algorithm (``algorithm_underload_detection``). The
 algorithm has a pre-defined interface, which allows substituting
 different implementations of the algorithm. The configured algorithm is
-invoked by the local manager and accepts historical data about the
-resource usage by the VMs running on the host as an input. An underload
-detection algorithm returns a decision of whether the host is
-underloaded.
+invoked by the local manager and accepts historical data on the resource
+usage by VMs running on the host as an input. An underload detection
+algorithm returns a decision of whether the host is underloaded.
 
 Overload Detection.
 ^^^^^^^^^^^^^^^^^^^
@@ -355,9 +357,9 @@ detection algorithm (``algorithm_overload_detection``). Similarly to
 underload detection, all overload detection algorithms implement a
 pre-defined interface to enable configuration-driven substitution of
 difference implementations. The configured algorithm is invoked by the
-local manager and accepts historical data about the resource usage by
-the VMs running on the host as an input. An overload detection algorithm
-returns a decision of whether the host is overloaded.
+local manager and accepts historical data on the resource usage by VMs
+running on the host as an input. An overload detection algorithm returns
+a decision of whether the host is overloaded.
 
 VM Selection.
 ^^^^^^^^^^^^^
@@ -366,9 +368,9 @@ If a host is overloaded, it is necessary to select VMs to migrate from
 the host to avoid performance degradation. This is done by a specified
 in the configuration VM selection algorithm
 (``algorithm_vm_selection``). Similarly to underload and overload
-detection algorithms, different VM selection algorithm can plugged in
+detection algorithms, different VM selection algorithm can by plugged in
 according to the configuration. A VM selection algorithm accepts
-historical data about the resource usage the VMs running on the host and
+historical data on the resource usage by VMs running on the host and
 returns a set of VMs to migrate from the host.
 
 Data Collector
@@ -376,10 +378,10 @@ Data Collector
 
 The data collector is deployed on every compute host and is executed
 periodically to collect the CPU utilization data for each VM running on
-the host and stores it in the local file-based data store. The data is
-collected in average number of MHz consumed by a VM during the last
-measurement interval. The CPU usage data are stored as integers. This
-data format is portable: the collected values can be converted to the
+the host and stores the data in the local file-based data store. The
+data is stored as the average number of MHz consumed by a VM during the
+last measurement interval. The CPU usage data are stored as integers.
+This data format is portable: the stored values can be converted to the
 CPU utilization for any host or VM type, supporting heterogeneous hosts
 and VMs.
 
@@ -463,7 +465,8 @@ files in the ``<local_data_directory>/vm`` directory, where
 the ``local_data_directory`` option. The data for each VM are stored in
 a separate file named according to the UUID of the corresponding VM. The
 format of the files is a new line separated list of integers
-representing the CPU consumption by the VMs in MHz.
+representing the average CPU consumption by the VMs in MHz during the
+last measurement interval.
 
 Configuration File
 ------------------
@@ -500,7 +503,7 @@ comments. The configuration includes the following options:
    connecting to the compute hosts to switch them into the sleep mode;
 -  ``sleep_command`` – a shell command used to switch a host into the
    sleep mode, the ``compute_user`` must have permissions to execute
-   this command (the default values is ``pm-suspend``);
+   this command (the default value is ``pm-suspend``);
 -  ``algorithm_underload_detection`` – the fully qualified name of a
    Python function to use as an underload detection algorithm;
 -  ``algorithm_overload_detection`` – the fully qualified name of a
@@ -529,7 +532,8 @@ the required components:
 3. `SQLAlchemy <http://www.sqlalchemy.org/>`_ – a Python SQL toolkit and
    Object Relational Mapper (used by the core OpenStack service).
 4. `Bottle <http://bottlepy.org/>`_ – a micro web-framework for Python,
-   authentication using the same credentials using for Nova.
+   authentication using the same credentials used to authenticate in the
+   Nova API.
 5. `python-novaclient <https://github.com/openstack/python-novaclient>`_
    – a Python Nova API client implementation.
 6. `Sphinx <http://sphinx.pocoo.org/>`_ – a documentation generator for
@@ -561,7 +565,7 @@ with the target host and then invoke the command specified in the
 ``sleep_command``, which defaults to ``pm-suspend``.
 
 When a host needs to be re-activated from the sleep mode, the global
-manager will leverage the Wake-on-Lan technology and send a magic packet
+manager will leverage the Wake-on-LAN technology and send a magic packet
 to the target host using the ``ether-wake`` program and passing the
 corresponding MAC address as an argument. The mapping between the IP
 addresses of the hosts and their MAC addresses is initialized in the
@@ -570,7 +574,7 @@ beginning of the global manager’s execution.
 Local Manager
 -------------
 
-The local manager will be implemented as a Linux daemon in the
+The local manager will be implemented as a Linux daemon running in the
 background and every ``local_manager_interval`` seconds checking whether
 some VMs should be migrated from the host. Every time interval, the
 local manager performs the following steps:
@@ -580,10 +584,10 @@ local manager performs the following steps:
 2. Call the function specified in the ``algorithm_underload_detection``
    configuration option and pass the data on the resource usage by the
    VMs, as well as the frequency of the CPU as arguments.
-3. If the host is underloaded, send a request to the REST web service of
-   the global manager and pass the list of the UUIDs of all the VMs
-   currently running on the host in the ``vm_uuids`` paramter, as well
-   as the ``reason`` for migration as being “underload”.
+3. If the host is underloaded, send a request to the REST API of the
+   global manager and pass a list of the UUIDs of all the VMs currently
+   running on the host in the ``vm_uuids`` parameter, as well as the
+   ``reason`` for migration as being 0.
 4. If the host is not underloaded, call the function specified in the
    ``algorithm_overload_detection`` configuration option and pass the
    data on the resource usage by the VMs, as well as the frequency of
@@ -592,15 +596,16 @@ local manager performs the following steps:
    ``algorithm_vm_selection`` configuration option and pass the data on
    the resource usage by the VMs, as well as the frequency of the host’s
    CPU as arguments
-6. If the host is overloaded, send a request to the REST web service of
-   the global manager and pass the list of the UUIDs of the VMs selected
-   by the VM selection algorithm in the ``vm_uuids`` paramter, as well
-   as the ``reason`` for migration as being “overload”.
+6. If the host is overloaded, send a request to the REST API of the
+   global manager and pass a list of the UUIDs of the VMs selected by
+   the VM selection algorithm in the ``vm_uuids`` parameter, as well as
+   the ``reason`` for migration as being 1.
+7. Schedule the next execution after ``local_manager_interval`` seconds.
 
 Data Collector
 --------------
 
-The data collect will be implemented as a Linux daemon running in the
+The data collector will be implemented as a Linux daemon running in the
 background and collecting data on the resource usage by VMs every
 ``data_collector_interval`` seconds. When the data collection phase is
 invoked, the component performs the following steps:

@@ -197,7 +197,7 @@ error codes are used:
 #### Switching Hosts On and Off.
 
 One of the main features required to be supported by the hardware in order to take advantage of
-dynamic VM consolidation to save energy is [Wake-on-Lan](http://en.wikipedia.org/wiki/Wake-on-LAN).
+dynamic VM consolidation to save energy is [Wake-on-LAN](http://en.wikipedia.org/wiki/Wake-on-LAN).
 This technology allows a computer being in the sleep (Suspend to RAM) mode to be re-activated by
 sending a special packet over network. This technology has been introduced in 1997 by the Advanced
 Manageability Alliance (AMA) formed by Intel and IBM, and is currently supported by most of the
@@ -220,7 +220,7 @@ modes. The following command can be used to switch the host into the Suspend to 
 pm-suspend
 ```
 
-To re-activate a host using the Wake-on-Lan technology, it is necessary to send a special packet,
+To re-activate a host using the Wake-on-LAN technology, it is necessary to send a special packet,
 called the *magic packet*. This can be done using the `ether-wake` program as follows:
 
 ```Bash
@@ -440,7 +440,7 @@ connection with the target host and then invoke the command specified in the `sl
 defaults to `pm-suspend`.
 
 When a host needs to be re-activated from the sleep mode, the global manager will leverage the
-Wake-on-Lan technology and send a magic packet to the target host using the `ether-wake` program and
+Wake-on-LAN technology and send a magic packet to the target host using the `ether-wake` program and
 passing the corresponding MAC address as an argument. The mapping between the IP addresses of the
 hosts and their MAC addresses is initialized in the beginning of the global manager's execution.
 
@@ -465,7 +465,7 @@ time interval, the local manager performs the following steps:
    configuration option and pass the data on the resource usage by the VMs, as well as the frequency
    of the host's CPU as arguments
 6. If the host is overloaded, send a request to the REST API of the global manager and pass a list
-   of the UUIDs of the VMs selected by the VM selection algorithm in the `vm_uuids` paramter, as
+   of the UUIDs of the VMs selected by the VM selection algorithm in the `vm_uuids` parameter, as
    well as the `reason` for migration as being 1.
 7. Schedule the next execution after `local_manager_interval` seconds.
 
