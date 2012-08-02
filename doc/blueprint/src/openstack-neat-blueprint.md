@@ -411,7 +411,7 @@ The following third party libraries are planned to be used to implement the requ
 
 1. [pyqcy](https://github.com/Xion/pyqcy) -- a QuickCheck-like testing framework for Python, FreeBSD
    License.
-2. [PyContracts](http://andreacensi.github.com/contracts/) -- a Python library for Design by
+2. [PyContracts](https://github.com/AndreaCensi/contracts) -- a Python library for Design by
    Contract (DbC), GNU Lesser General Public License.
 3. [SQLAlchemy](http://www.sqlalchemy.org/) -- a Python SQL toolkit and Object Relational Mapper
    (used by the core OpenStack service), MIT License.

@@ -1,0 +1,35 @@
+OpenStack Neat
+Copyright 2012 Anton Beloglazov
+
+This product includes software developed at the Cloud Computing and
+Distributed Systems (CLOUDS) Laboratory, Department of Computing and
+Information Systems, The University of Melbourne, Australia
+(http://www.cloudbus.org/).
+
+
+This software uses pyqcy, a QuickCheck-like testing framework for
+Python developed by Karol Kuczmarski, released under the FreeBSD
+License, and available from https://github.com/Xion/pyqcy
+
+This software uses PyContracts, a Python library for supporting Design
+by Contract (DbC), developed by Andrea Censi, released under the GNU
+Lesser General Public License, and available from
+https://github.com/AndreaCensi/contracts
+
+This software uses SQLAlchemy, a Python SQL toolkit and Object
+Relational Mapper, developed by the SQLAlchemy (trademark of Michael
+Bayer) authors and contributors, released under the MIT License, and
+available from http://www.sqlalchemy.org/
+
+This software uses Bottle, a micro web-framework for Python, developed
+by Marcel Hellkamp, released under the MIT License, and available from
+http://bottlepy.org/
+
+This software uses python-novaclient, a Python Nova API client
+implementation, developed by Jacob Kaplan-Moss and Rackspace -
+OpenStack extensions, released under the Apache 2.0 License, and
+available from https://github.com/openstack/python-novaclient
+
+This software uses Sphinx, a documentation generator for Python,
+developed by Georg Brandl, released under the BSD License, and
+available from http://sphinx.pocoo.org/
