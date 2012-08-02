@@ -5,6 +5,7 @@ pandoc \
     --table-of-contents \
     --number-sections \
     --template=template.tex \
+    --variable=geometry:textwidth=365pt \
     --variable=affilation:"`cat affiliation.tex`" \
     --variable=thanks:"`cat thanks.tex`" \
     --bibliography=bibliography.bib --csl=ieee.csl \

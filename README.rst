@@ -15,9 +15,9 @@ This blueprint is also available in the following formats:
 -  `EPUB <https://github.com/beloglazov/openstack-neat/raw/master/doc/blueprint/openstack-neat-blueprint.epub>`_
 -  `HTML <https://raw.github.com/beloglazov/openstack-neat/master/doc/blueprint/openstack-neat-blueprint.html>`_
 
-% OpenStack Neat – A Framework for Dynamic Consolidation of Virtual
-Machines in OpenStack Clouds: A Blueprint % Anton Beloglazov; Rajkumar
-Buyya % 1st of August 2012
+% OpenStack Neat: A Framework for Dynamic Consolidation of Virtual
+Machines in OpenStack Clouds % Anton Beloglazov; Rajkumar Buyya % 1st of
+August 2012
 
 Summary
 =======
@@ -50,15 +50,14 @@ consolidation can be split into 4 sub-problems:
 4. Placing VMs selected for migration to other active or re-activated
    hosts.
 
-This work is a part of PhD research conducted within the `Cloud
-Computing and Distributed Systems (CLOUDS)
-Laboratory <http://www.cloudbus.org/>`_ at the University of Melbourne.
-The problem of dynamic VM consolidation considering Quality of Service
-(QoS) constraints has been studied from the theoretical perspective and
-algorithms addressing the sub-problems listed above have been proposed
-[1], [2]. The algorithms have been evaluated using
-`CloudSim <http://code.google.com/p/cloudsim/>`_ and real-world workload
-traces collected from more than a thousand
+This work is conducted within the `Cloud Computing and Distributed
+Systems (CLOUDS) Laboratory <http://www.cloudbus.org/>`_ at the
+University of Melbourne. The problem of dynamic VM consolidation
+considering Quality of Service (QoS) constraints has been studied from
+the theoretical perspective and algorithms addressing the sub-problems
+listed above have been proposed [1], [2]. The algorithms have been
+evaluated using `CloudSim <http://code.google.com/p/cloudsim/>`_ and
+real-world workload traces collected from more than a thousand
 `PlanetLab <https://www.planet-lab.org/>`_ VMs hosted on servers located
 in more than 500 places around the world.
 
