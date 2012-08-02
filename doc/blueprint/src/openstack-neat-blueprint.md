@@ -1,5 +1,5 @@
 % OpenStack Neat -- A Framework for Dynamic Consolidation of Virtual Machines: A Blueprint
-% Anton Beloglazov
+% Anton Beloglazov; Rajkumar Buyya
 % 1st of August 2012
 
 
