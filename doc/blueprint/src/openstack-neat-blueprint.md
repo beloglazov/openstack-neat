@@ -1,4 +1,4 @@
-% OpenStack Neat -- A Framework for Dynamic Consolidation of Virtual Machines: A Blueprint
+% OpenStack Neat: A Framework for Dynamic Consolidation of Virtual Machines in OpenStack Clouds
 % Anton Beloglazov; Rajkumar Buyya
 % 1st of August 2012
 
@@ -26,7 +26,7 @@ host to other hosts to avoid performance degradation.
 by the host.
 4. Placing VMs selected for migration to other active or re-activated hosts.
 
-This work is a part of PhD research conducted within the
+This work is conducted within the
 [Cloud Computing and Distributed Systems (CLOUDS) Laboratory](http://www.cloudbus.org/) at the
 University of Melbourne. The problem of dynamic VM consolidation considering Quality of Service
 (QoS) constraints has been studied from the theoretical perspective and algorithms addressing the

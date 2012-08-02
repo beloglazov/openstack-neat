@@ -16,8 +16,8 @@ This blueprint is also available in the following formats:
 -  `HTML <https://raw.github.com/beloglazov/openstack-neat/master/doc/blueprint/openstack-neat-blueprint.html>`_
 
 % OpenStack Neat – A Framework for Dynamic Consolidation of Virtual
-Machines: A Blueprint % Anton Beloglazov; Rajkumar Buyya % 1st of August
-2012
+Machines in OpenStack Clouds: A Blueprint % Anton Beloglazov; Rajkumar
+Buyya % 1st of August 2012
 
 Summary
 =======
