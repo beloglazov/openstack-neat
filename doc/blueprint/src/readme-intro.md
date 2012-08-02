@@ -4,6 +4,7 @@
 
 [View the build history](http://travis-ci.org/beloglazov/openstack-neat)
 
+The blueprint has been submitted to OpenStack Compute (Nova) Blueprints: https://blueprints.launchpad.net/nova/+spec/dynamic-consolidation-of-virtual-machines
 
 This blueprint is also available in the following formats:
 

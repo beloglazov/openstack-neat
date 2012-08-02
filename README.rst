@@ -9,6 +9,9 @@ OpenStack Neat: A Framework for Dynamic Consolidation of Virtual Machines in Ope
 `View the build
 history <http://travis-ci.org/beloglazov/openstack-neat>`_
 
+The blueprint has been submitted to OpenStack Compute (Nova) Blueprints:
+https://blueprints.launchpad.net/nova/+spec/dynamic-consolidation-of-virtual-machines
+
 This blueprint is also available in the following formats:
 
 -  `PDF <https://github.com/beloglazov/openstack-neat/raw/master/doc/blueprint/openstack-neat-blueprint.pdf>`_
