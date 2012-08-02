@@ -230,12 +230,12 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <h2 id="libraries"><a href="#TOC"><span class="header-section-number">7.1</span> Libraries</a></h2>
 <p>The following third party libraries are planned to be used to implement the required components:</p>
 <ol style="list-style-type: decimal">
-<li><a href="https://github.com/Xion/pyqcy">pyqcy</a> – a QuickCheck-like testing framework for Python.</li>
-<li><a href="http://andreacensi.github.com/contracts/">PyContracts</a> – a Python library for Design by Contract (DbC).</li>
-<li><a href="http://www.sqlalchemy.org/">SQLAlchemy</a> – a Python SQL toolkit and Object Relational Mapper (used by the core OpenStack service).</li>
-<li><a href="http://bottlepy.org/">Bottle</a> – a micro web-framework for Python, authentication using the same credentials used to authenticate in the Nova API.</li>
-<li><a href="https://github.com/openstack/python-novaclient">python-novaclient</a> – a Python Nova API client implementation.</li>
-<li><a href="http://sphinx.pocoo.org/">Sphinx</a> – a documentation generator for Python.</li>
+<li><a href="https://github.com/Xion/pyqcy">pyqcy</a> – a QuickCheck-like testing framework for Python, FreeBSD License.</li>
+<li><a href="http://andreacensi.github.com/contracts/">PyContracts</a> – a Python library for Design by Contract (DbC), GNU Lesser General Public License.</li>
+<li><a href="http://www.sqlalchemy.org/">SQLAlchemy</a> – a Python SQL toolkit and Object Relational Mapper (used by the core OpenStack service), MIT License.</li>
+<li><a href="http://bottlepy.org/">Bottle</a> – a micro web-framework for Python, authentication using the same credentials used to authenticate in the Nova API, MIT License.</li>
+<li><a href="https://github.com/openstack/python-novaclient">python-novaclient</a> – a Python Nova API client implementation, Apache 2.0 License.</li>
+<li><a href="http://sphinx.pocoo.org/">Sphinx</a> – a documentation generator for Python, BSD License.</li>
 </ol>
 <h2 id="global-manager-1"><a href="#TOC"><span class="header-section-number">7.2</span> Global Manager</a></h2>
 <p>The global manager component will provide a REST web service implemented using the Bottle framework. The authentication is going to be done using the admin credentials specified in the configuration file. Upon receiving a request from a local manager, the following steps will be performed:</p>
