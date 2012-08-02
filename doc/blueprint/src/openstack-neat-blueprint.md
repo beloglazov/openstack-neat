@@ -61,7 +61,7 @@ The problem of data center operation is high energy consumption, which has risen
 [@koomey2011growth]. Apart from high operating costs, this results in substantial carbon dioxide
 (CO~2~) emissions, which are estimated to be 2% of the global emissions [@gartner2007co2]. The
 problem has been partially addressed by improvements in the physical infrastructure of modern data
-centers. As reported by [the Open Compute Project](http://opencompute.org/), Facebook's Oregon data
+centers. As reported by the [Open Compute Project](http://opencompute.org/), Facebook's Oregon data
 center achieves a Power Usage Effectiveness (PUE) of 1.08, which means that approximately 93% of the
 data center's energy consumption are consumed by the computing resources. Therefore, now it is
 important to focus on the resource management aspect, i.e. ensuring that the computing resources are

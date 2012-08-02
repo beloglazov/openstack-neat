@@ -93,7 +93,7 @@ operating costs, this results in substantial carbon dioxide
 (CO\ :sub:`2`) emissions, which are estimated to be 2% of the global
 emissions [4]. The problem has been partially addressed by improvements
 in the physical infrastructure of modern data centers. As reported by
-`the Open Compute Project <http://opencompute.org/>`_, Facebook’s Oregon
+the `Open Compute Project <http://opencompute.org/>`_, Facebook’s Oregon
 data center achieves a Power Usage Effectiveness (PUE) of 1.08, which
 means that approximately 93% of the data center’s energy consumption are
 consumed by the computing resources. Therefore, now it is important to
