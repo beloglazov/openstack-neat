@@ -16,6 +16,15 @@ import sys
 import libvirt
 
 
+def start(iterations):
+    collect()
+    return iterations
+
+
+def collect():
+    pass
+
+
 def getNumberOfPhysicalCpus(connection):
     return connection.getInfo()[2]
 
@@ -37,13 +46,21 @@ def getCpuUtilization(numberOfPhysicalCpus, domain, previousTime, previousCpuTim
 def collectCpuUtilization(numberOfPhysicalCpus, timeInterval, reportingFunction):
     pass
 
+# temporarily commented
+#conn = libvirt.openReadOnly(None)
+#if conn is None:
+#    print 'Failed to open connection to the hypervisor'
+#    sys.exit(1)
+#
+#numberOfPhysicalCpus = getNumberOfPhysicalCpus(conn)
 
-conn = libvirt.openReadOnly(None)
-if conn is None:
-    print 'Failed to open connection to the hypervisor'
-    sys.exit(1)
 
-numberOfPhysicalCpus = getNumberOfPhysicalCpus(conn)
+
+
+
+
+
+
 #print "Host CPUs: " + str(numberOfPhysicalCpus)
 
 

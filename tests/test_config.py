@@ -13,22 +13,15 @@
 # limitations under the License.
 
 from pyqcy import *
-from mocktest import *
 
-import neat.collector
+from neat.config import readConfig
 
 
-class DataCollector(TestCase):
+class Config(TestCase):
 
     @qc
-    def start(
-        iterations=int_(0, 10)
+    def addition_actually_works(
+        x=int_(min=0), y=int_(min=0)
     ):
-        expect(neat.collector).collect().and_return('ok').exactly(iteration).times()
-
-        print 'ok'
-        assert neat.collector.start(iterations) == iterations
-
-    @qc
-    def dumb():
-        assert True
+        the_sum = x + y
+        assert the_sum >= x and the_sum >= y
