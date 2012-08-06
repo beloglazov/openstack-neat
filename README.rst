@@ -532,18 +532,20 @@ the required components:
 
 1. `pyqcy <https://github.com/Xion/pyqcy>`_ – a QuickCheck-like testing
    framework for Python, FreeBSD License.
-2. `PyContracts <https://github.com/AndreaCensi/contracts>`_ – a Python
+2. `mocktest <https://github.com/gfxmonk/mocktest>`_ – a mocking library
+   for Python, LGPL License.
+3. `PyContracts <https://github.com/AndreaCensi/contracts>`_ – a Python
    library for Design by Contract (DbC), GNU Lesser General Public
    License.
-3. `SQLAlchemy <http://www.sqlalchemy.org/>`_ – a Python SQL toolkit and
+4. `SQLAlchemy <http://www.sqlalchemy.org/>`_ – a Python SQL toolkit and
    Object Relational Mapper (used by the core OpenStack service), MIT
    License.
-4. `Bottle <http://bottlepy.org/>`_ – a micro web-framework for Python,
+5. `Bottle <http://bottlepy.org/>`_ – a micro web-framework for Python,
    authentication using the same credentials used to authenticate in the
    Nova API, MIT License.
-5. `python-novaclient <https://github.com/openstack/python-novaclient>`_
+6. `python-novaclient <https://github.com/openstack/python-novaclient>`_
    – a Python Nova API client implementation, Apache 2.0 License.
-6. `Sphinx <http://sphinx.pocoo.org/>`_ – a documentation generator for
+7. `Sphinx <http://sphinx.pocoo.org/>`_ – a documentation generator for
    Python, BSD License.
 
 Global Manager

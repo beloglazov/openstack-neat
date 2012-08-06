@@ -411,15 +411,17 @@ The following third party libraries are planned to be used to implement the requ
 
 1. [pyqcy](https://github.com/Xion/pyqcy) -- a QuickCheck-like testing framework for Python, FreeBSD
    License.
-2. [PyContracts](https://github.com/AndreaCensi/contracts) -- a Python library for Design by
+2. [mocktest](https://github.com/gfxmonk/mocktest) -- a mocking library for Python, LGPL
+   License.
+3. [PyContracts](https://github.com/AndreaCensi/contracts) -- a Python library for Design by
    Contract (DbC), GNU Lesser General Public License.
-3. [SQLAlchemy](http://www.sqlalchemy.org/) -- a Python SQL toolkit and Object Relational Mapper
+4. [SQLAlchemy](http://www.sqlalchemy.org/) -- a Python SQL toolkit and Object Relational Mapper
    (used by the core OpenStack service), MIT License.
-4. [Bottle](http://bottlepy.org/) -- a micro web-framework for Python, authentication using the same
+5. [Bottle](http://bottlepy.org/) -- a micro web-framework for Python, authentication using the same
    credentials used to authenticate in the Nova API, MIT License.
-5. [python-novaclient](https://github.com/openstack/python-novaclient) -- a Python Nova API client
+6. [python-novaclient](https://github.com/openstack/python-novaclient) -- a Python Nova API client
    implementation, Apache 2.0 License.
-6. [Sphinx](http://sphinx.pocoo.org/) -- a documentation generator for Python, BSD License.
+7. [Sphinx](http://sphinx.pocoo.org/) -- a documentation generator for Python, BSD License.
 
 
 ## Global Manager
