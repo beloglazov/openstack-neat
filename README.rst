@@ -669,12 +669,13 @@ References
 [1] A. Beloglazov and R. Buyya, “Optimal online deterministic algorithms
 and adaptive heuristics for energy and performance efficient dynamic
 consolidation of virtual machines in Cloud data centers,” *Concurrency
-and Computation: Practice and Experience (CCPE)*, 2012.
+and Computation: Practice and Experience (CCPE)*, 2012 (in press,
+accepted on September 2, 2011).
 
 [2] A. Beloglazov and R. Buyya, “Managing Overloaded Hosts for Dynamic
 Consolidation of Virtual Machines in Cloud Data Centers Under Quality of
 Service Constraints,” *IEEE Transactions on Parallel and Distributed
-Systems (TPDS)*, 2012 (under review).
+Systems (TPDS)*, 2012 (in press, accepted on August 2, 2012).
 
 [3] J. Koomey, *Growth in data center electricity use 2005 to 2010*.
 Oakland, CA: Analytics Press, 2011.
