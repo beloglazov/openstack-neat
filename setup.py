@@ -35,5 +35,5 @@ setup(
 
     packages=find_packages(),
     test_suite='tests',
-    tests_require=['pyqcy'],
+    tests_require=['pyqcy', 'mocktest', 'PyContracts'],
 )
