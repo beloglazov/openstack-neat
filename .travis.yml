@@ -1,9 +1,9 @@
 language: python
 python:
-  - 2.6
   - 2.7
 install:
   - sudo apt-get install -qq python-libvirt
+  - cp /usr/lib/python2.7/dist-packages/*libvirt* ~virtualenv/python2.7/local/lib/python2.7/site-packages/
   - pip install --use-mirrors pyqcy mocktest PyContracts nose
   - python setup.py install
 script: nosetests
