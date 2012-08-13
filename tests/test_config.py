@@ -13,15 +13,35 @@
 # limitations under the License.
 
 from pyqcy import *
-
-from neat.config import readConfig
+from neat.config import *
 
 
 class Config(TestCase):
 
     @qc
-    def addition_actually_works(
-        x=int_(min=0), y=int_(min=0)
+    def read_default_config():
+        config = readConfig([DEFAILT_CONFIG_PATH])
+        assert validateConfig(config, REQUIRED_FIELDS)
+
+    @qc
+    def read_config():
+        config = readConfig([DEFAILT_CONFIG_PATH, CONFIG_PATH])
+        assert validateConfig(config, REQUIRED_FIELDS)
+
+    @qc
+    def validate_valid_config(
+        x=list_(of=str_(of='abc123_', max_length=20), min_length=0, max_length=10)
     ):
-        the_sum = x + y
-        assert the_sum >= x and the_sum >= y
+        test_config = dict(zip(x, x))
+        assert validateConfig(test_config, x)
+
+    @qc
+    def validate_invalid_config(
+        x=list_(of=str_(of='abc123_', max_length=20), min_length=0, max_length=10),
+        y=list_(of=str_(of='abc123_', max_length=20), min_length=0, max_length=10)
+    ):
+        test_config = dict(zip(x, x))
+        if not y:
+            assert validateConfig(test_config, y)
+        else:
+            assert not validateConfig(test_config, y)
