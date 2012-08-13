@@ -27,6 +27,7 @@ DEFAILT_CONFIG_PATH = os.path.join(os.path.dirname(__file__), '..', 'neat.conf')
 #CONFIG_PATH = "/etc/neat/neat.conf"
 CONFIG_PATH = os.path.join(os.path.dirname(__file__), '..', 'neat.conf')
 
+# These fields must present in the configuration file
 REQUIRED_FIELDS = [
     'sql_connection',
     'admin_tenant_name',
