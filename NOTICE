@@ -12,6 +12,10 @@ module distributions developed by Tarek Ziadé, released under the
 Python Software Foundation License, and available from
 https://bitbucket.org/tarek/distribute
 
+This software uses sniffer, a Python auto-testing tool developed by
+Jeff Hui, released under the MIT License, and available from
+https://github.com/jeffh/sniffer
+
 This software uses pyqcy, a QuickCheck-like testing framework for
 Python developed by Karol Kuczmarski, released under the FreeBSD
 License, and available from https://github.com/Xion/pyqcy
