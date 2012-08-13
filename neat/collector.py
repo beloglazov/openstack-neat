@@ -21,9 +21,22 @@ import sys
 import libvirt
 
 
+@contract
 def start(iterations):
-    for _ in xrange(iterations):
-        collect()
+    """ Start the data collector loop.
+
+    :param iterations: The number of iterations to perform, -1 for infinite.
+     :type iterations: int
+
+    :return: The number of iterations performed.
+     :rtype: int
+    """
+    if iterations == -1:
+        while True:
+            collect()
+    else:
+        for _ in xrange(iterations):
+            collect()
     return iterations
 
 

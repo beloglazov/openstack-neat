@@ -29,5 +29,5 @@ class Collector(TestCase):
     @qc(10)
     def start(iterations=int_(0, 10)):
         with MockTransaction:
-            expect(collector).collect().and_return('ok').exactly(iterations).times()
+            expect(collector).collect().exactly(iterations).times()
             assert collector.start(iterations) == iterations
