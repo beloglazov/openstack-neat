@@ -14,21 +14,17 @@
 
 from pyqcy import *
 from mocktest import *
+from neat.integration import TestCase
 
-import neat.collector
+import neat.collector as collector
 
 
-class DataCollector(TestCase):
+class Collector(TestCase):
 
-    @qc
+    @qc(10)
     def start(
         iterations=int_(0, 10)
     ):
-        expect(neat.collector).collect().and_return('ok').exactly(iteration).times()
-
-        print 'ok'
-        assert neat.collector.start(iterations) == iterations
-
-    @qc
-    def dumb():
-        assert True
+        #expect(collector).collect().and_return('ok').exactly(iterations * 10).times()
+        when(collector).collect().and_return('ok')
+        assert collector.start(iterations) == iterations
