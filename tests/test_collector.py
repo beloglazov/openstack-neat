@@ -12,19 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from pyqcy import *
 from mocktest import *
-from neat.integration import TestCase
+from pyqcy import *
 
 import neat.collector as collector
 
 
 class Collector(TestCase):
 
+    # def setUp(self):
+    #     MockTransaction.__enter__()
+
+    # def tearDown(self):
+    #     MockTransaction.__exit__()
+
     @qc(10)
-    def start(
-        iterations=int_(0, 10)
-    ):
-        #expect(collector).collect().and_return('ok').exactly(iterations * 10).times()
-        when(collector).collect().and_return('ok')
-        assert collector.start(iterations) == iterations
+    def start(iterations=int_(0, 10)):
+        with MockTransaction:
+            expect(collector).collect().and_return('ok').exactly(iterations).times()
+            assert collector.start(iterations) == iterations
