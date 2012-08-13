@@ -14,4 +14,4 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-sudo pip2 install pyqcy mocktest PyContracts sniffer pyinotify --upgrade
+sudo pip2 install --upgrade pyqcy mocktest PyContracts sniffer pyinotify
