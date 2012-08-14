@@ -21,8 +21,8 @@ The blueprint is also available in the following formats:
 -  `HTML <https://raw.github.com/beloglazov/openstack-neat/master/doc/blueprint/openstack-neat-blueprint.html>`_
 
 % OpenStack Neat: A Framework for Dynamic Consolidation of Virtual
-Machines in OpenStack Clouds % Anton Beloglazov; Rajkumar Buyya % 1st of
-August 2012
+Machines in OpenStack Clouds % Anton Beloglazov; Rajkumar Buyya % 14th
+of August 2012
 
 Summary
 =======
@@ -530,23 +530,29 @@ Libraries
 The following third party libraries are planned to be used to implement
 the required components:
 
-1. `pyqcy <https://github.com/Xion/pyqcy>`_ – a QuickCheck-like testing
-   framework for Python, FreeBSD License.
-2. `mocktest <https://github.com/gfxmonk/mocktest>`_ – a mocking library
-   for Python, LGPL License.
-3. `PyContracts <https://github.com/AndreaCensi/contracts>`_ – a Python
-   library for Design by Contract (DbC), GNU Lesser General Public
-   License.
-4. `SQLAlchemy <http://www.sqlalchemy.org/>`_ – a Python SQL toolkit and
-   Object Relational Mapper (used by the core OpenStack service), MIT
-   License.
-5. `Bottle <http://bottlepy.org/>`_ – a micro web-framework for Python,
+1. `distribute <https://bitbucket.org/tarek/distribute>`_ – a library
+   for working with Python module distributions, released under the
+   Python Software Foundation License.
+2. `sniffer <https://github.com/jeffh/sniffer>`_ – a Python auto-testing
+   tool, released under the MIT License.
+3. `pyqcy <https://github.com/Xion/pyqcy>`_ – a QuickCheck-like testing
+   framework for Python, released under the FreeBSD License.
+4. `mocktest <https://github.com/gfxmonk/mocktest>`_ – a mocking library
+   for Python, released under the LGPL License.
+5. `PyContracts <https://github.com/AndreaCensi/contracts>`_ – a Python
+   library for Design by Contract (DbC), released under the GNU Lesser
+   General Public License.
+6. `SQLAlchemy <http://www.sqlalchemy.org/>`_ – a Python SQL toolkit and
+   Object Relational Mapper (used by the core OpenStack service),
+   released under the MIT License.
+7. `Bottle <http://bottlepy.org/>`_ – a micro web-framework for Python,
    authentication using the same credentials used to authenticate in the
-   Nova API, MIT License.
-6. `python-novaclient <https://github.com/openstack/python-novaclient>`_
-   – a Python Nova API client implementation, Apache 2.0 License.
-7. `Sphinx <http://sphinx.pocoo.org/>`_ – a documentation generator for
-   Python, BSD License.
+   Nova API, released under the MIT License.
+8. `python-novaclient <https://github.com/openstack/python-novaclient>`_
+   – a Python Nova API client implementation, released under the Apache
+   2.0 License.
+9. `Sphinx <http://sphinx.pocoo.org/>`_ – a documentation generator for
+   Python, released under the BSD License.
 
 Global Manager
 --------------
@@ -740,4 +746,4 @@ Survey of Energy-Efficient Data Centers and Cloud Computing Systems,”
 Step-by-Step Guide to Installing OpenStack on CentOS Using the KVM
 Hypervisor and GlusterFS Distributed File System,” *Technical Report
 CLOUDS-TR-2012-3, Cloud Computing and Distributed Systems Laboratory,
-The University of Melbourne*, Jul. 2012.
+The University of Melbourne*, Aug. 2012.

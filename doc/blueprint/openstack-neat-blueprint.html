@@ -32,7 +32,7 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <h1 class="title">OpenStack Neat: A Framework for Dynamic Consolidation of Virtual Machines in OpenStack Clouds</h1>
 <h2 class="author">Anton Beloglazov</h2>
 <h2 class="author">Rajkumar Buyya</h2>
-<h3 class="date">1st of August 2012</h3>
+<h3 class="date">14th of August 2012</h3>
 </div>
 <div id="TOC">
 <ul>
@@ -230,13 +230,15 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <h2 id="libraries"><a href="#TOC"><span class="header-section-number">7.1</span> Libraries</a></h2>
 <p>The following third party libraries are planned to be used to implement the required components:</p>
 <ol style="list-style-type: decimal">
-<li><a href="https://github.com/Xion/pyqcy">pyqcy</a> – a QuickCheck-like testing framework for Python, FreeBSD License.</li>
-<li><a href="https://github.com/gfxmonk/mocktest">mocktest</a> – a mocking library for Python, LGPL License.</li>
-<li><a href="https://github.com/AndreaCensi/contracts">PyContracts</a> – a Python library for Design by Contract (DbC), GNU Lesser General Public License.</li>
-<li><a href="http://www.sqlalchemy.org/">SQLAlchemy</a> – a Python SQL toolkit and Object Relational Mapper (used by the core OpenStack service), MIT License.</li>
-<li><a href="http://bottlepy.org/">Bottle</a> – a micro web-framework for Python, authentication using the same credentials used to authenticate in the Nova API, MIT License.</li>
-<li><a href="https://github.com/openstack/python-novaclient">python-novaclient</a> – a Python Nova API client implementation, Apache 2.0 License.</li>
-<li><a href="http://sphinx.pocoo.org/">Sphinx</a> – a documentation generator for Python, BSD License.</li>
+<li><a href="https://bitbucket.org/tarek/distribute">distribute</a> – a library for working with Python module distributions, released under the Python Software Foundation License.</li>
+<li><a href="https://github.com/jeffh/sniffer">sniffer</a> – a Python auto-testing tool, released under the MIT License.</li>
+<li><a href="https://github.com/Xion/pyqcy">pyqcy</a> – a QuickCheck-like testing framework for Python, released under the FreeBSD License.</li>
+<li><a href="https://github.com/gfxmonk/mocktest">mocktest</a> – a mocking library for Python, released under the LGPL License.</li>
+<li><a href="https://github.com/AndreaCensi/contracts">PyContracts</a> – a Python library for Design by Contract (DbC), released under the GNU Lesser General Public License.</li>
+<li><a href="http://www.sqlalchemy.org/">SQLAlchemy</a> – a Python SQL toolkit and Object Relational Mapper (used by the core OpenStack service), released under the MIT License.</li>
+<li><a href="http://bottlepy.org/">Bottle</a> – a micro web-framework for Python, authentication using the same credentials used to authenticate in the Nova API, released under the MIT License.</li>
+<li><a href="https://github.com/openstack/python-novaclient">python-novaclient</a> – a Python Nova API client implementation, released under the Apache 2.0 License.</li>
+<li><a href="http://sphinx.pocoo.org/">Sphinx</a> – a documentation generator for Python, released under the BSD License.</li>
 </ol>
 <h2 id="global-manager-1"><a href="#TOC"><span class="header-section-number">7.2</span> Global Manager</a></h2>
 <p>The global manager component will provide a REST web service implemented using the Bottle framework. The authentication is going to be done using the admin credentials specified in the configuration file. Upon receiving a request from a local manager, the following steps will be performed:</p>
@@ -295,6 +297,6 @@ code > span.er { color: #ff0000; font-weight: bold; }
 <p>[14] B. Guenter, N. Jain, and C. Williams, “Managing Cost, Performance, and Reliability Tradeoffs for Energy-Aware Server Provisioning,” in <em>Proc. of the 30st Annual IEEE Intl. Conf. on Computer Communications (INFOCOM)</em>, 2011, pp. 1332–1340.</p>
 <p>[15] N. Bobroff, A. Kochut, and K. Beaty, “Dynamic placement of virtual machines for managing SLA violations,” in <em>Proc. of the 10th IFIP/IEEE Intl. Symp. on Integrated Network Management (IM)</em>, 2007, pp. 119–128.</p>
 <p>[16] A. Beloglazov, R. Buyya, Y. C. Lee, and A. Zomaya, “A Taxonomy and Survey of Energy-Efficient Data Centers and Cloud Computing Systems,” <em>Advances in Computers, M. Zelkowitz (ed.)</em>, vol. 82, pp. 47–111, 2011.</p>
-<p>[17] A. Beloglazov, S. F. Piraghaj, M. Alrokayan, and R. Buyya, “A Step-by-Step Guide to Installing OpenStack on CentOS Using the KVM Hypervisor and GlusterFS Distributed File System,” <em>Technical Report CLOUDS-TR-2012-3, Cloud Computing and Distributed Systems Laboratory, The University of Melbourne</em>, Jul. 2012.</p>
+<p>[17] A. Beloglazov, S. F. Piraghaj, M. Alrokayan, and R. Buyya, “A Step-by-Step Guide to Installing OpenStack on CentOS Using the KVM Hypervisor and GlusterFS Distributed File System,” <em>Technical Report CLOUDS-TR-2012-3, Cloud Computing and Distributed Systems Laboratory, The University of Melbourne</em>, Aug. 2012.</p>
 </body>
 </html>
