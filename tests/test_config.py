@@ -21,20 +21,20 @@ class Config(TestCase):
 
     @qc
     def read_default_config():
-        config = readConfig([DEFAILT_CONFIG_PATH])
-        assert validateConfig(config, REQUIRED_FIELDS)
+        config = read_config([DEFAILT_CONFIG_PATH])
+        assert validate_config(config, REQUIRED_FIELDS)
 
     @qc
     def read_config():
-        config = readConfig([DEFAILT_CONFIG_PATH, CONFIG_PATH])
-        assert validateConfig(config, REQUIRED_FIELDS)
+        config = read_config([DEFAILT_CONFIG_PATH, CONFIG_PATH])
+        assert validate_config(config, REQUIRED_FIELDS)
 
     @qc
     def validate_valid_config(
         x=list_(of=str_(of='abc123_', max_length=20), min_length=0, max_length=10)
     ):
         test_config = dict(zip(x, x))
-        assert validateConfig(test_config, x)
+        assert validate_config(test_config, x)
 
     @qc
     def validate_invalid_config(
@@ -43,6 +43,6 @@ class Config(TestCase):
     ):
         test_config = dict(zip(x, x))
         if not y:
-            assert validateConfig(test_config, y)
+            assert validate_config(test_config, y)
         else:
-            assert not validateConfig(test_config, y)
+            assert not validate_config(test_config, y)

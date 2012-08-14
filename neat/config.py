@@ -54,7 +54,7 @@ REQUIRED_FIELDS = [
 
 
 @contract
-def readConfig(paths):
+def read_config(paths):
     """ Read the configuration files and return the options.
 
     :param paths: A list of required configuration file paths.
@@ -70,7 +70,7 @@ def readConfig(paths):
 
 
 @contract
-def validateConfig(config, required_fields):
+def validate_config(config, required_fields):
     """ Check that the config contains all the required fields.
 
     :param config: A config dictionary to check.

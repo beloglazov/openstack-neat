@@ -29,5 +29,20 @@ class Collector(TestCase):
     @qc(10)
     def start(iterations=int_(0, 10)):
         with MockTransaction:
-            expect(collector).collect().exactly(iterations).times()
+            expect(collector).collect(any_dict).exactly(iterations).times()
             assert collector.start(iterations) == iterations
+
+    @qc(1)
+    def get_previous_vms():
+        local_data_directory = os.path.join(
+            os.path.dirname(__file__), 'resources', 'vms')
+        assert collector.get_previous_vms(local_data_directory) == \
+            ['ec452be0-e5d0-11e1-aff1-0800200c9a66',
+             'e615c450-e5d0-11e1-aff1-0800200c9a66',
+             'f3e142d0-e5d0-11e1-aff1-0800200c9a66']
+
+    @qc
+    def build_local_vm_path(
+        x=str_(of='abc123_-/')
+    ):
+        assert collector.build_local_vm_path(x) == os.path.join(x, 'vms')
