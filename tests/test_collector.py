@@ -36,10 +36,11 @@ class Collector(TestCase):
     def get_previous_vms():
         local_data_directory = os.path.join(
             os.path.dirname(__file__), 'resources', 'vms')
-        assert collector.get_previous_vms(local_data_directory) == \
-            ['ec452be0-e5d0-11e1-aff1-0800200c9a66',
-             'e615c450-e5d0-11e1-aff1-0800200c9a66',
-             'f3e142d0-e5d0-11e1-aff1-0800200c9a66']
+        previous_vms = collector.get_previous_vms(local_data_directory)
+        assert len(previous_vms) == 3
+        assert 'ec452be0-e5d0-11e1-aff1-0800200c9a66' in previous_vms
+        assert 'e615c450-e5d0-11e1-aff1-0800200c9a66' in previous_vms
+        assert 'f3e142d0-e5d0-11e1-aff1-0800200c9a66' in previous_vms
 
     @qc
     def build_local_vm_path(
