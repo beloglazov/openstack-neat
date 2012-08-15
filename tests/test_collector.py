@@ -43,7 +43,7 @@ class Collector(TestCase):
         assert 'e615c450-e5d0-11e1-aff1-0800200c9a66' in previous_vms
         assert 'f3e142d0-e5d0-11e1-aff1-0800200c9a66' in previous_vms
 
-    @qc(1)
+    @qc
     def get_current_vms(
         ids=dict_(
             keys=int_(min=0),
@@ -60,7 +60,9 @@ class Collector(TestCase):
 
             connection = libvirt.virConnect()
             expect(connection).listDomainsID().and_return(ids.keys()).once()
-            expect(connection).lookupByID(any_int).and_call(lambda id: init_vm(id))
+            if ids:
+                expect(connection).lookupByID(any_int) \
+                    .and_call(lambda id: init_vm(id))
             assert collector.get_current_vms(connection) == ids.values()
 
     @qc
@@ -68,6 +70,23 @@ class Collector(TestCase):
         x=str_(of='abc123_-/')
     ):
         assert collector.build_local_vm_path(x) == os.path.join(x, 'vms')
+
+    @qc
+    def get_added_vms(
+        x=list_(
+            of=str_(of='abc123-', min_length=36, max_length=36),
+            min_length=0, max_length=5
+        ),
+        y=list_(
+            of=str_(of='abc123-', min_length=36, max_length=36),
+            min_length=0, max_length=5
+        )
+    ):
+        previous_vms = list(x)
+        if x:
+            x.pop(random.randrange(len(x)))
+        x.extend(y)
+        assert set(collector.get_added_vms(previous_vms, x)) == set(y)
 
     @qc
     def substract_lists(

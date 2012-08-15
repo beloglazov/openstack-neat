@@ -205,6 +205,22 @@ def build_local_vm_path(local_data_directory):
 
 
 @contract
+def get_added_vms(previous_vms, current_vms):
+    """ Get a list of newly added VM UUIDs.
+
+    :param previous_vms: A list of VMs at the previous time frame.
+     :type previous_vms: list(str)
+
+    :param current_vms: A list of VM at the current time frame.
+     :type current_vms: list(str)
+
+    :return: A list of VM UUIDs that have been added since the last time frame.
+     :rtype: list(str)
+    """
+    return substract_lists(current_vms, previous_vms)
+
+
+@contract
 def substract_lists(list1, list2):
     """ Return the elements of list1 that are not in list2.
 
@@ -217,8 +233,9 @@ def substract_lists(list1, list2):
     :return: The list of element of list 1 that are not in list2.
      :rtype: list
     """
-    s = set(list2)
-    return [x for x in list1 if x not in s]
+    #s = set(list2)
+    #return [x for x in list1 if x not in s]
+    return list(set(list1).difference(list2))
 
 
 def getNumberOfPhysicalCpus(connection):
