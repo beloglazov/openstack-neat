@@ -91,7 +91,6 @@ invoked, the component performs the following steps:
 """
 
 from contracts import contract
-import libvirt
 
 from neat.config import *
 from neat.contracts_extra import *
@@ -186,21 +185,21 @@ def get_current_vms(vir_connection):
     :return: The list of VM UUIDs from libvirt.
      :rtype: list(str)
     """
-    conn = libvirt.openReadOnly(None)
-    print conn
-    print "++++++++++++++++++"
-    print conn.listAllDomains(0)
-    print "++++++++++++++++++"
-    print conn.listDomainsID()
-    print "++++++++++++++++++"
+    # conn = libvirt.openReadOnly(None)
+    # print conn
+    # print "++++++++++++++++++"
+    # print conn.listAllDomains(0)
+    # print "++++++++++++++++++"
+    # print conn.listDomainsID()
+    # print "++++++++++++++++++"
     vm_uuids = []
-    for vm_id in conn.listDomainsID():
-        print conn.lookupByID(vm_id).UUIDString()
-        vm_uuids.append(conn.lookupByID(vm_id).UUIDString())
-    print "++++++++++++++++++"
+    for vm_id in vir_connection.listDomainsID():
+        #print vir_connection.lookupByID(vm_id).UUIDString()
+        vm_uuids.append(vir_connection.lookupByID(vm_id).UUIDString())
+    # print "++++++++++++++++++"
     print vm_uuids
-    print "++++++++++++++++++"
-    return []
+    # print "++++++++++++++++++"
+    return vm_uuids
 
 
 @contract

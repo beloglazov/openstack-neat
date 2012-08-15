@@ -52,10 +52,13 @@ class Collector(TestCase):
         )
     ):
         #with MockTransaction:
-            #expect(collector).collect(any_dict).exactly(iterations).times()
-        print ids.keys()
-        print ids.values()
-        collector.get_current_vms(libvirt.virConnect())
+            #print ids.keys()
+            #print ids.values()
+            #connection = libvirt.virConnect()
+            #expect(collector).listDomainsID().andReturn(ids.keys()).once()
+
+
+            collector.get_current_vms(libvirt.virConnect())
 
     @qc
     def build_local_vm_path(

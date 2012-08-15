@@ -14,7 +14,7 @@
 
 from contracts import new_contract
 
-from libvirt import virConnect
+import libvirt
 
 
-new_contract('virConnect', virConnect)
+new_contract('virConnect', libvirt.virConnect)
