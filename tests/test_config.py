@@ -38,11 +38,8 @@ class Config(TestCase):
 
     @qc
     def validate_invalid_config(
-        x=list_(of=str_(of='abc123_', max_length=20), min_length=0, max_length=10),
-        y=list_(of=str_(of='abc123_', max_length=20), min_length=0, max_length=10)
+        x=list_(of=str_(of='abc123_', max_length=20), min_length=0, max_length=5),
+        y=list_(of=str_(of='abc123_', max_length=20), min_length=6, max_length=10)
     ):
         test_config = dict(zip(x, x))
-        if not y:
-            assert validate_config(test_config, y)
-        else:
-            assert not validate_config(test_config, y)
+        assert not validate_config(test_config, y)
