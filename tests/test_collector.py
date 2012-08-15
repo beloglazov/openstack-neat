@@ -51,14 +51,17 @@ class Collector(TestCase):
             min_length=0, max_length=10
         )
     ):
-        #with MockTransaction:
-            #print ids.keys()
-            #print ids.values()
-            #connection = libvirt.virConnect()
-            #expect(collector).listDomainsID().andReturn(ids.keys()).once()
+        with MockTransaction:
 
+            def init_vm(id):
+                vm = mock('vm')
+                expect(vm).UUIDString().and_return(ids[id]).once()
+                return vm
 
-            collector.get_current_vms(libvirt.virConnect())
+            connection = libvirt.virConnect()
+            expect(connection).listDomainsID().and_return(ids.keys()).once()
+            expect(connection).lookupByID(any_int).and_call(lambda id: init_vm(id))
+            assert collector.get_current_vms(connection) == ids.values()
 
     @qc
     def build_local_vm_path(
