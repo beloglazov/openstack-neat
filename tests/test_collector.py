@@ -15,6 +15,7 @@
 from mocktest import *
 from pyqcy import *
 
+import libvirt
 import neat.collector as collector
 
 
@@ -41,6 +42,20 @@ class Collector(TestCase):
         assert 'ec452be0-e5d0-11e1-aff1-0800200c9a66' in previous_vms
         assert 'e615c450-e5d0-11e1-aff1-0800200c9a66' in previous_vms
         assert 'f3e142d0-e5d0-11e1-aff1-0800200c9a66' in previous_vms
+
+    @qc(1)
+    def get_current_vms(
+        ids=dict_(
+            keys=int_(min=0),
+            values=str_(of='abc123-', min_length=36, max_length=36),
+            min_length=0, max_length=10
+        )
+    ):
+        #with MockTransaction:
+            #expect(collector).collect(any_dict).exactly(iterations).times()
+        print ids.keys()
+        print ids.values()
+        collector.get_current_vms(libvirt.virConnect())
 
     @qc
     def build_local_vm_path(

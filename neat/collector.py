@@ -91,10 +91,10 @@ invoked, the component performs the following steps:
 """
 
 from contracts import contract
-import sys
 import libvirt
 
 from neat.config import *
+from neat.contracts_extra import *
 
 
 @contract
@@ -176,14 +176,31 @@ def get_previous_vms(path):
     return os.listdir(path)
 
 
-@contract
-def get_current_vms():
+@contract()
+def get_current_vms(vir_connection):
     """ Get a list of VM UUIDs from libvirt.
+
+    :param vir_connection: A libvirt connection object.
+     :type vir_connection: virConnect
 
     :return: The list of VM UUIDs from libvirt.
      :rtype: list(str)
     """
-    pass
+    conn = libvirt.openReadOnly(None)
+    print conn
+    print "++++++++++++++++++"
+    print conn.listAllDomains(0)
+    print "++++++++++++++++++"
+    print conn.listDomainsID()
+    print "++++++++++++++++++"
+    vm_uuids = []
+    for vm_id in conn.listDomainsID():
+        print conn.lookupByID(vm_id).UUIDString()
+        vm_uuids.append(conn.lookupByID(vm_id).UUIDString())
+    print "++++++++++++++++++"
+    print vm_uuids
+    print "++++++++++++++++++"
+    return []
 
 
 @contract
