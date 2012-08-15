@@ -68,3 +68,11 @@ class Collector(TestCase):
         x=str_(of='abc123_-/')
     ):
         assert collector.build_local_vm_path(x) == os.path.join(x, 'vms')
+
+    @qc
+    def substract_lists(
+        x=list_(of=int, max_length=10),
+        y=list_(of=int, max_length=10)
+    ):
+        assert set(collector.substract_lists(x, y)) == \
+            set([item for item in x if item not in y])

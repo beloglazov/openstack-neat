@@ -204,6 +204,23 @@ def build_local_vm_path(local_data_directory):
     return os.path.join(local_data_directory, 'vms')
 
 
+@contract
+def substract_lists(list1, list2):
+    """ Return the elements of list1 that are not in list2.
+
+    :param list1: The first list.
+     :type list1: list
+
+    :param list2: The second list.
+     :type list2: list
+
+    :return: The list of element of list 1 that are not in list2.
+     :rtype: list
+    """
+    s = set(list2)
+    return [x for x in list1 if x not in s]
+
+
 def getNumberOfPhysicalCpus(connection):
     return connection.getInfo()[2]
 
