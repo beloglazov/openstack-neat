@@ -19,6 +19,7 @@ import os
 import shutil
 import libvirt
 import neat.collector as collector
+import neat.db_utils as db_utils
 
 
 class Collector(TestCase):
@@ -142,7 +143,18 @@ class Collector(TestCase):
 
         assert len(os.listdir(local_data_directory_tmp)) == initial_files
 
-    # @qc(1)
-    # def fetch_remote_data():
-    #     pass
-        #collector.fetch_remote_data()
+    @qc(1)
+    def fetch_remote_data(
+        x=dict_(
+            keys=str_(of='abc123-', min_length=36, max_length=36),
+            values=list_(of=int_(min=0, max=3000), min_length=10, max_length=10),
+            min_length=0, max_length=3
+        )
+    ):
+        db = db_utils.init_db('sqlite:///:memory:')
+        if x:
+            n = random.randrange(len(x.values()[0]))
+            for key, value in x.items():
+                x[key] = value[:n]
+            print x
+            assert collector.fetch_remote_data(db, n, x.keys()) == x

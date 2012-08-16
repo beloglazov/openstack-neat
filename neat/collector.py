@@ -94,6 +94,7 @@ from contracts import contract
 from neat.contracts_extra import *
 
 from neat.config import *
+from neat.db_utils import *
 
 
 @contract
@@ -270,8 +271,11 @@ def cleanup_local_data(path, vms):
 
 
 @contract
-def fetch_remote_data(data_length, vms):
+def fetch_remote_data(db, data_length, vms):
     """ Fetch VM data from the central DB.
+
+    :param db: The database object.
+     :type db: Database
 
     :param data_length: The length of data to fetch.
      :type data_length: int
