@@ -4,6 +4,6 @@ python:
 install:
   - sudo apt-get install -qq python-libvirt
   - cp /usr/lib/python2.7/dist-packages/*libvirt* ~/virtualenv/python2.7/local/lib/python2.7/site-packages/
-  - pip install --use-mirrors pyqcy mocktest PyContracts nose
+  - pip install --use-mirrors pyqcy mocktest PyContracts nose SQLAlchemy
   - python setup.py install
 script: nosetests
