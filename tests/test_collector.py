@@ -15,6 +15,8 @@
 from mocktest import *
 from pyqcy import *
 
+import os
+import shutil
 import libvirt
 import neat.collector as collector
 
@@ -115,3 +117,29 @@ class Collector(TestCase):
     ):
         assert set(collector.substract_lists(x, y)) == \
             set([item for item in x if item not in y])
+
+    @qc(1)
+    def cleanup_removed_vms():
+        local_data_directory = os.path.join(
+            os.path.dirname(__file__), 'resources', 'vms')
+        local_data_directory_tmp = os.path.join(
+            local_data_directory, 'tmp')
+        vm1 = 'ec452be0-e5d0-11e1-aff1-0800200c9a66'
+        vm2 = 'e615c450-e5d0-11e1-aff1-0800200c9a66'
+        vm3 = 'f3e142d0-e5d0-11e1-aff1-0800200c9a66'
+        os.mkdir(local_data_directory_tmp)
+        shutil.copy(os.path.join(local_data_directory, vm1),
+                    local_data_directory_tmp)
+        shutil.copy(os.path.join(local_data_directory, vm2),
+                    local_data_directory_tmp)
+        shutil.copy(os.path.join(local_data_directory, vm3),
+                    local_data_directory_tmp)
+
+        assert len(os.listdir(local_data_directory_tmp)) == 3
+
+        collector.cleanup_removed_vms(local_data_directory_tmp,
+                                      [vm1, vm2, vm3])
+
+        files = len(os.listdir(local_data_directory_tmp))
+        shutil.rmtree(local_data_directory_tmp)
+        assert files == 0

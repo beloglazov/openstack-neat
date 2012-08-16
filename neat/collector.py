@@ -160,6 +160,9 @@ def collect(config):
     vms_previous = get_previous_vms(
         build_local_vm_path(config.get('local_data_directory')))
     vms_current = get_current_vms()
+    vms_added = get_added_vms(vms_previous, vms_current)
+    vms_removed = get_removed_vms(vms_previous, vms_current)
+    cleanup_removed_vms(vms_removed)
 
 
 @contract
@@ -250,6 +253,20 @@ def substract_lists(list1, list2):
      :rtype: list
     """
     return list(set(list1).difference(list2))
+
+
+@contract
+def cleanup_removed_vms(path, removed_vms):
+    """ Delete the local data related to the removed VMs.
+
+    :param path: A path to removed VM data from.
+     :type path: str
+
+    :param removed_vms: A list of removed VM UUIDs.
+     :type removed_vms: list(str)
+    """
+    for vm in removed_vms:
+        os.remove(os.path.join(path, vm))
 
 
 def getNumberOfPhysicalCpus(connection):
