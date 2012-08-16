@@ -249,8 +249,6 @@ def substract_lists(list1, list2):
     :return: The list of element of list 1 that are not in list2.
      :rtype: list
     """
-    #s = set(list2)
-    #return [x for x in list1 if x not in s]
     return list(set(list1).difference(list2))
 
 
