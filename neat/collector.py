@@ -221,6 +221,22 @@ def get_added_vms(previous_vms, current_vms):
 
 
 @contract
+def get_removed_vms(previous_vms, current_vms):
+    """ Get a list of VM UUIDs removed since the last time frame.
+
+    :param previous_vms: A list of VMs at the previous time frame.
+     :type previous_vms: list(str)
+
+    :param current_vms: A list of VM at the current time frame.
+     :type current_vms: list(str)
+
+    :return: A list of VM UUIDs that have been removed since the last time frame.
+     :rtype: list(str)
+    """
+    return substract_lists(previous_vms, current_vms)
+
+
+@contract
 def substract_lists(list1, list2):
     """ Return the elements of list1 that are not in list2.
 

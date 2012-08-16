@@ -89,6 +89,26 @@ class Collector(TestCase):
         assert set(collector.get_added_vms(previous_vms, x)) == set(y)
 
     @qc
+    def get_removed_vms(
+        x=list_(
+            of=str_(of='abc123-', min_length=36, max_length=36),
+            min_length=0, max_length=5
+        ),
+        y=list_(
+            of=str_(of='abc123-', min_length=36, max_length=36),
+            min_length=0, max_length=5
+        )
+    ):
+        previous_vms = list(x)
+        removed = []
+        if x:
+            to_remove = random.randrange(len(x))
+            for _ in xrange(to_remove):
+                removed.append(x.pop(random.randrange(len(x))))
+        x.extend(y)
+        assert set(collector.get_removed_vms(previous_vms, x)) == set(removed)
+
+    @qc
     def substract_lists(
         x=list_(of=int_(min=0, max=20), max_length=10),
         y=list_(of=int_(min=0, max=20), max_length=10)
