@@ -27,5 +27,5 @@ class Database(object):
         :param vms: The vms table.
         :param vm_resource_usage: The vm_resource_usage table.
         """
-        self._vms = vms
-        self._vm_resource_usage = vm_resource_usage
+        self.vms = vms
+        self.vm_resource_usage = vm_resource_usage

@@ -143,7 +143,7 @@ class Collector(TestCase):
         #shutil.rmtree(local_data_directory_tmp)
         assert files == 0
 
-    @qc(1)
-    def fetch_remote_data():
-        pass
+    # @qc(1)
+    # def fetch_remote_data():
+    #     pass
         #collector.fetch_remote_data()

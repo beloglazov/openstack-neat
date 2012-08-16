@@ -41,7 +41,7 @@ def init_db(sql_connection):
     vm_resource_usage = Table('vm_resource_usage', metadata,
                 Column('id', Integer, primary_key=True),
                 Column('vm_id', Integer, ForeignKey('vms.id'), nullable=False),
-                Column('timestamp', DateTime, server_default=text("sysdate")),
+                Column('timestamp', DateTime, server_default=text('CURRENT_TIMESTAMP')),
                 Column('cpu_mhz', Integer, nullable=False))
 
     metadata.create_all()

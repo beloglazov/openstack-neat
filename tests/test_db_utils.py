@@ -25,7 +25,6 @@ class DbUtils(TestCase):
 
     @qc(1)
     def init_db():
-        assert False
         db = db_utils.init_db('sqlite:///:memory:')
         assert type(db) is neat.db.Database
         assert isinstance(db.vms, Table)
@@ -34,4 +33,13 @@ class DbUtils(TestCase):
             ['id', 'uuid']
         assert db.vm_resource_usage.c.keys() == \
             ['id', 'vm_id', 'timestamp', 'cpu_mhz']
-        assert db.vm_resource_usage.foreign_keys == ['vm_id']
+        assert list(db.vm_resource_usage.foreign_keys)[0].target_fullname \
+            == 'vms.id'
+
+    @qc(1)
+    def insert_select():
+        db = db_utils.init_db('sqlite:///:memory:')
+        db.vms.insert().execute(uuid='test')
+        assert db.vms.select().execute().first()['uuid'] == 'test'
+        db.vm_resource_usage.insert().execute(vm_id=1, cpu_mhz=1000)
+        assert db.vm_resource_usage.select().execute().first()['cpu_mhz'] == 1000
