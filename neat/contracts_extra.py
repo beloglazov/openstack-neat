@@ -15,6 +15,10 @@
 from contracts import new_contract
 
 import libvirt
+import sqlalchemy
+import neat
 
 
 new_contract('virConnect', libvirt.virConnect)
+new_contract('Table', sqlalchemy.Table)
+new_contract('Database', neat.db.Database)
