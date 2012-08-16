@@ -126,7 +126,8 @@ class Collector(TestCase):
         vm1 = 'ec452be0-e5d0-11e1-aff1-0800200c9a66'
         vm2 = 'e615c450-e5d0-11e1-aff1-0800200c9a66'
         vm3 = 'f3e142d0-e5d0-11e1-aff1-0800200c9a66'
-        #os.mkdir(local_data_directory_tmp)
+        initial_files = len(os.listdir(local_data_directory_tmp))
+
         shutil.copy(os.path.join(local_data_directory, vm1),
                     local_data_directory_tmp)
         shutil.copy(os.path.join(local_data_directory, vm2),
@@ -134,14 +135,12 @@ class Collector(TestCase):
         shutil.copy(os.path.join(local_data_directory, vm3),
                     local_data_directory_tmp)
 
-        assert len(os.listdir(local_data_directory_tmp)) == 3
+        assert len(os.listdir(local_data_directory_tmp)) == initial_files + 3
 
         collector.cleanup_local_data(local_data_directory_tmp,
                                       [vm1, vm2, vm3])
 
-        files = len(os.listdir(local_data_directory_tmp))
-        #shutil.rmtree(local_data_directory_tmp)
-        assert files == 0
+        assert len(os.listdir(local_data_directory_tmp)) == initial_files
 
     # @qc(1)
     # def fetch_remote_data():
