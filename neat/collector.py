@@ -271,7 +271,7 @@ def cleanup_local_data(path, vms):
 
 
 @contract
-def fetch_remote_data(db, data_length, vms):
+def fetch_remote_data(db, data_length, uuids):
     """ Fetch VM data from the central DB.
 
     :param db: The database object.
@@ -280,13 +280,16 @@ def fetch_remote_data(db, data_length, vms):
     :param data_length: The length of data to fetch.
      :type data_length: int
 
-    :param vms: A list of VM UUIDs to fetch data for.
-     :type vms: list(str)
+    :param uuids: A list of VM UUIDs to fetch data for.
+     :type uuids: list(str)
 
     :return: A dictionary of VM UUIDs and the corresponding data.
      :rtype: dict(str : list(int))
     """
-    pass
+    res = dict()
+    for uuid in uuids:
+        res[uuid] = db.select_cpu_mhz_for_vm(uuid, data_length)
+    return res
 
 
 def getNumberOfPhysicalCpus(connection):

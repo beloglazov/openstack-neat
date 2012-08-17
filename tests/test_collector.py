@@ -143,18 +143,23 @@ class Collector(TestCase):
 
         assert len(os.listdir(local_data_directory_tmp)) == initial_files
 
-    @qc(1)
+    @qc
     def fetch_remote_data(
         x=dict_(
             keys=str_(of='abc123-', min_length=36, max_length=36),
-            values=list_(of=int_(min=0, max=3000), min_length=10, max_length=10),
+            values=list_(of=int_(min=0, max=3000), min_length=0, max_length=10),
             min_length=0, max_length=3
-        )
+        ),
+        data_length=int_(min=1, max=10)
     ):
         db = db_utils.init_db('sqlite:///:memory:')
         if x:
-            n = random.randrange(len(x.values()[0]))
-            for key, value in x.items():
-                x[key] = value[:n]
-            print x
-            assert collector.fetch_remote_data(db, n, x.keys()) == x
+            for uuid, data in x.items():
+                result = db.vms.insert().execute(uuid=uuid)
+                vm_id = result.inserted_primary_key[0]
+                for mhz in reversed(data):
+                    db.vm_resource_usage.insert().execute(
+                        vm_id=vm_id,
+                        cpu_mhz=mhz)
+                x[uuid] = data[:data_length]
+        assert collector.fetch_remote_data(db, data_length, x.keys()) == x
