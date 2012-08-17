@@ -164,6 +164,8 @@ def collect(config):
     vms_added = get_added_vms(vms_previous, vms_current)
     vms_removed = get_removed_vms(vms_previous, vms_current)
     cleanup_local_data(vms_removed)
+    data = fetch_remote_data(vms_added)
+    write_data_locally(data)
 
 
 @contract
@@ -286,10 +288,26 @@ def fetch_remote_data(db, data_length, uuids):
     :return: A dictionary of VM UUIDs and the corresponding data.
      :rtype: dict(str : list(int))
     """
-    res = dict()
+    result = dict()
     for uuid in uuids:
-        res[uuid] = db.select_cpu_mhz_for_vm(uuid, data_length)
-    return res
+        result[uuid] = db.select_cpu_mhz_for_vm(uuid, data_length)
+    return result
+
+
+@contract
+def write_data_locally(path, data):
+    """ Write a set of CPU MHz values for a set of VMs.
+
+    :param path: A path to write the data to.
+     :type path: str
+
+    :param data: A map of VM UUIDs onto the corresponing CPU MHz history.
+     :type data: dict(str : list(int))
+    """
+    for uuid, values in data.items():
+        with open(os.path.join(path, uuid), 'w') as f:
+            if values:
+                f.write('\n'.join([str(x) for x in values]))
 
 
 def getNumberOfPhysicalCpus(connection):

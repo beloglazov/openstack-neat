@@ -163,3 +163,24 @@ class Collector(TestCase):
                         cpu_mhz=mhz)
                 x[uuid] = data[:data_length]
         assert collector.fetch_remote_data(db, data_length, x.keys()) == x
+
+    @qc
+    def write_data_locally(
+        x=dict_(
+            keys=str_(of='abc123-', min_length=36, max_length=36),
+            values=list_(of=int_(min=0, max=3000), min_length=0, max_length=10),
+            min_length=0, max_length=3
+        )
+    ):
+        path = os.path.join(os.path.dirname(__file__), 'resources', 'vms', 'tmp')
+        collector.write_data_locally(path, x)
+        files = os.listdir(path)
+        files.remove('.gitignore')
+        assert set(files) == set(x.keys())
+
+        for uuid, values in x.items():
+            file = os.path.join(path, uuid)
+            with open(file, 'r') as f:
+                data = [int(x) for x in f.read().splitlines()]
+                assert data == values
+            os.remove(file)
