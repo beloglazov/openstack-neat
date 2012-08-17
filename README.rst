@@ -742,8 +742,8 @@ Intl. Symp. on Integrated Network Management (IM)*, 2007, pp. 119–128.
 Survey of Energy-Efficient Data Centers and Cloud Computing Systems,”
 *Advances in Computers, M. Zelkowitz (ed.)*, vol. 82, pp. 47–111, 2011.
 
-[17] A. Beloglazov, S. F. Piraghaj, M. Alrokayan, and R. Buyya, “A
-Step-by-Step Guide to Installing OpenStack on CentOS Using the KVM
-Hypervisor and GlusterFS Distributed File System,” *Technical Report
-CLOUDS-TR-2012-3, Cloud Computing and Distributed Systems Laboratory,
-The University of Melbourne*, Aug. 2012.
+[17] A. Beloglazov, S. F. Piraghaj, M. Alrokayan, and R. Buyya,
+“Deploying OpenStack on CentOS Using the KVM Hypervisor and GlusterFS
+Distributed File System,” *Technical Report CLOUDS-TR-2012-3, Cloud
+Computing and Distributed Systems Laboratory, The University of
+Melbourne*, Aug. 2012.
