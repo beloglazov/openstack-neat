@@ -310,6 +310,23 @@ def write_data_locally(path, data):
                 f.write('\n'.join([str(x) for x in values]))
 
 
+@contract
+def get_cpu_time(vir_connection, uuid):
+    """ Get the CPU time of a VM specified by the UUID using libvirt.
+
+    :param vir_connection: A libvirt connection object.
+     :type vir_connection: virConnect
+
+    :param vir_connection: The UUID of a VM.
+     :type vir_connection: str[36]
+
+    :return: The CPU time of the VM.
+     :rtype: int
+    """
+    domain = vir_connection.lookupByUUIDString(uuid)
+    return domain.getCPUStats(True, 0)[0]['cpu_time']
+
+
 def getNumberOfPhysicalCpus(connection):
     return connection.getInfo()[2]
 
