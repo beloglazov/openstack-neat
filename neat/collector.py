@@ -158,14 +158,14 @@ def collect(config):
     :param config: A config dictionary.
      :type config: dict(str: *)
     """
-    vms_previous = get_previous_vms(
-        build_local_vm_path(config.get('local_data_directory')))
+    path = build_local_vm_path(config.get('local_data_directory'))
+    vms_previous = get_previous_vms(path)
     vms_current = get_current_vms()
     vms_added = get_added_vms(vms_previous, vms_current)
     vms_removed = get_removed_vms(vms_previous, vms_current)
     cleanup_local_data(vms_removed)
     data = fetch_remote_data(vms_added)
-    write_data_locally(data)
+    write_data_locally(path, data)
 
 
 @contract
