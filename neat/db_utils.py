@@ -45,6 +45,6 @@ def init_db(sql_connection):
                 Column('cpu_mhz', Integer, nullable=False))
 
     metadata.create_all()
-    engine.connect()
+    connection = engine.connect()
 
-    return Database(vms, vm_resource_usage)
+    return Database(connection, vms, vm_resource_usage)
