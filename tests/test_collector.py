@@ -193,7 +193,7 @@ class Collector(TestCase):
                 assert data == values
             os.remove(file)
 
-    @qc(1)
+    @qc
     def get_cpu_mhz(
         cpus=int_(min=1, max=8),
         current_time=int_(min=100),
@@ -208,41 +208,44 @@ class Collector(TestCase):
             values=tuple_(int_(min=1, max=100),
                           list_(of=int_(min=1, max=3000),
                                 min_length=0, max_length=10)),
-            min_length=0, max_length=10
+            min_length=0, max_length=5
         )
     ):
         with MockTransaction:
             def mock_get_cpu_time(vir_connection, uuid):
-                if uuid in vms:
-                    return vms[uuid][1]
+                if uuid in original_vm_data:
+                    return original_vm_data[uuid][0] + original_vm_data[uuid][1]
                 else:
-                    return added_vms[uuid]
+                    return added_vms[uuid][0]
 
+            original_vm_data = dict(vm_data)
             previous_time = current_time - time_period
             connection = libvirt.virConnect()
-            expect(collector).get_cpu_time(connection, any_string). \
-                and_call(mock_get_cpu_time)
+            when(collector).get_cpu_time(connection, any_string). \
+                then_call(mock_get_cpu_time)
 
             previous_cpu_time = {}
             cpu_mhz = {}
             for uuid, data in vm_data.items():
                 previous_cpu_time[uuid] = data[0]
-                cpu_mhz[uuid] = collector.calculate_cpu_mhz(
-                    cpus, previous_time, current_time, data[0], data[1])
 
             if vm_data:
                 to_remove = random.randrange(len(vm_data))
                 for _ in xrange(to_remove):
-                    del vm_data[random.choice(vm_data.keys())]
+                    tmp = random.choice(vm_data.keys())
+                    del vm_data[tmp]
             vms = vm_data.keys()
 
             current_cpu_time = {}
             for uuid in vms:
                 current_cpu_time[uuid] = vm_data[uuid][0] + vm_data[uuid][1]
+                cpu_mhz[uuid] = collector.calculate_cpu_mhz(
+                    cpus, previous_time, current_time,
+                    vm_data[uuid][0], vm_data[uuid][0] + vm_data[uuid][1])
 
+            added_vm_data = {}
             if added_vms:
-                added_vm_data = {}
-                for uuid, data in added_vms:
+                for uuid, data in added_vms.items():
                     current_cpu_time[uuid] = data[0]
                     added_vm_data[uuid] = data[1]
                     if data[1]:

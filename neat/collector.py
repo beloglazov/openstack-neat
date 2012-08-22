@@ -146,7 +146,7 @@ def collect(config, state):
 
 1. Read the names of the files from the <local_data_directory>/vm
    directory to determine the list of VMs running on the host at the
-   last added_vm_data collection.
+   last data collection.
 
 2. Call the Nova API to obtain the list of VMs that are currently
    active on the host.
@@ -157,20 +157,20 @@ def collect(config, state):
 4. Delete the files from the <local_data_directory>/vm directory
    corresponding to the VMs that have been removed from the host.
 
-5. Fetch the latest data_collector_data_length added_vm_data values from the
+5. Fetch the latest data_collector_data_length data values from the
    central database for each newly added VM using the database
    connection information specified in the sql_connection option and
-   save the added_vm_data in the <local_data_directory>/vm directory.
+   save the data in the <local_data_directory>/vm directory.
 
 6. Call the Libvirt API to obtain the CPU time for each VM active on
    the host.
 
-7. Transform the added_vm_data obtained from the Libvirt API into the average
+7. Transform the data obtained from the Libvirt API into the average
    MHz according to the frequency of the host's CPU and time interval
-   from the previous added_vm_data collection.
+   from the previous data collection.
 
-8. Store the converted added_vm_data in the <local_data_directory>/vm
-   directory in separate files for each VM, and submit the added_vm_data to the
+8. Store the converted data in the <local_data_directory>/vm
+   directory in separate files for each VM, and submit the data to the
    central database.
 
 9. Schedule the next execution after data_collector_interval
@@ -382,10 +382,10 @@ def get_cpu_mhz(vir_connection, physical_cpus, previous_cpu_time,
     removed_vms = get_removed_vms(previous_vms, current_vms)
     cpu_mhz = {}
 
-    for uuid, previous_cpu_time in previous_cpu_time.items():
+    for uuid, cpu_time in previous_cpu_time.items():
         current_cpu_time = get_cpu_time(vir_connection, uuid)
         cpu_mhz[uuid] = calculate_cpu_mhz(physical_cpus, previous_time,
-                                          current_time, previous_cpu_time,
+                                          current_time, cpu_time,
                                           current_cpu_time)
         previous_cpu_time[uuid] = current_cpu_time
 
@@ -396,6 +396,7 @@ def get_cpu_mhz(vir_connection, physical_cpus, previous_cpu_time,
 
     for uuid in removed_vms:
         del previous_cpu_time[uuid]
+        del cpu_mhz[uuid]
 
     return previous_cpu_time, cpu_mhz
 
