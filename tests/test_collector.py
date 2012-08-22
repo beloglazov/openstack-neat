@@ -35,10 +35,15 @@ class Collector(TestCase):
 
     @qc(1)
     def init_state():
-        state = collector.init_state()
-        assert state['previous_time'] == 0
-        assert isinstance(state['previous_cpu_time'], dict)
-        assert isinstance(state['vir_connect'], libvirt.virConnect)
+        with MockTransaction:
+            physical_cpus = 13
+            expect(collector).get_physical_cpus(any_). \
+                and_return(physical_cpus).once()
+            state = collector.init_state()
+            assert state['previous_time'] == 0
+            assert isinstance(state['previous_cpu_time'], dict)
+            assert isinstance(state['vir_connect'], libvirt.virConnect)
+            assert state['physical_cpus'] == physical_cpus
 
     @qc(1)
     def get_previous_vms():
@@ -187,6 +192,16 @@ class Collector(TestCase):
                 data = [int(x) for x in f.read().splitlines()]
                 assert data == values
             os.remove(file)
+
+    @qc
+    def get_cpu_mhz(
+        cpus=int_(min=1, max=8),
+        time_period=int_(min=1, max=100),
+        current_time=int_(min=100),
+        cpu_time=int_(min=0, max=100),
+        current_cpu_time=int_(min=100)
+    ):
+        pass
 
     @qc(10)
     def get_cpu_time(

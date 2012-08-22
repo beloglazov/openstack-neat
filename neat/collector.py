@@ -137,7 +137,8 @@ def init_state():
         sys.exit(1)
     return {'previous_time': 0,
             'previous_cpu_time': dict(),
-            'vir_connect': vir_connection}
+            'vir_connect': vir_connection,
+            'physical_cpus': get_physical_cpus(vir_connection)}
 
 
 def collect(config, state):
@@ -361,13 +362,12 @@ def get_cpu_mhz(vir_connection, previous_time, previous_cpu_time, current_time, 
     :param previous_cpu_time: A dictionary of previous CPU times for the VMs.
      :type previous_cpu_time: dict(str : int)
 
-    :param vms: A list of VM UUIds.
+    :param vms: A list of VM UUIDs.
      :type vms: list(str)
 
     :return: The updated CPU times and average CPU utilization in MHz.
      :rtype: tuple(dict(str : int), dict(str : int))
     """
-
     previous_vms = previous_cpu_time.keys()
     added_vms = get_added_vms(previous_vms, vms)
     removed_vms = get_removed_vms(previous_vms, vms)
