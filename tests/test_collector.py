@@ -36,13 +36,16 @@ class Collector(TestCase):
     @qc(1)
     def init_state():
         with MockTransaction:
+            vir_connection = mock('virConnect')
+            expect(libvirt).openReadOnly(None). \
+                and_return(vir_connection).once()
             physical_cpus = 13
             expect(collector).get_physical_cpus(any_). \
                 and_return(physical_cpus).once()
             state = collector.init_state()
             assert state['previous_time'] == 0
             assert isinstance(state['previous_cpu_time'], dict)
-            assert isinstance(state['vir_connect'], libvirt.virConnect)
+            assert state['vir_connect'] == vir_connection
             assert state['physical_cpus'] == physical_cpus
 
     @qc(1)
