@@ -187,14 +187,54 @@ class Collector(TestCase):
         collector.write_data_locally(path, x)
         files = os.listdir(path)
         files.remove('.gitignore')
-        assert set(files) == set(x.keys())
 
-        for uuid, values in x.items():
+        result = {}
+        for uuid in x.keys():
             file = os.path.join(path, uuid)
             with open(file, 'r') as f:
-                data = [int(x) for x in f.read().splitlines()]
-                assert data == values
+                result[uuid] = [int(a) for a in f.read().splitlines()]
             os.remove(file)
+
+        assert set(files) == set(x.keys())
+        for uuid, values in x.items():
+            assert result[uuid] == values
+
+    @qc
+    def append_data_locally(
+        x=dict_(
+            keys=str_(of='abc123-', min_length=36, max_length=36),
+            values=tuple_(list_(of=int_(min=0, max=3000),
+                                min_length=0, max_length=10),
+                          int_(min=0, max=3000)),
+            min_length=0, max_length=3
+        )
+    ):
+        path = os.path.join(os.path.dirname(__file__), 'resources', 'vms', 'tmp')
+        original_data = {}
+        to_append = {}
+        after_appending = {}
+        for uuid, data in x.items():
+            original_data[uuid] = data[0]
+            to_append[uuid] = data[1]
+            after_appending[uuid] = list(data[0])
+            after_appending[uuid].append(data[1])
+
+        collector.write_data_locally(path, original_data)
+        collector.append_data_locally(path, to_append)
+
+        files = os.listdir(path)
+        files.remove('.gitignore')
+
+        result = {}
+        for uuid in x.keys():
+            file = os.path.join(path, uuid)
+            with open(file, 'r') as f:
+                result[uuid] = [int(a) for a in f.read().splitlines()]
+            os.remove(file)
+
+        assert set(files) == set(x.keys())
+        for uuid in x.keys():
+            assert result[uuid] == after_appending[uuid]
 
     @qc
     def get_cpu_mhz(

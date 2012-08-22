@@ -345,7 +345,22 @@ def write_data_locally(path, data):
     for uuid, values in data.items():
         with open(os.path.join(path, uuid), 'w') as f:
             if values:
-                f.write('\n'.join([str(x) for x in values]))
+                f.write('\n'.join([str(x) for x in values]) + '\n')
+
+
+@contract
+def append_data_locally(path, data):
+    """ Write a CPU MHz value for each out of a set of VMs.
+
+    :param path: A path to write the data to.
+     :type path: str
+
+    :param data: A map of VM UUIDs onto the corresponing CPU MHz values.
+     :type data: dict(str : int)
+    """
+    for uuid, mhz in data.items():
+        with open(os.path.join(path, uuid), 'a') as f:
+            f.write(str(mhz) + '\n')
 
 
 @contract
