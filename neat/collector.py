@@ -105,19 +105,21 @@ def start(iterations):
      :type iterations: int
 
     :return: The number of iterations performed.
-     :rtype: int
+     :rtype: tuple(int, dict)
     """
     config = read_config([DEFAILT_CONFIG_PATH, CONFIG_PATH])
     if not validate_config(config, REQUIRED_FIELDS):
         raise KeyError("The config dictionary does not contain all the required fields")
+    state = init_state()
 
     if iterations == -1:
         while True:
-            collect(config)
+            state = collect(config, state)
     else:
         for _ in xrange(iterations):
-            collect(config)
-    return iterations
+            state = collect(config, state)
+
+    return iterations, state
 
 
 @contract
@@ -136,7 +138,7 @@ def init_state():
             'vir_connect': vir_connection}
 
 
-def collect(config):
+def collect(config, state):
     """ Execute a data collection iteration.
 
 1. Read the names of the files from the <local_data_directory>/vm
@@ -173,6 +175,12 @@ def collect(config):
 
     :param config: A config dictionary.
      :type config: dict(str: *)
+
+    :param config: A state dictionary.
+     :type config: dict(str: *)
+
+    :return: The updated state dictionary.
+     :rtype: dict(str: *)
     """
     path = build_local_vm_path(config.get('local_data_directory'))
     vms_previous = get_previous_vms(path)
@@ -182,6 +190,7 @@ def collect(config):
     cleanup_local_data(vms_removed)
     data = fetch_remote_data(vms_added)
     write_data_locally(path, data)
+    return state
 
 
 @contract

@@ -27,8 +27,11 @@ class Collector(TestCase):
     @qc(10)
     def start(iterations=int_(0, 10)):
         with MockTransaction:
-            expect(collector).collect(any_dict).exactly(iterations).times()
-            assert collector.start(iterations) == iterations
+            state = {'property': 'value'}
+            expect(collector).init_state().and_return(state).once()
+            expect(collector).collect(any_dict, any_dict). \
+                and_return(state).exactly(iterations).times()
+            assert collector.start(iterations) == (iterations, state)
 
     @qc(1)
     def init_state():
