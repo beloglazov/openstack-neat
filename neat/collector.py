@@ -93,6 +93,8 @@ invoked, the component performs the following steps:
 from contracts import contract
 from neat.contracts_extra import *
 
+import time
+
 from neat.config import *
 from neat.db_utils import *
 
@@ -190,6 +192,14 @@ def collect(config, state):
     cleanup_local_data(vms_removed)
     data = fetch_remote_data(vms_added)
     write_data_locally(path, data)
+    current_time = time.time()
+    (cpu_time, cpu_mhz) = get_cpu_mhz(state['vir_connection'],
+                                      state['previous_time'],
+                                      state['previous_cpu_time'],
+                                      current_time,
+                                      vms_current)
+    state['previous_time'] = current_time
+    state['previous_cpu_time'] = cpu_time
     return state
 
 
@@ -333,6 +343,57 @@ def write_data_locally(path, data):
         with open(os.path.join(path, uuid), 'w') as f:
             if values:
                 f.write('\n'.join([str(x) for x in values]))
+
+    (cpu_time, cpu_mhz) = get_cpu_mhz(state['vir_connection'],
+                                      state['previous_time'],
+                                      state['previous_cpu_time'],
+                                      current_time,
+                                      vms_current)
+
+
+@contract
+def get_cpu_mhz(vir_connection, previous_time, previous_cpu_time, current_time, vms):
+    """ Get the average CPU utilization in MHz for a set of VMs.
+
+    :param vir_connection: A libvirt connection object.
+     :type vir_connection: virConnect
+
+    :param previous_time: The previous timestamp.
+     :type previous_time: int
+
+    :param current_time: The previous timestamp.
+     :type current_time: int
+
+    :param previous_cpu_time: A dictionary of previous CPU times for the VMs.
+     :type previous_cpu_time: dict(str : long)
+
+    :param vms: A list of VM UUIds.
+     :type vms: list(str)
+
+    :return: The updated CPU times and average CPU utilization in MHz.
+     :rtype: tuple(dict(str : long), dict(str : int))
+    """
+
+    previous_vms = previous_cpu_time.keys()
+    added_vms = get_added_vms(previous_vms, vms)
+    removed_vms = get_removed_vms(previous_vms, vms)
+    physical_cpus = get_physical_cpus(vir_connection)
+    cpu_mhz = {}
+
+    for uuid, previous_cpu_time in previous_cpu_time.items():
+        current_cpu_time = get_cpu_time(vir_connection, uuid)
+        cpu_mhz[uuid] = calculate_cpu_mhz(physical_cpus, previous_time,
+                                          current_time, previous_cpu_time,
+                                          current_cpu_time)
+        previous_cpu_time[uuid] = current_cpu_time
+
+    for uuid in added_vms:
+        previous_cpu_time[uuid] = get_cpu_time(vir_connection, uuid)
+
+    for uuid in removed_vms:
+        del previous_cpu_time[uuid]
+
+    return previous_cpu_time, cpu_mhz
 
 
 @contract
