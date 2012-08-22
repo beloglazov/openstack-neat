@@ -20,5 +20,6 @@ import neat.db
 
 
 new_contract('virConnect', libvirt.virConnect)
+new_contract('virDomain', libvirt.virDomain)
 new_contract('Table', sqlalchemy.Table)
 new_contract('Database', neat.db.Database)
