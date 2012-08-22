@@ -344,12 +344,6 @@ def write_data_locally(path, data):
             if values:
                 f.write('\n'.join([str(x) for x in values]))
 
-    (cpu_time, cpu_mhz) = get_cpu_mhz(state['vir_connection'],
-                                      state['previous_time'],
-                                      state['previous_cpu_time'],
-                                      current_time,
-                                      vms_current)
-
 
 @contract
 def get_cpu_mhz(vir_connection, previous_time, previous_cpu_time, current_time, vms):
@@ -365,13 +359,13 @@ def get_cpu_mhz(vir_connection, previous_time, previous_cpu_time, current_time, 
      :type current_time: int
 
     :param previous_cpu_time: A dictionary of previous CPU times for the VMs.
-     :type previous_cpu_time: dict(str : long)
+     :type previous_cpu_time: dict(str : int)
 
     :param vms: A list of VM UUIds.
      :type vms: list(str)
 
     :return: The updated CPU times and average CPU utilization in MHz.
-     :rtype: tuple(dict(str : long), dict(str : int))
+     :rtype: tuple(dict(str : int), dict(str : int))
     """
 
     previous_vms = previous_cpu_time.keys()
