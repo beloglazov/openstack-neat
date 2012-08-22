@@ -120,6 +120,22 @@ def start(iterations):
     return iterations
 
 
+@contract
+def init_state():
+    """ Initialize a dict for storing the state of the data collector.
+
+    :return: A dictionary containing the initial state of the data collector.
+     :rtype: dict
+    """
+    vir_connection = libvirt.openReadOnly(None)
+    if vir_connection is None:
+        print 'Failed to open connection to the hypervisor'
+        sys.exit(1)
+    return {'previous_time': 0,
+            'previous_cpu_time': dict(),
+            'vir_connect': vir_connection}
+
+
 def collect(config):
     """ Execute a data collection iteration.
 
@@ -367,19 +383,6 @@ def calculate_cpu_mhz(cpus, previous_time, current_time,
                ((current_time - previous_time) * 1000000000 * cpus))
 
 
-def getCpuUtilization(numberOfPhysicalCpus, domain, previousTime, previousCpuTime, currentTime, currentCpuTime):
-    #prevTime = time.time()
-    #prevCpuTime = getDomainTotalCpuTime(domain)
-    #time.sleep(1)
-    #currTime = time.time()
-    #currCpuTime = getDomainTotalCpuTime(domain)
-
-    return ((currentCpuTime - previousCpuTime) / ((currentTime - previousTime) * 1000000000 * numberOfPhysicalCpus))
-
-
-def collectCpuUtilization(numberOfPhysicalCpus, timeInterval, reportingFunction):
-    pass
-
 # temporarily commented
 #conn = libvirt.openReadOnly(None)
 #if conn is None:
@@ -387,29 +390,13 @@ def collectCpuUtilization(numberOfPhysicalCpus, timeInterval, reportingFunction)
 #    sys.exit(1)
 #
 #numberOfPhysicalCpus = getNumberOfPhysicalCpus(conn)
-
-
-
-
-
-
-
-
 #print "Host CPUs: " + str(numberOfPhysicalCpus)
-
-
-
-
 #getCpuUtilization(dom0, numberOfPhysicalCpus)
-
-
 #try:
 #    dom0 = conn.lookupByName("cirros")
 #except:
 #    print 'Failed to find the main domain'
 #    sys.exit(1)
-
-
 #print "Domain 0: id %d running %s" % (dom0.ID(), dom0.OSType())
 #print dom0.info()
 #print dom0.getCPUStats(1, 0)
