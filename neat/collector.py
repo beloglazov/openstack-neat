@@ -364,6 +364,21 @@ def append_data_locally(path, data):
 
 
 @contract
+def append_data_remotely(db, data):
+    """ Submit a CPU MHz values to the central database.
+
+    :param db: The database object.
+     :type db: Database
+
+    :param data: A map of VM UUIDs onto the corresponing CPU MHz values.
+     :type data: dict(str : int)
+    """
+    for uuid, mhz in data.items():
+        with open(os.path.join(path, uuid), 'a') as f:
+            f.write(str(mhz) + '\n')
+
+
+@contract
 def get_cpu_mhz(vir_connection, physical_cpus, previous_cpu_time,
                 previous_time, current_time, current_vms, added_vm_data):
     """ Get the average CPU utilization in MHz for a set of VMs.

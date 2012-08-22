@@ -54,3 +54,30 @@ class Database(object):
             limit(n)
         res = self.connection.execute(sel).fetchall()
         return [x[0] for x in res]
+
+    @contract
+    def select_vm_id(self, uuid):
+        """ Select the ID of a VM by the VM UUID.
+
+        :param uuid: The UUID of a VM.
+         :type uuid: str[36]
+
+        :return: The ID of the VM.
+         :rtype: int
+        """
+        sel = select([self.vms.c.id]).where(self.vms.c.uuid == uuid)
+        return self.connection.execute(sel).fetchone()['id']
+
+    @contract
+    def insert_cpu_mhz(self, data):
+        """ Insert a set of CPU MHz values for a set of VMs.
+
+        :param data: A dictionary of VM UUIDs and CPU MHz values.
+         :type data: dict(str : int)
+        """
+        query = []
+        for uuid, cpu_mhz in data.items():
+            vm_id = select_vm_id(uuid)
+            query.append({'vm_id': vm_id,
+                          'cpu_mhz': cpu_mhz})
+        self.vm_resource_usage.insert().execute(query)
