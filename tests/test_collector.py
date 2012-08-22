@@ -204,3 +204,18 @@ class Collector(TestCase):
             connection = libvirt.virConnect()
             expect(connection).getInfo().and_return([0, 0, x]).once()
             assert collector.get_physical_cpus(connection) == x
+
+    @qc
+    def calculate_cpu_mhz(
+        cpus=int_(min=1, max=8),
+        time_period=int_(min=0, max=100),
+        current_time=int_(min=100),
+        cpu_time=int_(min=0, max=100),
+        current_cpu_time=int_(min=100)
+    ):
+        previous_time = current_time - time_period
+        previous_cpu_time = current_cpu_time - cpu_time
+        assert collector. \
+            calculate_cpu_mhz(cpus, previous_time, current_time,
+                              previous_cpu_time, current_cpu_time) == \
+            (cpu_time / (time_period * 1000000000 * cpus))

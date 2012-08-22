@@ -340,6 +340,33 @@ def get_physical_cpus(vir_connection):
     return vir_connection.getInfo()[2]
 
 
+@contract
+def calculate_cpu_mhz(cpus, previous_time, current_time,
+                      previous_cpu_time, current_cpu_time):
+    """ Calculate the average CPU utilization in MHz for a period of time.
+
+    :param cpus: The number of physical CPUs.
+     :type cpus: int
+
+    :param previous_time: The previous timestamp.
+     :type previous_time: int
+
+    :param current_time: The current timestamp.
+     :type current_time: int
+
+    :param previous_cpu_time: The previous CPU time of the domain.
+     :type previous_cpu_time: int
+
+    :param current_cpu_time: The current CPU time of the domain.
+     :type current_cpu_time: int
+
+    :return: The average CPU utilization in MHz.
+     :rtype: int
+    """
+    return int((current_cpu_time - previous_cpu_time) /
+               ((current_time - previous_time) * 1000000000 * cpus))
+
+
 def getCpuUtilization(numberOfPhysicalCpus, domain, previousTime, previousCpuTime, currentTime, currentCpuTime):
     #prevTime = time.time()
     #prevCpuTime = getDomainTotalCpuTime(domain)
