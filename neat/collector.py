@@ -317,8 +317,8 @@ def get_cpu_time(vir_connection, uuid):
     :param vir_connection: A libvirt connection object.
      :type vir_connection: virConnect
 
-    :param vir_connection: The UUID of a VM.
-     :type vir_connection: str[36]
+    :param uuid: The UUID of a VM.
+     :type uuid: str[36]
 
     :return: The CPU time of the VM.
      :rtype: int
@@ -327,12 +327,17 @@ def get_cpu_time(vir_connection, uuid):
     return domain.getCPUStats(True, 0)[0]['cpu_time']
 
 
-def getNumberOfPhysicalCpus(connection):
-    return connection.getInfo()[2]
+@contract
+def get_physical_cpus(vir_connection):
+    """ Get the number of physical CPUs using libvirt.
 
+    :param vir_connection: A libvirt connection object.
+     :type vir_connection: virConnect
 
-def getDomainTotalCpuTime(domain):
-    return domain.getCPUStats(True, 0)[0]['cpu_time']
+    :return: The number of physical CPUs.
+     :rtype: int
+    """
+    return vir_connection.getInfo()[2]
 
 
 def getCpuUtilization(numberOfPhysicalCpus, domain, previousTime, previousCpuTime, currentTime, currentCpuTime):

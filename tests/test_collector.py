@@ -138,8 +138,7 @@ class Collector(TestCase):
 
         assert len(os.listdir(local_data_directory_tmp)) == initial_files + 3
 
-        collector.cleanup_local_data(local_data_directory_tmp,
-                                      [vm1, vm2, vm3])
+        collector.cleanup_local_data(local_data_directory_tmp, [vm1, vm2, vm3])
 
         assert len(os.listdir(local_data_directory_tmp)) == initial_files
 
@@ -184,3 +183,24 @@ class Collector(TestCase):
                 data = [int(x) for x in f.read().splitlines()]
                 assert data == values
             os.remove(file)
+
+    @qc(10)
+    def get_cpu_time(
+        uuid=str_(of='abc123-', min_length=36, max_length=36),
+        x=int_(min=0)
+    ):
+        with MockTransaction:
+            connection = libvirt.virConnect()
+            domain = mock('domain')
+            expect(connection).lookupByUUIDString(uuid). \
+                and_return(domain).once()
+            expect(domain).getCPUStats(True, 0). \
+                and_return([{'cpu_time': x}]).once()
+            assert collector.get_cpu_time(connection, uuid) == x
+
+    @qc(10)
+    def get_physical_cpus(x=int_(min=0, max=8)):
+        with MockTransaction:
+            connection = libvirt.virConnect()
+            expect(connection).getInfo().and_return([0, 0, x]).once()
+            assert collector.get_physical_cpus(connection) == x
