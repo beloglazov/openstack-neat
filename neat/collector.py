@@ -195,7 +195,9 @@ def collect(config, state):
     vms_added = get_added_vms(vms_previous, vms_current)
     vms_removed = get_removed_vms(vms_previous, vms_current)
     cleanup_local_data(vms_removed)
-    added_vm_data = fetch_remote_data(vms_added)
+    added_vm_data = fetch_remote_data(config.get('db'),
+                                      config.get('data_collector_data_length'),
+                                      vms_added)
     write_data_locally(path, added_vm_data)
     current_time = time.time()
     (cpu_time, cpu_mhz) = get_cpu_mhz(state['vir_connection'],
@@ -208,7 +210,7 @@ def collect(config, state):
     state['previous_time'] = current_time
     state['previous_cpu_time'] = cpu_time
     append_data_locally(path, cpu_mhz)
-    # append_data_remotely()
+    append_data_remotely(config.get('db'), cpu_mhz)
     return state
 
 
