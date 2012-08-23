@@ -117,9 +117,11 @@ def start(iterations):
     if iterations == -1:
         while True:
             state = collect(config, state)
+            time.sleep(config.get('data_collector_interval'))
     else:
         for _ in xrange(iterations):
             state = collect(config, state)
+            time.sleep(config.get('data_collector_interval'))
 
     return iterations, state
 

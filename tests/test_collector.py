@@ -28,6 +28,9 @@ class Collector(TestCase):
     def start(iterations=int_(0, 10)):
         with MockTransaction:
             state = {'property': 'value'}
+            config = {'data_collector_interval': 0}
+            expect(collector).read_config(any_list).and_return(config).once()
+            expect(collector).validate_config(config, any_list).and_return(True).once()
             expect(collector).init_state(any_dict).and_return(state).once()
             expect(collector).collect(any_dict, any_dict). \
                 and_return(state).exactly(iterations).times()
