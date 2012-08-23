@@ -168,7 +168,7 @@ class Collector(TestCase):
             for uuid, data in x.items():
                 result = db.vms.insert().execute(uuid=uuid)
                 vm_id = result.inserted_primary_key[0]
-                for mhz in reversed(data):
+                for mhz in data:
                     db.vm_resource_usage.insert().execute(
                         vm_id=vm_id,
                         cpu_mhz=mhz)

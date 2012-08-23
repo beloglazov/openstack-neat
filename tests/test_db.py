@@ -15,12 +15,10 @@
 from mocktest import *
 from pyqcy import *
 
-from sqlalchemy import *
-
 import neat.db_utils as db_utils
 
 
-class DbUtils(TestCase):
+class Db(TestCase):
 
     @qc(1)
     def insert_select():
@@ -39,7 +37,7 @@ class DbUtils(TestCase):
         db = db_utils.init_db('sqlite:///:memory:')
         result = db.vms.insert().execute(uuid=uuid)
         vm_id = result.inserted_primary_key[0]
-        for mhz in reversed(cpu_mhz):
+        for mhz in cpu_mhz:
             db.vm_resource_usage.insert().execute(
                 vm_id=vm_id,
                 cpu_mhz=mhz)
@@ -56,24 +54,33 @@ class DbUtils(TestCase):
         assert db.select_vm_id(uuid1) == vm_id
         assert db.select_vm_id(uuid2) == vm_id + 1
 
-    # @qc(10)
-    # def insert_cpu_mhz(
-    #     vms=dict_(
-    #         keys=str_(of='abc123-', min_length=36, max_length=36),
-    #         values=tuple_(int_(min=1, max=3000),
-    #                       list_(of=int_(min=1, max=3000),
-    #                             min_length=0, max_length=10)),
-    #         min_length=0, max_length=5
-    #     )
-    # ):
-    #     db = db_utils.init_db('sqlite:///:memory:')
-    #     initial_data = {}
-    #     for uuid, data in vms:
+    @qc(10)
+    def insert_cpu_mhz(
+        vms=dict_(
+            keys=str_(of='abc123-', min_length=36, max_length=36),
+            values=tuple_(int_(min=1, max=3000),
+                          list_(of=int_(min=1, max=3000),
+                                min_length=0, max_length=10)),
+            min_length=0, max_length=5
+        )
+    ):
+        db = db_utils.init_db('sqlite:///:memory:')
+        initial_data = []
+        data_to_submit = {}
+        final_data = {}
 
-    #     result = db.vms.insert().execute(uuid=uuid)
-    #     vm_id = result.inserted_primary_key[0]
-    #     for mhz in reversed(cpu_mhz):
-    #         db.vm_resource_usage.insert().execute(
-    #             vm_id=vm_id,
-    #             cpu_mhz=mhz)
-    #     assert db.select_cpu_mhz_for_vm(uuid, n) == cpu_mhz[:n]
+        for uuid, data in vms.items():
+            vm_id = db.select_vm_id(uuid)
+            data_to_submit[uuid] = data[0]
+            final_data[uuid] = list(data[1])
+            final_data[uuid].append(data[0])
+            for cpu_mhz in data[1]:
+                initial_data.append({'vm_id': vm_id,
+                                     'cpu_mhz': cpu_mhz})
+        if initial_data:
+            db.vm_resource_usage.insert().execute(initial_data)
+
+        db.insert_cpu_mhz(data_to_submit)
+
+        for uuid, data in final_data.items():
+            assert db.select_cpu_mhz_for_vm(uuid, 11) == data

@@ -50,7 +50,7 @@ class Database(object):
             where(and_(
                 self.vms.c.id == self.vm_resource_usage.c.vm_id,
                 self.vms.c.uuid == uuid)). \
-            order_by(self.vm_resource_usage.c.id.desc()). \
+            order_by(self.vm_resource_usage.c.id.asc()). \
             limit(n)
         res = self.connection.execute(sel).fetchall()
         return [x[0] for x in res]
@@ -79,9 +79,10 @@ class Database(object):
         :param data: A dictionary of VM UUIDs and CPU MHz values.
          :type data: dict(str : int)
         """
-        query = []
-        for uuid, cpu_mhz in data.items():
-            vm_id = select_vm_id(uuid)
-            query.append({'vm_id': vm_id,
-                          'cpu_mhz': cpu_mhz})
-        self.vm_resource_usage.insert().execute(query)
+        if data:
+            query = []
+            for uuid, cpu_mhz in data.items():
+                vm_id = self.select_vm_id(uuid)
+                query.append({'vm_id': vm_id,
+                              'cpu_mhz': cpu_mhz})
+            self.vm_resource_usage.insert().execute(query)
