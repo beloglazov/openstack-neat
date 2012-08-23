@@ -169,18 +169,13 @@ def collect(config, state):
    save the data in the <local_data_directory>/vm directory.
 
 6. Call the Libvirt API to obtain the CPU time for each VM active on
-   the host.
-
-7. Transform the data obtained from the Libvirt API into the average
-   MHz according to the frequency of the host's CPU and time interval
-   from the previous data collection.
+   the host. Transform the data obtained from the Libvirt API into the
+   average MHz according to the frequency of the host's CPU and time
+   interval from the previous data collection.
 
 8. Store the converted data in the <local_data_directory>/vm
    directory in separate files for each VM, and submit the data to the
    central database.
-
-9. Schedule the next execution after data_collector_interval
-   seconds.
 
     :param config: A config dictionary.
      :type config: dict(str: *)
