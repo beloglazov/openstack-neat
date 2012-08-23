@@ -47,20 +47,29 @@ class DbUtils(TestCase):
 
     @qc(10)
     def select_vm_id(
-        uuid=str_(of='abc123-', min_length=36, max_length=36)
+        uuid1=str_(of='abc123-', min_length=36, max_length=36),
+        uuid2=str_(of='abc123-', min_length=36, max_length=36)
     ):
         db = db_utils.init_db('sqlite:///:memory:')
-        result = db.vms.insert().execute(uuid=uuid)
+        result = db.vms.insert().execute(uuid=uuid1)
         vm_id = result.inserted_primary_key[0]
-        assert db.select_vm_id(uuid) == vm_id
+        assert db.select_vm_id(uuid1) == vm_id
+        assert db.select_vm_id(uuid2) == vm_id + 1
 
     # @qc(10)
     # def insert_cpu_mhz(
-    #     uuid=str_(of='abc123-', min_length=36, max_length=36),
-    #     cpu_mhz=list_(of=int_(min=0, max=3000), min_length=0, max_length=10),
-    #     n=int_(min=1, max=10)
+    #     vms=dict_(
+    #         keys=str_(of='abc123-', min_length=36, max_length=36),
+    #         values=tuple_(int_(min=1, max=3000),
+    #                       list_(of=int_(min=1, max=3000),
+    #                             min_length=0, max_length=10)),
+    #         min_length=0, max_length=5
+    #     )
     # ):
     #     db = db_utils.init_db('sqlite:///:memory:')
+    #     initial_data = {}
+    #     for uuid, data in vms:
+
     #     result = db.vms.insert().execute(uuid=uuid)
     #     vm_id = result.inserted_primary_key[0]
     #     for mhz in reversed(cpu_mhz):

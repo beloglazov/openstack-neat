@@ -57,7 +57,7 @@ class Database(object):
 
     @contract
     def select_vm_id(self, uuid):
-        """ Select the ID of a VM by the VM UUID.
+        """ Select the ID of a VM by the VM UUID, or insert a new record.
 
         :param uuid: The UUID of a VM.
          :type uuid: str[36]
@@ -66,7 +66,11 @@ class Database(object):
          :rtype: int
         """
         sel = select([self.vms.c.id]).where(self.vms.c.uuid == uuid)
-        return self.connection.execute(sel).fetchone()['id']
+        row = self.connection.execute(sel).fetchone()
+        if row == None:
+            return self.vms.insert().execute(uuid=uuid).inserted_primary_key[0]
+        else:
+            return row['id']
 
     @contract
     def insert_cpu_mhz(self, data):
