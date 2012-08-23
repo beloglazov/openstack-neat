@@ -28,7 +28,7 @@ class Collector(TestCase):
     def start(iterations=int_(0, 10)):
         with MockTransaction:
             state = {'property': 'value'}
-            expect(collector).init_state().and_return(state).once()
+            expect(collector).init_state(any_dict).and_return(state).once()
             expect(collector).collect(any_dict, any_dict). \
                 and_return(state).exactly(iterations).times()
             assert collector.start(iterations) == (iterations, state)
@@ -37,16 +37,21 @@ class Collector(TestCase):
     def init_state():
         with MockTransaction:
             vir_connection = mock('virConnect')
+            db = mock('db')
             expect(libvirt).openReadOnly(None). \
                 and_return(vir_connection).once()
             physical_cpus = 13
             expect(collector).get_physical_cpus(any_). \
                 and_return(physical_cpus).once()
-            state = collector.init_state()
+            expect(collector).init_db('db'). \
+                then_return(db).once()
+            config = {'sql_connection': 'db'}
+            state = collector.init_state(config)
             assert state['previous_time'] == 0
             assert isinstance(state['previous_cpu_time'], dict)
             assert state['vir_connect'] == vir_connection
             assert state['physical_cpus'] == physical_cpus
+            assert state['db'] == db
 
     @qc(1)
     def get_previous_vms():

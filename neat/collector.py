@@ -112,7 +112,7 @@ def start(iterations):
     config = read_config([DEFAILT_CONFIG_PATH, CONFIG_PATH])
     if not validate_config(config, REQUIRED_FIELDS):
         raise KeyError("The config dictionary does not contain all the required fields")
-    state = init_state()
+    state = init_state(config)
 
     if iterations == -1:
         while True:
@@ -125,8 +125,11 @@ def start(iterations):
 
 
 @contract
-def init_state():
+def init_state(config):
     """ Initialize a dict for storing the state of the data collector.
+
+    :param config: A config dictionary.
+     :type config: dict(str: *)
 
     :return: A dictionary containing the initial state of the data collector.
      :rtype: dict
@@ -138,7 +141,8 @@ def init_state():
     return {'previous_time': 0,
             'previous_cpu_time': dict(),
             'vir_connect': vir_connection,
-            'physical_cpus': get_physical_cpus(vir_connection)}
+            'physical_cpus': get_physical_cpus(vir_connection),
+            'db': init_db(config.get('sql_connection'))}
 
 
 def collect(config, state):
@@ -203,6 +207,8 @@ def collect(config, state):
                                       added_vm_data)
     state['previous_time'] = current_time
     state['previous_cpu_time'] = cpu_time
+    append_data_locally(path, cpu_mhz)
+    # append_data_remotely()
     return state
 
 
