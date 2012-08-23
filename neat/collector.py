@@ -373,9 +373,7 @@ def append_data_remotely(db, data):
     :param data: A map of VM UUIDs onto the corresponing CPU MHz values.
      :type data: dict(str : int)
     """
-    for uuid, mhz in data.items():
-        with open(os.path.join(path, uuid), 'a') as f:
-            f.write(str(mhz) + '\n')
+    db.insert_cpu_mhz(data)
 
 
 @contract
