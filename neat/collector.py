@@ -352,6 +352,8 @@ def append_data_locally(path, data):
     :param data: A map of VM UUIDs onto the corresponing CPU MHz values.
      :type data: dict(str : int)
     """
+    # TODO: need to use deque and read all the data first, then write again
+    # http://stackoverflow.com/questions/136168/get-last-n-lines-of-a-file-with-python-similar-to-tail
     for uuid, mhz in data.items():
         with open(os.path.join(path, uuid), 'a') as f:
             f.write(str(mhz) + '\n')
