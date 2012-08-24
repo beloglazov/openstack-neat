@@ -86,3 +86,22 @@ def validate_config(config, required_fields):
         if not field in config:
             return False
     return True
+
+
+@contract
+def read_and_validate_config(paths, required_fields):
+    """ Read the configuration files, validate and return the options.
+
+    :param paths: A list of required configuration file paths.
+     :type paths: list(str)
+
+    :param required_fields: A list of required fields.
+     :type required_fields: list(str)
+
+    :return: A dictionary of the configuration options.
+     :rtype: dict(str: *)
+    """
+    config = read_config(paths)
+    if not validate_config(config, required_fields):
+        raise KeyError("The config dictionary does not contain all the required fields")
+    return config
