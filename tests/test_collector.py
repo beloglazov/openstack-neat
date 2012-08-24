@@ -26,18 +26,21 @@ import neat.db_utils as db_utils
 class Collector(TestCase):
 
     @qc(10)
-    def start(iterations=int_(0, 10)):
+    def start(
+            iterations=int_(min=0, max=10),
+            time_interval=int_(min=0)
+    ):
         with MockTransaction:
             state = {'property': 'value'}
-            config = {'data_collector_interval': 0}
+            config = {'data_collector_interval': time_interval}
             paths = [collector.DEFAILT_CONFIG_PATH, collector.CONFIG_PATH]
             fields = collector.REQUIRED_FIELDS
             expect(collector).read_and_validate_config(paths, fields). \
                 and_return(config).once()
             expect(common).start(collector.init_state,
-                                 collector.collect,
+                                 collector.execute,
                                  config,
-                                 any_int).and_return(state).once()
+                                 time_interval).and_return(state).once()
             assert collector.start() == state
 
     @qc(1)

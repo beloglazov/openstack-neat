@@ -95,7 +95,7 @@ from neat.contracts_extra import *
 
 import time
 
-import common
+import neat.common as common
 from neat.config import *
 from neat.db_utils import *
 
@@ -110,7 +110,7 @@ def start():
     config = read_and_validate_config([DEFAILT_CONFIG_PATH, CONFIG_PATH], REQUIRED_FIELDS)
     return common.start(
         init_state,
-        collect,
+        execute,
         config,
         config.get('data_collector_interval'))
 
@@ -136,8 +136,8 @@ def init_state(config):
             'db': init_db(config.get('sql_connection'))}
 
 
-def collect(config, state):
-    """ Execute a added_vm_data collection iteration.
+def execute(config, state):
+    """ Execute a data collection iteration.
 
 1. Read the names of the files from the <local_data_directory>/vm
    directory to determine the list of VMs running on the host at the
