@@ -18,6 +18,7 @@ from pyqcy import *
 import os
 import shutil
 import libvirt
+import neat.common as common
 import neat.collector as collector
 import neat.db_utils as db_utils
 
@@ -29,12 +30,15 @@ class Collector(TestCase):
         with MockTransaction:
             state = {'property': 'value'}
             config = {'data_collector_interval': 0}
-            expect(collector).read_config(any_list).and_return(config).once()
-            expect(collector).validate_config(config, any_list).and_return(True).once()
-            expect(collector).init_state(any_dict).and_return(state).once()
-            expect(collector).collect(any_dict, any_dict). \
-                and_return(state).exactly(iterations).times()
-            assert collector.start(iterations) == (iterations, state)
+            paths = [collector.DEFAILT_CONFIG_PATH, collector.CONFIG_PATH]
+            fields = collector.REQUIRED_FIELDS
+            expect(collector).read_and_validate_config(paths, fields). \
+                and_return(config).once()
+            expect(common).start(collector.init_state,
+                                 collector.collect,
+                                 config,
+                                 any_int).and_return(state).once()
+            assert collector.start() == state
 
     @qc(1)
     def init_state():

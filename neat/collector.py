@@ -95,35 +95,24 @@ from neat.contracts_extra import *
 
 import time
 
+import common
 from neat.config import *
 from neat.db_utils import *
 
 
 @contract
-def start(iterations):
+def start():
     """ Start the data collector loop.
 
-    :param iterations: The number of iterations to perform, -1 for infinite.
-     :type iterations: int
-
-    :return: The number of iterations performed.
-     :rtype: tuple(int, dict)
+    :return: The final state.
+     :rtype: dict(str: *)
     """
-    config = read_config([DEFAILT_CONFIG_PATH, CONFIG_PATH])
-    if not validate_config(config, REQUIRED_FIELDS):
-        raise KeyError("The config dictionary does not contain all the required fields")
-    state = init_state(config)
-
-    if iterations == -1:
-        while True:
-            state = collect(config, state)
-            time.sleep(config.get('data_collector_interval'))
-    else:
-        for _ in xrange(iterations):
-            state = collect(config, state)
-            time.sleep(config.get('data_collector_interval'))
-
-    return iterations, state
+    config = read_and_validate_config([DEFAILT_CONFIG_PATH, CONFIG_PATH], REQUIRED_FIELDS)
+    return common.start(
+        init_state,
+        collect,
+        config,
+        config.get('data_collector_interval'))
 
 
 @contract
