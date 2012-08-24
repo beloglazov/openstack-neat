@@ -47,7 +47,7 @@ class Config(TestCase):
         test_config = dict(zip(x, x))
         assert not config.validate_config(test_config, y)
 
-    @qc
+    @qc(10)
     def read_and_validate_valid_config(
         x=list_(of=str_(of='abc123_', max_length=20), min_length=0, max_length=10)
     ):
@@ -58,7 +58,7 @@ class Config(TestCase):
             expect(config).validate_config(test_config, x).and_return(True).once()
             assert config.read_and_validate_config(paths, x) == test_config
 
-    @qc
+    @qc(10)
     def read_and_validate_invalid_config(
         x=list_(of=str_(of='abc123_', max_length=20), min_length=0, max_length=5),
         y=list_(of=str_(of='abc123_', max_length=20), min_length=6, max_length=10)
