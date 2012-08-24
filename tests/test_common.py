@@ -26,12 +26,11 @@ class Common(TestCase):
             config = {'option': 'value'}
             state = {'property': 'value'}
             fn = mock('function container')
-            expect(common).read_config(any_list).and_return(config).once()
-            expect(common).validate_config(config, any_list).and_return(True).once()
             expect(fn).init_state(any_dict).and_return(state).once()
             expect(fn).execute(any_dict, any_dict). \
                 and_return(state).exactly(iterations).times()
             assert common.start(fn.init_state,
                                 fn.execute,
-                                iterations,
-                                0) == state
+                                config,
+                                0,
+                                iterations) == state

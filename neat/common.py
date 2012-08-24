@@ -25,27 +25,27 @@ from neat.db_utils import *
 
 
 @contract
-def start(init_state, execute, iterations, time_interval):
+def start(init_state, execute, config, time_interval, iterations):
     """ Start the processing loop.
 
     :param init_state: A function accepting a config and returning a state dictionary.
      :type init_state: function
 
-     :param execute: A function performing the processing at each iteration.
+    :param execute: A function performing the processing at each iteration.
      :type execute: function
 
-    :param iterations: The number of iterations to perform, -1 for infinite.
-     :type iterations: int
+    :param config: A config dictionary.
+     :type config: dict(str: *)
 
-    :param iterations: The time interval to wait between iterations.
+    :param time_interval: The time interval to wait between iterations.
+     :type time_interval: int
+
+    :param iterations: The number of iterations to perform, -1 for infinite.
      :type iterations: int
 
     :return: The final state.
      :rtype: dict(str: *)
     """
-    config = read_config([DEFAILT_CONFIG_PATH, CONFIG_PATH])
-    if not validate_config(config, REQUIRED_FIELDS):
-        raise KeyError("The config dictionary does not contain all the required fields")
     state = init_state(config)
 
     if iterations == -1:
