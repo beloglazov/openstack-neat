@@ -82,7 +82,6 @@ class Collector(TestCase):
         )
     ):
         with MockTransaction:
-
             def init_vm(id):
                 vm = mock('vm')
                 expect(vm).UUIDString().and_return(ids[id]).once()

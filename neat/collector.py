@@ -489,25 +489,3 @@ def calculate_cpu_mhz(cpus, previous_time, current_time,
     """
     return int((current_cpu_time - previous_cpu_time) /
                ((current_time - previous_time) * 1000000000 * cpus))
-
-
-# temporarily commented
-#conn = libvirt.openReadOnly(None)
-#if conn is None:
-#    print 'Failed to open connection to the hypervisor'
-#    sys.exit(1)
-#
-#numberOfPhysicalCpus = getNumberOfPhysicalCpus(conn)
-#print "Host CPUs: " + str(numberOfPhysicalCpus)
-#getCpuUtilization(dom0, numberOfPhysicalCpus)
-#try:
-#    dom0 = conn.lookupByName("cirros")
-#except:
-#    print 'Failed to find the main domain'
-#    sys.exit(1)
-#print "Domain 0: id %d running %s" % (dom0.ID(), dom0.OSType())
-#print dom0.info()
-#print dom0.getCPUStats(1, 0)
-#print dom0.vcpus()
-#print dom0.vcpuPinInfo(0)
-#print conn.getCPUStats(1, 0)
