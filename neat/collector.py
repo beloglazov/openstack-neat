@@ -185,7 +185,7 @@ def execute(config, state):
     added_vm_data = fetch_remote_data(config.get('db'),
                                       config.get('data_collector_data_length'),
                                       vms_added)
-    write_data_locally(path, added_vm_data)
+    write_data_locally(path, added_vm_data, config.get('data_collector_data_length'))
     current_time = time.time()
     (cpu_time, cpu_mhz) = get_cpu_mhz(state['vir_connection'],
                                       state['physical_cpus'],
@@ -196,7 +196,7 @@ def execute(config, state):
                                       added_vm_data)
     state['previous_time'] = current_time
     state['previous_cpu_time'] = cpu_time
-    append_data_locally(path, cpu_mhz)
+    append_data_locally(path, cpu_mhz, config.get('data_collector_data_length'))
     append_data_remotely(config.get('db'), cpu_mhz)
     return state
 
@@ -328,7 +328,7 @@ def fetch_remote_data(db, data_length, uuids):
 
 
 @contract
-def write_data_locally(path, data):
+def write_data_locally(path, data, data_length):
     """ Write a set of CPU MHz values for a set of VMs.
 
     :param path: A path to write the data to.
@@ -336,11 +336,14 @@ def write_data_locally(path, data):
 
     :param data: A map of VM UUIDs onto the corresponing CPU MHz history.
      :type data: dict(str : list(int))
+
+    :param data_length: The maximum allowed length of the data.
+     :type data_length: int
     """
     for uuid, values in data.items():
         with open(os.path.join(path, uuid), 'w') as f:
-            if values:
-                f.write('\n'.join([str(x) for x in values]) + '\n')
+            if data_length > 0:
+                f.write('\n'.join([str(x) for x in values[-data_length:]]) + '\n')
 
 
 @contract

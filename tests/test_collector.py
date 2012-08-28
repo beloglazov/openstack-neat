@@ -197,10 +197,11 @@ class Collector(TestCase):
             keys=str_(of='abc123-', min_length=36, max_length=36),
             values=list_(of=int_(min=0, max=3000), min_length=0, max_length=10),
             min_length=0, max_length=3
-        )
+        ),
+        data_length=int_(min=0, max=10)
     ):
         path = os.path.join(os.path.dirname(__file__), 'resources', 'vms', 'tmp')
-        collector.write_data_locally(path, x)
+        collector.write_data_locally(path, x, data_length)
         files = os.listdir(path)
         files.remove('.gitignore')
 
@@ -208,12 +209,15 @@ class Collector(TestCase):
         for uuid in x.keys():
             file = os.path.join(path, uuid)
             with open(file, 'r') as f:
-                result[uuid] = [int(a) for a in f.read().splitlines()]
+                result[uuid] = [int(a) for a in f.read().strip().splitlines()]
             os.remove(file)
 
         assert set(files) == set(x.keys())
         for uuid, values in x.items():
-            assert result[uuid] == values
+            if data_length > 0:
+                assert result[uuid] == values[-data_length:]
+            else:
+                assert result[uuid] == []
 
     @qc
     def append_data_locally(
@@ -240,7 +244,7 @@ class Collector(TestCase):
             else:
                 after_appending[uuid] = []
 
-        collector.write_data_locally(path, original_data)
+        collector.write_data_locally(path, original_data, data_length)
         collector.append_data_locally(path, to_append, data_length)
 
         files = os.listdir(path)
