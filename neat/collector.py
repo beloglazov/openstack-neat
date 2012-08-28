@@ -94,6 +94,7 @@ from contracts import contract
 from neat.contracts_extra import *
 
 import time
+from collections import deque
 
 import neat.common as common
 from neat.config import *
@@ -343,7 +344,7 @@ def write_data_locally(path, data):
 
 
 @contract
-def append_data_locally(path, data):
+def append_data_locally(path, data, data_length):
     """ Write a CPU MHz value for each out of a set of VMs.
 
     :param path: A path to write the data to.
@@ -351,12 +352,17 @@ def append_data_locally(path, data):
 
     :param data: A map of VM UUIDs onto the corresponing CPU MHz values.
      :type data: dict(str : int)
+
+    :param data_length: The maximum allowed length of the data.
+     :type data_length: int
     """
-    # TODO: need to use deque and read all the data first, then write again
-    # http://stackoverflow.com/questions/136168/get-last-n-lines-of-a-file-with-python-similar-to-tail
-    for uuid, mhz in data.items():
-        with open(os.path.join(path, uuid), 'a') as f:
-            f.write(str(mhz) + '\n')
+    for uuid, value in data.items():
+        with open(os.path.join(path, uuid), 'r+') as f:
+            values = deque(f.read().strip().splitlines(), data_length)
+            values.append(value)
+            f.truncate(0)
+            f.seek(0)
+            f.write('\n'.join([str(x) for x in values]) + '\n')
 
 
 @contract

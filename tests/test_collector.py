@@ -18,6 +18,7 @@ from pyqcy import *
 import os
 import shutil
 import libvirt
+
 import neat.common as common
 import neat.collector as collector
 import neat.db_utils as db_utils
@@ -222,7 +223,8 @@ class Collector(TestCase):
                                 min_length=0, max_length=10),
                           int_(min=0, max=3000)),
             min_length=0, max_length=3
-        )
+        ),
+        data_length=int_(min=0, max=10)
     ):
         path = os.path.join(os.path.dirname(__file__), 'resources', 'vms', 'tmp')
         original_data = {}
@@ -231,11 +233,15 @@ class Collector(TestCase):
         for uuid, data in x.items():
             original_data[uuid] = data[0]
             to_append[uuid] = data[1]
-            after_appending[uuid] = list(data[0])
-            after_appending[uuid].append(data[1])
+            if data_length > 0:
+                after_appending[uuid] = list(data[0])
+                after_appending[uuid].append(data[1])
+                after_appending[uuid] = after_appending[uuid][-data_length:]
+            else:
+                after_appending[uuid] = []
 
         collector.write_data_locally(path, original_data)
-        collector.append_data_locally(path, to_append)
+        collector.append_data_locally(path, to_append, data_length)
 
         files = os.listdir(path)
         files.remove('.gitignore')
@@ -244,7 +250,7 @@ class Collector(TestCase):
         for uuid in x.keys():
             file = os.path.join(path, uuid)
             with open(file, 'r') as f:
-                result[uuid] = [int(a) for a in f.read().splitlines()]
+                result[uuid] = [int(a) for a in f.read().strip().splitlines()]
             os.remove(file)
 
         assert set(files) == set(x.keys())
