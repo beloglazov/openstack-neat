@@ -183,7 +183,8 @@ def execute(config, state):
     :return: The updated state dictionary.
      :rtype: dict(str: *)
     """
-    pass
+    path = common.build_local_vm_path(config.get('local_data_directory'))
+    vm_data = get_local_data(path)
 
 
 @contract

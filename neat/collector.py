@@ -133,7 +133,7 @@ def init_state(config):
     return {'previous_time': 0,
             'previous_cpu_time': dict(),
             'vir_connect': vir_connection,
-            'physical_cpus': get_physical_cpus(vir_connection),
+            'physical_cpus': common.physical_cpu_count(vir_connection),
             'db': init_db(config.get('sql_connection'))}
 
 
@@ -176,7 +176,7 @@ def execute(config, state):
     :return: The updated state dictionary.
      :rtype: dict(str: *)
     """
-    path = build_local_vm_path(config.get('local_data_directory'))
+    path = common.build_local_vm_path(config.get('local_data_directory'))
     vms_previous = get_previous_vms(path)
     vms_current = get_current_vms()
     vms_added = get_added_vms(vms_previous, vms_current)
@@ -228,19 +228,6 @@ def get_current_vms(vir_connection):
     for vm_id in vir_connection.listDomainsID():
         vm_uuids.append(vir_connection.lookupByID(vm_id).UUIDString())
     return vm_uuids
-
-
-@contract
-def build_local_vm_path(local_data_directory):
-    """ Build the path to the local VM data directory.
-
-    :param local_data_directory: The base local data path.
-     :type local_data_directory: str
-
-    :return: The path to the local VM data directory.
-     :rtype: str
-    """
-    return os.path.join(local_data_directory, 'vms')
 
 
 @contract
@@ -449,19 +436,6 @@ def get_cpu_time(vir_connection, uuid):
     """
     domain = vir_connection.lookupByUUIDString(uuid)
     return domain.getCPUStats(True, 0)[0]['cpu_time']
-
-
-@contract
-def get_physical_cpus(vir_connection):
-    """ Get the number of physical CPUs using libvirt.
-
-    :param vir_connection: A libvirt connection object.
-     :type vir_connection: virConnect
-
-    :return: The number of physical CPUs.
-     :rtype: int
-    """
-    return vir_connection.getInfo()[2]
 
 
 @contract

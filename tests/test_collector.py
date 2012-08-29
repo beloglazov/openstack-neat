@@ -52,7 +52,7 @@ class Collector(TestCase):
             expect(libvirt).openReadOnly(None). \
                 and_return(vir_connection).once()
             physical_cpus = 13
-            expect(collector).get_physical_cpus(any_). \
+            expect(common).physical_cpu_count(any_). \
                 and_return(physical_cpus).once()
             expect(collector).init_db('db'). \
                 then_return(db).once()
@@ -93,12 +93,6 @@ class Collector(TestCase):
                 expect(connection).lookupByID(any_int) \
                     .and_call(lambda id: init_vm(id))
             assert collector.get_current_vms(connection) == ids.values()
-
-    @qc
-    def build_local_vm_path(
-        x=str_(of='abc123_-/')
-    ):
-        assert collector.build_local_vm_path(x) == os.path.join(x, 'vms')
 
     @qc
     def get_added_vms(
@@ -376,13 +370,6 @@ class Collector(TestCase):
             expect(domain).getCPUStats(True, 0). \
                 and_return([{'cpu_time': x}]).once()
             assert collector.get_cpu_time(connection, uuid) == x
-
-    @qc(10)
-    def get_physical_cpus(x=int_(min=0, max=8)):
-        with MockTransaction:
-            connection = libvirt.virConnect()
-            expect(connection).getInfo().and_return([0, 0, x]).once()
-            assert collector.get_physical_cpus(connection) == x
 
     @qc
     def calculate_cpu_mhz(

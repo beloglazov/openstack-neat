@@ -15,6 +15,9 @@
 from mocktest import *
 from pyqcy import *
 
+import os
+import libvirt
+
 import neat.common as common
 
 
@@ -34,3 +37,23 @@ class Common(TestCase):
                                 config,
                                 0,
                                 iterations) == state
+
+    @qc
+    def build_local_vm_path(
+        x=str_(of='abc123_-/')
+    ):
+        assert common.build_local_vm_path(x) == os.path.join(x, 'vms')
+
+    @qc(10)
+    def physical_cpu_count(x=int_(min=0, max=8)):
+        with MockTransaction:
+            connection = libvirt.virConnect()
+            expect(connection).getInfo().and_return([0, 0, x]).once()
+            assert common.physical_cpu_count(connection) == x
+
+    @qc(10)
+    def physical_cpu_mhz(x=int_(min=0, max=8)):
+        with MockTransaction:
+            connection = libvirt.virConnect()
+            expect(connection).getInfo().and_return([0, x, 0]).once()
+            assert common.physical_cpu_mhz(connection) == x

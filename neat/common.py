@@ -58,3 +58,42 @@ def start(init_state, execute, config, time_interval, iterations):
             time.sleep(time_interval)
 
     return state
+
+
+@contract
+def build_local_vm_path(local_data_directory):
+    """ Build the path to the local VM data directory.
+
+    :param local_data_directory: The base local data path.
+     :type local_data_directory: str
+
+    :return: The path to the local VM data directory.
+     :rtype: str
+    """
+    return os.path.join(local_data_directory, 'vms')
+
+
+@contract
+def physical_cpu_count(vir_connection):
+    """ Get the number of physical CPUs using libvirt.
+
+    :param vir_connection: A libvirt connection object.
+     :type vir_connection: virConnect
+
+    :return: The number of physical CPUs.
+     :rtype: int
+    """
+    return vir_connection.getInfo()[2]
+
+
+@contract
+def physical_cpu_mhz(vir_connection):
+    """ Get the CPU frequency in MHz using libvirt.
+
+    :param vir_connection: A libvirt connection object.
+     :type vir_connection: virConnect
+
+    :return: The CPU frequency in MHz.
+     :rtype: int
+    """
+    return vir_connection.getInfo()[1]
