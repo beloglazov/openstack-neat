@@ -16,15 +16,13 @@
 
 The local manager component is deployed on every compute host and is
 invoked periodically to determine when it necessary to reallocate VM
-instances from the host. A high-level view of the workflow performed
-by the local manager is shown in Figure 3. First of all, it reads from
-the local storage the historical data on the resource usage by VMs
-stored by the data collector described in the next section. Then, the
-local manager invokes the specified in the configuration underload
-detection algorithm to determine whether the host is underloaded. If
-the host is underloaded, the local manager sends a request to the
-global manager's REST API to migrate all the VMs from the host and
-switch the host to the sleep mode.
+instances from the host. First of all, it reads from the local storage
+the historical data on the resource usage by VMs stored by the data
+collector. Then, the local manager invokes the specified in the
+configuration underload detection algorithm to determine whether the
+host is underloaded. If the host is underloaded, the local manager
+sends a request to the global manager's REST API to migrate all the
+VMs from the host and switch the host to the sleep mode.
 
 If the host is not underloaded, the local manager proceeds to invoking
 the specified in the configuration overload detection algorithm. If
@@ -186,3 +184,20 @@ def execute(config, state):
      :rtype: dict(str: *)
     """
     pass
+
+
+@contract
+def get_local_data(path):
+    """ Read the data about VMs from the local storage.
+
+    :param path: A path to read VM UUIDs from.
+     :type path: str
+
+    :return: A map of VM UUIDs onto the corresponing CPU MHz values.
+     :rtype: dict(str : list(int))
+    """
+    result = {}
+    for uuid in os.listdir(path):
+        with open(os.path.join(path, uuid), 'r') as f:
+            result[uuid] = [int(x) for x in f.read().strip().splitlines()]
+    return result

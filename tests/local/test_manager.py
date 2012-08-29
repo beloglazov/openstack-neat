@@ -15,8 +15,11 @@
 from mocktest import *
 from pyqcy import *
 
+import shutil
 import libvirt
+
 import neat.common as common
+import neat.collector as collector
 import neat.local.manager as manager
 
 
@@ -54,3 +57,20 @@ class LocalManager(TestCase):
             assert state['previous_time'] == 0
             assert state['vir_connect'] == vir_connection
             assert state['db'] == db
+
+    @qc(1)
+    def get_data_locally(
+        data=dict_(
+            keys=str_(of='abc123-', min_length=36, max_length=36),
+            values=list_(of=int_(min=1, max=3000),
+                         min_length=0, max_length=10),
+            min_length=0, max_length=5
+        )
+    ):
+        path = os.path.join(os.path.dirname(__file__), '..', 'resources', 'vms', 'tmp')
+        shutil.rmtree(path, True)
+        os.mkdir(path)
+        collector.write_data_locally(path, data, 10)
+
+        assert manager.get_local_data(path) == data
+        shutil.rmtree(path)
