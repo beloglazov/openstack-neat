@@ -151,10 +151,10 @@ class Collector(TestCase):
             os.path.dirname(__file__), 'resources', 'vms')
         local_data_directory_tmp = os.path.join(
             local_data_directory, 'tmp')
+        os.mkdir(local_data_directory_tmp)
         vm1 = 'ec452be0-e5d0-11e1-aff1-0800200c9a66'
         vm2 = 'e615c450-e5d0-11e1-aff1-0800200c9a66'
         vm3 = 'f3e142d0-e5d0-11e1-aff1-0800200c9a66'
-        initial_files = len(os.listdir(local_data_directory_tmp))
 
         shutil.copy(os.path.join(local_data_directory, vm1),
                     local_data_directory_tmp)
@@ -163,11 +163,11 @@ class Collector(TestCase):
         shutil.copy(os.path.join(local_data_directory, vm3),
                     local_data_directory_tmp)
 
-        assert len(os.listdir(local_data_directory_tmp)) == initial_files + 3
-
+        assert len(os.listdir(local_data_directory_tmp)) == 3
         collector.cleanup_local_data(local_data_directory_tmp, [vm1, vm2, vm3])
+        assert len(os.listdir(local_data_directory_tmp)) == 0
 
-        assert len(os.listdir(local_data_directory_tmp)) == initial_files
+        os.rmdir(local_data_directory_tmp)
 
     @qc
     def fetch_remote_data(
@@ -200,16 +200,17 @@ class Collector(TestCase):
         data_length=int_(min=0, max=10)
     ):
         path = os.path.join(os.path.dirname(__file__), 'resources', 'vms', 'tmp')
+        os.mkdir(path)
         collector.write_data_locally(path, x, data_length)
         files = os.listdir(path)
-        files.remove('.gitignore')
 
         result = {}
         for uuid in x.keys():
             file = os.path.join(path, uuid)
             with open(file, 'r') as f:
                 result[uuid] = [int(a) for a in f.read().strip().splitlines()]
-            os.remove(file)
+
+        shutil.rmtree(path)
 
         assert set(files) == set(x.keys())
         for uuid, values in x.items():
@@ -230,6 +231,7 @@ class Collector(TestCase):
         data_length=int_(min=0, max=10)
     ):
         path = os.path.join(os.path.dirname(__file__), 'resources', 'vms', 'tmp')
+        os.mkdir(path)
         original_data = {}
         to_append = {}
         after_appending = {}
@@ -247,14 +249,14 @@ class Collector(TestCase):
         collector.append_data_locally(path, to_append, data_length)
 
         files = os.listdir(path)
-        files.remove('.gitignore')
 
         result = {}
         for uuid in x.keys():
             file = os.path.join(path, uuid)
             with open(file, 'r') as f:
                 result[uuid] = [int(a) for a in f.read().strip().splitlines()]
-            os.remove(file)
+
+        shutil.rmtree(path)
 
         assert set(files) == set(x.keys())
         for uuid in x.keys():
