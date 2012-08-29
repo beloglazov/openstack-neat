@@ -97,3 +97,16 @@ def physical_cpu_mhz(vir_connection):
      :rtype: int
     """
     return vir_connection.getInfo()[1]
+
+
+@contract
+def physical_cpu_mhz_total(vir_connection):
+    """ Get the sum of the core CPU frequencies in MHz using libvirt.
+
+    :param vir_connection: A libvirt connection object.
+     :type vir_connection: virConnect
+
+    :return: The total CPU frequency in MHz.
+     :rtype: int
+    """
+    return physical_cpu_count(vir_connection) * physical_cpu_mhz(vir_connection)
