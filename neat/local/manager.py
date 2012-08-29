@@ -173,8 +173,6 @@ def execute(config, state):
    the VM selection algorithm in the vm_uuids parameter, as well as
    the reason for migration as being 1.
 
-7. Schedule the next execution after local_manager_interval seconds.
-
     :param config: A config dictionary.
      :type config: dict(str: *)
 
@@ -186,6 +184,14 @@ def execute(config, state):
     """
     path = common.build_local_vm_path(config.get('local_data_directory'))
     vm_data = get_local_data(path)
+    physical_cpu_mhz_total = config.get('physical_cpu_mhz_total')
+    if config.get('algorithm_underload_detection')(physical_cpu_mhz_total, vm_data):
+        # Send a request to the global manager with all the VMs to migrate
+        pass
+    elif config.get('algorithm_overload_detection')(physical_cpu_mhz_total, vm_data):
+        vms = config.get('algorithm_vm_selection')(physical_cpu_mhz_total, vm_data)
+        # send a request to the global manager with the selected VMs to migrate
+    return state
 
 
 @contract
