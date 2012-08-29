@@ -138,7 +138,8 @@ def init_state(config):
         sys.exit(1)
     return {'previous_time': 0,
             'vir_connect': vir_connection,
-            'db': init_db(config.get('sql_connection'))}
+            'db': init_db(config.get('sql_connection')),
+            'physical_cpu_mhz_total': common.physical_cpu_mhz_total(vir_connection)}
 
 
 @contract

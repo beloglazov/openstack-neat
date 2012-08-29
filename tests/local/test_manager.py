@@ -48,15 +48,19 @@ class LocalManager(TestCase):
         with MockTransaction:
             vir_connection = mock('virConnect')
             db = mock('db')
+            mhz = mock('mhz')
             expect(libvirt).openReadOnly(None). \
                 and_return(vir_connection).once()
             expect(manager).init_db('db'). \
-                then_return(db).once()
+                and_return(db).once()
+            expect(common).physical_cpu_mhz_total(vir_connection). \
+                and_return(mhz)
             config = {'sql_connection': 'db'}
             state = manager.init_state(config)
             assert state['previous_time'] == 0
             assert state['vir_connect'] == vir_connection
             assert state['db'] == db
+            assert state['physical_cpu_mhz_total'] == mhz
 
     @qc(1)
     def get_data_locally(
