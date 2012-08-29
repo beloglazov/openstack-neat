@@ -151,6 +151,7 @@ class Collector(TestCase):
             os.path.dirname(__file__), 'resources', 'vms')
         local_data_directory_tmp = os.path.join(
             local_data_directory, 'tmp')
+        shutil.rmtree(local_data_directory_tmp, True)
         os.mkdir(local_data_directory_tmp)
         vm1 = 'ec452be0-e5d0-11e1-aff1-0800200c9a66'
         vm2 = 'e615c450-e5d0-11e1-aff1-0800200c9a66'
@@ -200,6 +201,7 @@ class Collector(TestCase):
         data_length=int_(min=0, max=10)
     ):
         path = os.path.join(os.path.dirname(__file__), 'resources', 'vms', 'tmp')
+        shutil.rmtree(path, True)
         os.mkdir(path)
         collector.write_data_locally(path, x, data_length)
         files = os.listdir(path)
@@ -231,6 +233,7 @@ class Collector(TestCase):
         data_length=int_(min=0, max=10)
     ):
         path = os.path.join(os.path.dirname(__file__), 'resources', 'vms', 'tmp')
+        shutil.rmtree(path, True)
         os.mkdir(path)
         original_data = {}
         to_append = {}
