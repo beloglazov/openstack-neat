@@ -280,3 +280,25 @@ def init_variances(window_sizes, number_of_states):
         for j in range(number_of_states):
             variances[i].append(dict(data))
     return variances
+
+
+@contract
+def init_deque_structure(window_sizes, number_of_states):
+    """ Initialize a 3 level deque data structure.
+
+    :param window_sizes: The required window sizes.
+     :type window_sizes: list(int)
+
+    :param number_of_states: The number of states.
+     :type number_of_states: int,>0
+
+    :return: The initialized 3 level deque data structure.
+     :rtype: list(list(dict))
+    """
+    data = dict((size, deque([], size)) for size in window_sizes)
+    structure = []
+    for i in range(number_of_states):
+        structure.append([])
+        for j in range(number_of_states):
+            structure[i].append(dict(data))
+    return structure

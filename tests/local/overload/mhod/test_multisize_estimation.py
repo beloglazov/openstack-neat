@@ -740,3 +740,66 @@ class Multisize(TestCase):
                                                          4: 1.0},
                                                         {2: 1.0,
                                                          4: 1.0}]])
+
+    def test_init_3_level_structure(self):
+        structure = m.init_deque_structure([2, 4], 1)
+        self.assertEqual(structure, [[{2: deque(),
+                                       4: deque()}]])
+        self.assertEqual(structure[0][0][2].maxlen, 2)
+        self.assertEqual(structure[0][0][4].maxlen, 4)
+
+        structure = m.init_deque_structure([2, 4], 2)
+        self.assertEqual(structure, [[{2: deque(),
+                                       4: deque()},
+                                      {2: deque(),
+                                       4: deque()}],
+                                     [{2: deque(),
+                                       4: deque()},
+                                      {2: deque(),
+                                       4: deque()}]])
+        self.assertEqual(structure[0][0][2].maxlen, 2)
+        self.assertEqual(structure[0][0][4].maxlen, 4)
+        self.assertEqual(structure[0][1][2].maxlen, 2)
+        self.assertEqual(structure[0][1][4].maxlen, 4)
+        self.assertEqual(structure[1][0][2].maxlen, 2)
+        self.assertEqual(structure[1][0][4].maxlen, 4)
+        self.assertEqual(structure[1][1][2].maxlen, 2)
+        self.assertEqual(structure[1][1][4].maxlen, 4)
+
+        structure = m.init_deque_structure([2, 4], 3)
+        self.assertEqual(structure, [[{2: deque(),
+                                       4: deque()},
+                                      {2: deque(),
+                                       4: deque()},
+                                      {2: deque(),
+                                       4: deque()}],
+                                     [{2: deque(),
+                                       4: deque()},
+                                      {2: deque(),
+                                       4: deque()},
+                                      {2: deque(),
+                                       4: deque()}],
+                                     [{2: deque(),
+                                       4: deque()},
+                                      {2: deque(),
+                                       4: deque()},
+                                      {2: deque(),
+                                       4: deque()}]])
+        self.assertEqual(structure[0][0][2].maxlen, 2)
+        self.assertEqual(structure[0][0][4].maxlen, 4)
+        self.assertEqual(structure[0][1][2].maxlen, 2)
+        self.assertEqual(structure[0][1][4].maxlen, 4)
+        self.assertEqual(structure[0][2][2].maxlen, 2)
+        self.assertEqual(structure[0][2][4].maxlen, 4)
+        self.assertEqual(structure[1][0][2].maxlen, 2)
+        self.assertEqual(structure[1][0][4].maxlen, 4)
+        self.assertEqual(structure[1][1][2].maxlen, 2)
+        self.assertEqual(structure[1][1][4].maxlen, 4)
+        self.assertEqual(structure[1][2][2].maxlen, 2)
+        self.assertEqual(structure[1][2][4].maxlen, 4)
+        self.assertEqual(structure[2][0][2].maxlen, 2)
+        self.assertEqual(structure[2][0][4].maxlen, 4)
+        self.assertEqual(structure[2][1][2].maxlen, 2)
+        self.assertEqual(structure[2][1][4].maxlen, 4)
+        self.assertEqual(structure[2][2][2].maxlen, 2)
+        self.assertEqual(structure[2][2][4].maxlen, 4)
