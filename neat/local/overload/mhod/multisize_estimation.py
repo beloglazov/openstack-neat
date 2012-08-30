@@ -66,3 +66,22 @@ def acceptable_variance(probability, window_size):
      :rtype: float
     """
     return float(probability * (1 - probability)) / window_size
+
+
+@contract
+def estimate_probability(data, window_size, state):
+    """ Get the estimated probability.
+
+    :param data: A list of data values.
+     :type data: list(number)
+
+    :param window_size: The window size.
+     :type window_size: int,>0
+
+    :param state: The current state.
+     :type state: int,>=0
+
+    :return: The estimated probability.
+     :rtype: float,>=0
+    """
+    return float(data.count(state)) / window_size

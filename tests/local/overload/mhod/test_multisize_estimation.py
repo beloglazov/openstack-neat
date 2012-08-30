@@ -50,3 +50,13 @@ class Multisize(TestCase):
     def test_acceptable_variance(self):
         self.assertAlmostEqual(m.acceptable_variance(0.2, 5), 0.032, 3)
         self.assertAlmostEqual(m.acceptable_variance(0.6, 15), 0.016, 3)
+
+    def test_estimate_probability(self):
+        self.assertEqual(
+            m.estimate_probability([0, 0, 1, 1, 0, 0, 0, 0, 0, 0], 100, 0), 0.08)
+        self.assertEqual(
+            m.estimate_probability([0, 0, 1, 1, 0, 0, 0, 0, 0, 0], 100, 1), 0.02)
+        self.assertEqual(
+            m.estimate_probability([1, 1, 0, 0, 1, 1, 1, 1, 1, 1], 200, 0), 0.01)
+        self.assertEqual(
+            m.estimate_probability([1, 1, 0, 0, 1, 1, 1, 1, 1, 1], 200, 1), 0.04)
