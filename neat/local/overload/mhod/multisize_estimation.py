@@ -16,6 +16,8 @@
 """
 
 from contracts import contract
+from itertools import islice
+
 from neat.contracts_extra import *
 
 
@@ -95,13 +97,42 @@ def update_request_windows(request_windows, previous_state, current_state):
      :type request_windows: list(deque)
 
     :param previous_state: The previous state.
-     :type previous_state: int
+     :type previous_state: int,>=0
 
     :param current_state: The current state.
-     :type current_state: int
+     :type current_state: int,>=0
 
     :return: The updated request windows.
      :rtype: list(deque)
     """
     request_windows[previous_state].append(current_state)
     return request_windows
+
+
+@contract
+def update_estimate_windows(estimate_windows, request_windows, previous_state):
+    """ Update and return the updated estimate windows.
+
+    :param estimate_windows: The previous estimate windows.
+     :type estimate_windows: list(list(dict))
+
+    :param request_windows: The current request windows.
+     :type request_windows: list(deque)
+
+    :param previous_state: The previous state.
+     :type previous_state: int,>=0
+
+    :return: The updated estimate windows.
+     :rtype: list(list(dict))
+    """
+    request_window = request_windows[previous_state]
+    for state, estimate_window in enumerate(estimate_windows[previous_state]):
+        for window_size, estimates in estimate_window.items():
+            slice_from = len(request_window) - window_size
+            if slice_from < 0:
+                slice_from = 0
+            estimates.append(
+                estimate_probability(
+                    list(islice(request_window, slice_from, None)),
+                    window_size, state))
+    return estimate_windows
