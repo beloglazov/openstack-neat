@@ -16,6 +16,7 @@ from mocktest import *
 from pyqcy import *
 
 from collections import deque
+from copy import deepcopy
 
 import neat.local.overload.mhod.multisize_estimation as m
 
@@ -28,6 +29,10 @@ workloads = [{'until': 15,
               'transitions': [[0.5, 0.5],
                               [1.0, 0.0]]}]
 window_sizes = [2, 4, 6]
+
+
+def c(data):
+    return deepcopy(data)
 
 
 class Multisize(TestCase):
@@ -64,83 +69,94 @@ class Multisize(TestCase):
             m.estimate_probability([1, 1, 0, 0, 1, 1, 1, 1, 1, 1], 200, 1), 0.04)
 
     def test_update_request_windows(self):
-        windows = [[0, 0],
-                   [1, 1]]
+        max_window_size = 4
+        windows = [deque([0, 0], max_window_size),
+                   deque([1, 1], max_window_size)]
 
-        self.assertEqual(m.update_request_windows(windows, 4, 0, 0), [[0, 0, 0],
-                                                                      [1, 1]])
-        self.assertEqual(m.update_request_windows(windows, 4, 0, 1), [[0, 0, 1],
-                                                                      [1, 1]])
-        self.assertEqual(m.update_request_windows(windows, 4, 1, 0), [[0, 0],
-                                                                      [1, 1, 0]])
-        self.assertEqual(m.update_request_windows(windows, 4, 1, 1), [[0, 0],
-                                                                      [1, 1, 1]])
+        self.assertEqual(m.update_request_windows(c(windows), 0, 0), [deque([0, 0, 0]),
+                                                                      deque([1, 1])])
+        self.assertEqual(m.update_request_windows(c(windows), 0, 1), [deque([0, 0, 1]),
+                                                                      deque([1, 1])])
+        self.assertEqual(m.update_request_windows(c(windows), 1, 0), [deque([0, 0]),
+                                                                      deque([1, 1, 0])])
+        self.assertEqual(m.update_request_windows(c(windows), 1, 1), [deque([0, 0]),
+                                                                      deque([1, 1, 1])])
 
-        self.assertEqual(m.update_request_windows(windows, 2, 0, 0), [[0, 0],
-                                                                      [1, 1]])
-        self.assertEqual(m.update_request_windows(windows, 2, 0, 1), [[0, 1],
-                                                                      [1, 1]])
-        self.assertEqual(m.update_request_windows(windows, 2, 1, 0), [[0, 0],
-                                                                      [1, 0]])
-        self.assertEqual(m.update_request_windows(windows, 2, 1, 1), [[0, 0],
-                                                                      [1, 1]])
+        max_window_size = 2
+        windows = [deque([0, 0], max_window_size),
+                   deque([1, 1], max_window_size)]
 
-        windows = [[0, 0],
-                   [1, 1],
-                   [2, 2]]
+        self.assertEqual(m.update_request_windows(c(windows), 0, 0), [deque([0, 0]),
+                                                                      deque([1, 1])])
+        self.assertEqual(m.update_request_windows(c(windows), 0, 1), [deque([0, 1]),
+                                                                      deque([1, 1])])
+        self.assertEqual(m.update_request_windows(c(windows), 1, 0), [deque([0, 0]),
+                                                                      deque([1, 0])])
+        self.assertEqual(m.update_request_windows(c(windows), 1, 1), [deque([0, 0]),
+                                                                      deque([1, 1])])
 
-        self.assertEqual(m.update_request_windows(windows, 4, 0, 0), [[0, 0, 0],
-                                                                      [1, 1],
-                                                                      [2, 2]])
-        self.assertEqual(m.update_request_windows(windows, 4, 0, 1), [[0, 0, 1],
-                                                                      [1, 1],
-                                                                      [2, 2]])
-        self.assertEqual(m.update_request_windows(windows, 4, 0, 2), [[0, 0, 2],
-                                                                      [1, 1],
-                                                                      [2, 2]])
-        self.assertEqual(m.update_request_windows(windows, 4, 1, 0), [[0, 0],
-                                                                      [1, 1, 0],
-                                                                      [2, 2]])
-        self.assertEqual(m.update_request_windows(windows, 4, 1, 1), [[0, 0],
-                                                                      [1, 1, 1],
-                                                                      [2, 2]])
-        self.assertEqual(m.update_request_windows(windows, 4, 1, 2), [[0, 0],
-                                                                      [1, 1, 2],
-                                                                      [2, 2]])
-        self.assertEqual(m.update_request_windows(windows, 4, 2, 0), [[0, 0],
-                                                                      [1, 1],
-                                                                      [2, 2, 0]])
-        self.assertEqual(m.update_request_windows(windows, 4, 2, 1), [[0, 0],
-                                                                      [1, 1],
-                                                                      [2, 2, 1]])
-        self.assertEqual(m.update_request_windows(windows, 4, 2, 2), [[0, 0],
-                                                                      [1, 1],
-                                                                      [2, 2, 2]])
+        max_window_size = 4
+        windows = [deque([0, 0], max_window_size),
+                   deque([1, 1], max_window_size),
+                   deque([2, 2], max_window_size)]
 
-        self.assertEqual(m.update_request_windows(windows, 2, 0, 0), [[0, 0],
-                                                                      [1, 1],
-                                                                      [2, 2]])
-        self.assertEqual(m.update_request_windows(windows, 2, 0, 1), [[0, 1],
-                                                                      [1, 1],
-                                                                      [2, 2]])
-        self.assertEqual(m.update_request_windows(windows, 2, 0, 2), [[0, 2],
-                                                                      [1, 1],
-                                                                      [2, 2]])
-        self.assertEqual(m.update_request_windows(windows, 2, 1, 0), [[0, 0],
-                                                                      [1, 0],
-                                                                      [2, 2]])
-        self.assertEqual(m.update_request_windows(windows, 2, 1, 1), [[0, 0],
-                                                                      [1, 1],
-                                                                      [2, 2]])
-        self.assertEqual(m.update_request_windows(windows, 2, 1, 2), [[0, 0],
-                                                                      [1, 2],
-                                                                      [2, 2]])
-        self.assertEqual(m.update_request_windows(windows, 2, 2, 0), [[0, 0],
-                                                                      [1, 1],
-                                                                      [2, 0]])
-        self.assertEqual(m.update_request_windows(windows, 2, 2, 1), [[0, 0],
-                                                                      [1, 1],
-                                                                      [2, 1]])
-        self.assertEqual(m.update_request_windows(windows, 2, 2, 2), [[0, 0],
-                                                                      [1, 1],
-                                                                      [2, 2]])
+        self.assertEqual(m.update_request_windows(c(windows), 0, 0), [deque([0, 0, 0]),
+                                                                      deque([1, 1]),
+                                                                      deque([2, 2])])
+        self.assertEqual(m.update_request_windows(c(windows), 0, 1), [deque([0, 0, 1]),
+                                                                      deque([1, 1]),
+                                                                      deque([2, 2])])
+        self.assertEqual(m.update_request_windows(c(windows), 0, 2), [deque([0, 0, 2]),
+                                                                      deque([1, 1]),
+                                                                      deque([2, 2])])
+        self.assertEqual(m.update_request_windows(c(windows), 1, 0), [deque([0, 0]),
+                                                                      deque([1, 1, 0]),
+                                                                      deque([2, 2])])
+        self.assertEqual(m.update_request_windows(c(windows), 1, 1), [deque([0, 0]),
+                                                                      deque([1, 1, 1]),
+                                                                      deque([2, 2])])
+        self.assertEqual(m.update_request_windows(c(windows), 1, 2), [deque([0, 0]),
+                                                                      deque([1, 1, 2]),
+                                                                      deque([2, 2])])
+        self.assertEqual(m.update_request_windows(c(windows), 2, 0), [deque([0, 0]),
+                                                                      deque([1, 1]),
+                                                                      deque([2, 2, 0])])
+        self.assertEqual(m.update_request_windows(c(windows), 2, 1), [deque([0, 0]),
+                                                                      deque([1, 1]),
+                                                                      deque([2, 2, 1])])
+        self.assertEqual(m.update_request_windows(c(windows), 2, 2), [deque([0, 0]),
+                                                                      deque([1, 1]),
+                                                                      deque([2, 2, 2])])
+
+        max_window_size = 2
+        windows = [deque([0, 0], max_window_size),
+                   deque([1, 1], max_window_size),
+                   deque([2, 2], max_window_size)]
+
+        self.assertEqual(m.update_request_windows(c(windows), 0, 0), [deque([0, 0]),
+                                                                      deque([1, 1]),
+                                                                      deque([2, 2])])
+        self.assertEqual(m.update_request_windows(c(windows), 0, 1), [deque([0, 1]),
+                                                                      deque([1, 1]),
+                                                                      deque([2, 2])])
+        self.assertEqual(m.update_request_windows(c(windows), 0, 2), [deque([0, 2]),
+                                                                      deque([1, 1]),
+                                                                      deque([2, 2])])
+        self.assertEqual(m.update_request_windows(c(windows), 1, 0), [deque([0, 0]),
+                                                                      deque([1, 0]),
+                                                                      deque([2, 2])])
+        self.assertEqual(m.update_request_windows(c(windows), 1, 1), [deque([0, 0]),
+                                                                      deque([1, 1]),
+                                                                      deque([2, 2])])
+        self.assertEqual(m.update_request_windows(c(windows), 1, 2), [deque([0, 0]),
+                                                                      deque([1, 2]),
+                                                                      deque([2, 2])])
+        self.assertEqual(m.update_request_windows(c(windows), 2, 0), [deque([0, 0]),
+                                                                      deque([1, 1]),
+                                                                      deque([2, 0])])
+        self.assertEqual(m.update_request_windows(c(windows), 2, 1), [deque([0, 0]),
+                                                                      deque([1, 1]),
+                                                                      deque([2, 1])])
+        self.assertEqual(m.update_request_windows(c(windows), 2, 2), [deque([0, 0]),
+                                                                      deque([1, 1]),
+                                                                      deque([2, 2])])
