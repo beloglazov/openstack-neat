@@ -803,3 +803,11 @@ class Multisize(TestCase):
         self.assertEqual(structure[2][1][4].maxlen, 4)
         self.assertEqual(structure[2][2][2].maxlen, 2)
         self.assertEqual(structure[2][2][4].maxlen, 4)
+
+    def test_init_selected_window_sizes(self):
+        self.assertEqual(m.init_selected_window_sizes([2, 4], 1), [[2]])
+        self.assertEqual(m.init_selected_window_sizes([2, 4], 2), [[2, 2],
+                                                                   [2, 2]])
+        self.assertEqual(m.init_selected_window_sizes([2, 4], 3), [[2, 2, 2],
+                                                                   [2, 2, 2],
+                                                                   [2, 2, 2]])

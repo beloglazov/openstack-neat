@@ -302,3 +302,24 @@ def init_deque_structure(window_sizes, number_of_states):
         for j in range(number_of_states):
             structure[i].append(dict(data))
     return structure
+
+
+@contract
+def init_selected_window_sizes(window_sizes, number_of_states):
+    """ Initialize a selected window sizes data structure.
+
+    :param window_sizes: The required window sizes.
+     :type window_sizes: list(int)
+
+    :param number_of_states: The number of states.
+     :type number_of_states: int,>0
+
+    :return: The initialized selected window sizes data structure.
+     :rtype: list(list(int))
+    """
+    structure = []
+    for i in range(number_of_states):
+        structure.append([])
+        for j in range(number_of_states):
+            structure[i].append(window_sizes[0])
+    return structure
