@@ -561,3 +561,91 @@ class Multisize(TestCase):
                            4: 0.0},
                           {2: 0.0,
                            4: 0.0}]])
+
+    def test_select_window(self):
+        variances = [[{2: 0.2,
+                       4: 0.9},
+                      {2: 0.2,
+                       4: 0.6}],
+                     [{2: 0.2,
+                       4: 0},
+                      {2: 0.2,
+                       4: 0.8}]]
+        acc_variances = [[{2: 0.1,
+                           4: 0.5},
+                          {2: 0.4,
+                           4: 0.5}],
+                         [{2: 0.4,
+                           4: 0.5},
+                          {2: 0.1,
+                           4: 0.5}]]
+        window_sizes = [2, 4]
+
+        self.assertEqual(m.select_window(variances, acc_variances, window_sizes),
+                         [[2, 2],
+                          [4, 2]])
+
+        variances = [[{2: 0,
+                       4: 0.9},
+                      {2: 0,
+                       4: 0}],
+                     [{2: 0,
+                       4: 0},
+                      {2: 0,
+                       4: 0.8}]]
+        acc_variances = [[{2: 0.5,
+                           4: 0.5},
+                          {2: 0.6,
+                           4: 0.5}],
+                         [{2: 0.7,
+                           4: 0.5},
+                          {2: 0.4,
+                           4: 0.5}]]
+        window_sizes = [2, 4]
+
+        self.assertEqual(m.select_window(variances, acc_variances, window_sizes),
+                         [[2, 4],
+                          [4, 2]])
+
+        variances = [[{2: 0,
+                       4: 0.9},
+                      {2: 0,
+                       4: 0},
+                      {2: 0,
+                       4: 1.0}],
+                     [{2: 0,
+                       4: 0},
+                      {2: 0,
+                       4: 0.8},
+                      {2: 0,
+                       4: 0}],
+                     [{2: 0,
+                       4: 0},
+                      {2: 0,
+                       4: 0.8},
+                      {2: 0.5,
+                       4: 0}]]
+        acc_variances = [[{2: 0.5,
+                           4: 0.9},
+                          {2: 0.6,
+                           4: 0.9},
+                          {2: 0.6,
+                           4: 0.9}],
+                         [{2: 0.7,
+                           4: 0.9},
+                          {2: 0.4,
+                           4: 0.9},
+                          {2: 0.4,
+                           4: 0.9}],
+                         [{2: 0.7,
+                           4: 0.9},
+                          {2: 0.4,
+                           4: 0.5},
+                          {2: 0.4,
+                           4: 0.9}]]
+        window_sizes = [2, 4]
+
+        self.assertEqual(m.select_window(variances, acc_variances, window_sizes),
+                         [[4, 4, 2],
+                          [4, 4, 4],
+                          [4, 2, 2]])
