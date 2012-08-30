@@ -59,7 +59,7 @@ def acceptable_variance(probability, window_size):
     """ Get the acceptable variance.
 
     :param probability: The probability to use.
-     :type probability: float,>=0
+     :type probability: number,>=0,<=1
 
     :param window_size: A window size.
      :type window_size: int,>0
@@ -163,3 +163,27 @@ def update_variances(variances, estimate_windows, previous_state):
             else:
                 variance_map[window_size] = variance(list(estimates), window_size)
     return variances
+
+
+@contract
+def update_acceptable_variances(acceptable_variances, estimate_windows, previous_state):
+    """ Update and return the updated acceptable variances.
+
+    :param acceptable_variances: The previous acceptable variances.
+     :type acceptable_variances: list(list(dict))
+
+    :param estimate_windows: The current estimate windows.
+     :type estimate_windows: list(list(dict))
+
+    :param previous_state: The previous state.
+     :type previous_state: int,>=0
+
+    :return: The updated acceptable variances.
+     :rtype: list(list(dict))
+    """
+    estimate_window = estimate_windows[previous_state]
+    for state, acceptable_variance_map in enumerate(acceptable_variances[previous_state]):
+        for window_size in acceptable_variance_map:
+            estimates = estimate_window[state][window_size]
+            acceptable_variance_map[window_size] = acceptable_variance(estimates[-1], window_size)
+    return acceptable_variances
