@@ -702,3 +702,11 @@ class Multisize(TestCase):
         self.assertEqual(m.select_best_estimates(c(est_win), [[2, 2], [4, 4]]),
                          [[0.0, 0.0],
                           [0.0, 0.0]])
+
+    def test_init_request_windows(self):
+        self.assertEqual(m.init_request_windows(1), [deque()])
+        self.assertEqual(m.init_request_windows(2), [deque(),
+                                                     deque()])
+        self.assertEqual(m.init_request_windows(3), [deque(),
+                                                     deque(),
+                                                     deque()])

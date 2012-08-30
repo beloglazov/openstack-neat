@@ -16,7 +16,9 @@
 """
 
 from contracts import contract
+
 from itertools import islice
+from collections import deque
 
 from neat.contracts_extra import *
 
@@ -243,3 +245,16 @@ def select_best_estimates(estimate_windows, selected_windows):
             else:
                 selected_estimates[i][j] = 0.0
     return selected_estimates
+
+
+@contract
+def init_request_windows(number_of_states):
+    """ Initialize a request window data structure.
+
+    :param number_of_states: The number of states.
+     :type number_of_states: int,>0
+
+    :return: The initialized empty request windows
+     :rtype: list(deque)
+    """
+    return number_of_states * [deque()]
