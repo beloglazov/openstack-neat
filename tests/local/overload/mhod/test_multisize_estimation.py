@@ -21,16 +21,6 @@ from copy import deepcopy
 import neat.local.overload.mhod.multisize_estimation as m
 
 
-time_limit = 30
-workloads = [{'until': 15,
-              'transitions': [[0.2, 0.8],
-                              [1.0, 0.0]]},
-             {'until': 30,
-              'transitions': [[0.5, 0.5],
-                              [1.0, 0.0]]}]
-window_sizes = [2, 4, 6]
-
-
 def c(data):
     return deepcopy(data)
 

@@ -16,11 +16,10 @@
 """
 
 from contracts import contract
+from neat.contracts_extra import *
 
 from itertools import islice
 from collections import deque
-
-from neat.contracts_extra import *
 
 
 @contract
