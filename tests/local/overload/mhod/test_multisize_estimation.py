@@ -710,3 +710,33 @@ class Multisize(TestCase):
         self.assertEqual(m.init_request_windows(3), [deque(),
                                                      deque(),
                                                      deque()])
+
+    def test_init_variances(self):
+        self.assertEqual(m.init_variances([2, 4], 1), [[{2: 1.0,
+                                                         4: 1.0}]])
+        self.assertEqual(m.init_variances([2, 4], 2), [[{2: 1.0,
+                                                         4: 1.0},
+                                                        {2: 1.0,
+                                                         4: 1.0}],
+                                                       [{2: 1.0,
+                                                         4: 1.0},
+                                                        {2: 1.0,
+                                                         4: 1.0}]])
+        self.assertEqual(m.init_variances([2, 4], 3), [[{2: 1.0,
+                                                         4: 1.0},
+                                                        {2: 1.0,
+                                                         4: 1.0},
+                                                        {2: 1.0,
+                                                         4: 1.0}],
+                                                       [{2: 1.0,
+                                                         4: 1.0},
+                                                        {2: 1.0,
+                                                         4: 1.0},
+                                                        {2: 1.0,
+                                                         4: 1.0}],
+                                                       [{2: 1.0,
+                                                         4: 1.0},
+                                                        {2: 1.0,
+                                                         4: 1.0},
+                                                        {2: 1.0,
+                                                         4: 1.0}]])

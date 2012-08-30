@@ -208,16 +208,16 @@ def select_window(variances, acceptable_variances, window_sizes):
      :rtype: list(list(int))
     """
     n = len(variances)
-    selected_windows = n * [0]
+    selected_windows = []
     for i in range(n):
-        selected_windows[i] = n * [0]
+        selected_windows.append([])
         for j in range(n):
             selected_size = window_sizes[0]
             for window_size in window_sizes:
                 if variances[i][j][window_size] > acceptable_variances[i][j][window_size]:
                     break
                 selected_size = window_size
-            selected_windows[i][j] = selected_size
+            selected_windows[i].append(selected_size)
     return selected_windows
 
 
@@ -235,15 +235,15 @@ def select_best_estimates(estimate_windows, selected_windows):
      :rtype: list(list(number))
     """
     n = len(estimate_windows)
-    selected_estimates = n * [0]
+    selected_estimates = []
     for i in range(n):
-        selected_estimates[i] = n * [0]
+        selected_estimates.append([])
         for j in range(n):
             estimates = estimate_windows[i][j][selected_windows[i][j]]
             if estimates:
-                selected_estimates[i][j] = estimates[-1]
+                selected_estimates[i].append(estimates[-1])
             else:
-                selected_estimates[i][j] = 0.0
+                selected_estimates[i].append(0.0)
     return selected_estimates
 
 
@@ -254,7 +254,29 @@ def init_request_windows(number_of_states):
     :param number_of_states: The number of states.
      :type number_of_states: int,>0
 
-    :return: The initialized empty request windows
+    :return: The initialized request windows data structure.
      :rtype: list(deque)
     """
     return number_of_states * [deque()]
+
+
+@contract
+def init_variances(window_sizes, number_of_states):
+    """ Initialize a variances data structure.
+
+    :param window_sizes: The required window sizes.
+     :type window_sizes: list(int)
+
+    :param number_of_states: The number of states.
+     :type number_of_states: int,>0
+
+    :return: The initialized variances data structure.
+     :rtype: list(list(dict))
+    """
+    data = dict(zip(window_sizes, len(window_sizes) * [1.0]))
+    variances = []
+    for i in range(number_of_states):
+        variances.append([])
+        for j in range(number_of_states):
+            variances[i].append(dict(data))
+    return variances
