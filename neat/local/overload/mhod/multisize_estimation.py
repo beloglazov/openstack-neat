@@ -85,3 +85,35 @@ def estimate_probability(data, window_size, state):
      :rtype: float,>=0
     """
     return float(data.count(state)) / window_size
+
+
+@contract
+def update_request_windows(request_windows, max_window_size, previous_state, current_state):
+    """ Update and return the updated request windows.
+(defn update-request-windows [request-windows max-window-size previous-state current-state]
+  {:pre [(vector? request-windows)
+         (posnum? max-window-size)
+         (not-negnum? previous-state)
+         (not-negnum? current-state)]
+   :post [(coll? %)]}
+  (let [window (get request-windows previous-state)]
+    (assoc request-windows previous-state
+           (conj (take (dec max-window-size) window) current-state))))
+
+    :param request_windows: The previous request windows.
+     :type request_windows: list(int)
+
+    :param max_window_size: The maximum window size.
+     :type max_window_size: int
+
+    :param previous_state: The previous state.
+     :type previous_state: int
+
+    :param current_state: The current state.
+     :type current_state: int
+
+    :return: The updated request windows.
+     :rtype: list(int)
+    """
+    window = request_windows[previous_state]
+    request_windows[previous_state]

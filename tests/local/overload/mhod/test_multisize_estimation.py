@@ -15,6 +15,8 @@
 from mocktest import *
 from pyqcy import *
 
+from collections import deque
+
 import neat.local.overload.mhod.multisize_estimation as m
 
 
@@ -60,3 +62,85 @@ class Multisize(TestCase):
             m.estimate_probability([1, 1, 0, 0, 1, 1, 1, 1, 1, 1], 200, 0), 0.01)
         self.assertEqual(
             m.estimate_probability([1, 1, 0, 0, 1, 1, 1, 1, 1, 1], 200, 1), 0.04)
+
+    def test_update_request_windows(self):
+        windows = [[0, 0],
+                   [1, 1]]
+
+        self.assertEqual(m.update_request_windows(windows, 4, 0, 0), [[0, 0, 0],
+                                                                      [1, 1]])
+        self.assertEqual(m.update_request_windows(windows, 4, 0, 1), [[0, 0, 1],
+                                                                      [1, 1]])
+        self.assertEqual(m.update_request_windows(windows, 4, 1, 0), [[0, 0],
+                                                                      [1, 1, 0]])
+        self.assertEqual(m.update_request_windows(windows, 4, 1, 1), [[0, 0],
+                                                                      [1, 1, 1]])
+
+        self.assertEqual(m.update_request_windows(windows, 2, 0, 0), [[0, 0],
+                                                                      [1, 1]])
+        self.assertEqual(m.update_request_windows(windows, 2, 0, 1), [[0, 1],
+                                                                      [1, 1]])
+        self.assertEqual(m.update_request_windows(windows, 2, 1, 0), [[0, 0],
+                                                                      [1, 0]])
+        self.assertEqual(m.update_request_windows(windows, 2, 1, 1), [[0, 0],
+                                                                      [1, 1]])
+
+        windows = [[0, 0],
+                   [1, 1],
+                   [2, 2]]
+
+        self.assertEqual(m.update_request_windows(windows, 4, 0, 0), [[0, 0, 0],
+                                                                      [1, 1],
+                                                                      [2, 2]])
+        self.assertEqual(m.update_request_windows(windows, 4, 0, 1), [[0, 0, 1],
+                                                                      [1, 1],
+                                                                      [2, 2]])
+        self.assertEqual(m.update_request_windows(windows, 4, 0, 2), [[0, 0, 2],
+                                                                      [1, 1],
+                                                                      [2, 2]])
+        self.assertEqual(m.update_request_windows(windows, 4, 1, 0), [[0, 0],
+                                                                      [1, 1, 0],
+                                                                      [2, 2]])
+        self.assertEqual(m.update_request_windows(windows, 4, 1, 1), [[0, 0],
+                                                                      [1, 1, 1],
+                                                                      [2, 2]])
+        self.assertEqual(m.update_request_windows(windows, 4, 1, 2), [[0, 0],
+                                                                      [1, 1, 2],
+                                                                      [2, 2]])
+        self.assertEqual(m.update_request_windows(windows, 4, 2, 0), [[0, 0],
+                                                                      [1, 1],
+                                                                      [2, 2, 0]])
+        self.assertEqual(m.update_request_windows(windows, 4, 2, 1), [[0, 0],
+                                                                      [1, 1],
+                                                                      [2, 2, 1]])
+        self.assertEqual(m.update_request_windows(windows, 4, 2, 2), [[0, 0],
+                                                                      [1, 1],
+                                                                      [2, 2, 2]])
+
+        self.assertEqual(m.update_request_windows(windows, 2, 0, 0), [[0, 0],
+                                                                      [1, 1],
+                                                                      [2, 2]])
+        self.assertEqual(m.update_request_windows(windows, 2, 0, 1), [[0, 1],
+                                                                      [1, 1],
+                                                                      [2, 2]])
+        self.assertEqual(m.update_request_windows(windows, 2, 0, 2), [[0, 2],
+                                                                      [1, 1],
+                                                                      [2, 2]])
+        self.assertEqual(m.update_request_windows(windows, 2, 1, 0), [[0, 0],
+                                                                      [1, 0],
+                                                                      [2, 2]])
+        self.assertEqual(m.update_request_windows(windows, 2, 1, 1), [[0, 0],
+                                                                      [1, 1],
+                                                                      [2, 2]])
+        self.assertEqual(m.update_request_windows(windows, 2, 1, 2), [[0, 0],
+                                                                      [1, 2],
+                                                                      [2, 2]])
+        self.assertEqual(m.update_request_windows(windows, 2, 2, 0), [[0, 0],
+                                                                      [1, 1],
+                                                                      [2, 0]])
+        self.assertEqual(m.update_request_windows(windows, 2, 2, 1), [[0, 0],
+                                                                      [1, 1],
+                                                                      [2, 1]])
+        self.assertEqual(m.update_request_windows(windows, 2, 2, 2), [[0, 0],
+                                                                      [1, 1],
+                                                                      [2, 2]])

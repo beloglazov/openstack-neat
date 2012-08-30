@@ -14,11 +14,13 @@
 
 from contracts import new_contract
 
+import collections
 import libvirt
 import sqlalchemy
 import neat.db
 
 
+new_contract('deque', collections.deque)
 new_contract('function', lambda x: hasattr(x, '__call__'))
 new_contract('virConnect', libvirt.virConnect)
 new_contract('virDomain', libvirt.virDomain)
