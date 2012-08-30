@@ -649,3 +649,56 @@ class Multisize(TestCase):
                          [[4, 4, 2],
                           [4, 4, 4],
                           [4, 2, 2]])
+
+    def test_select_best_estimates(self):
+        est_win = [[{2: deque([0, 0], 2),
+                     4: deque([1, 0, 0, 0], 4)},
+                    {2: deque([1, 1], 2),
+                     4: deque([0, 0, 1, 1], 4)},
+                    {2: deque([0, 0], 2),
+                     4: deque([0, 1, 0, 0], 4)}],
+                   [{2: deque([0.5, 0.25], 2),
+                     4: deque([0.25, 0.05, 0.5, 0.25], 4)},
+                    {2: deque([0.25, 0.5], 2),
+                     4: deque([0.4, 0.55, 0.25, 0.6], 4)},
+                    {2: deque([0.25, 0.25], 2),
+                     4: deque([0.35, 0.4, 0.25, 0.15], 4)}],
+                   [{2: deque([1, 0], 2),
+                     4: deque([1, 0, 1, 0], 4)},
+                    {2: deque([0, 1], 2),
+                     4: deque([0, 0, 0, 0.2], 4)},
+                    {2: deque([0, 0], 2),
+                     4: deque([0, 1, 0, 0], 4)}]]
+        selected_windows1 = [[2, 4, 2],
+                             [2, 2, 4],
+                             [4, 2, 2]]
+        selected_windows2 = [[4, 4, 4],
+                             [2, 2, 2],
+                             [2, 4, 2]]
+
+        self.assertEqual(m.select_best_estimates(c(est_win), selected_windows1),
+                         [[0, 1, 0],
+                          [0.25, 0.5, 0.15],
+                          [0, 1, 0]])
+
+        self.assertEqual(m.select_best_estimates(c(est_win), selected_windows2),
+                         [[0, 1, 0],
+                          [0.25, 0.5, 0.25],
+                          [0, 0.2, 0]])
+
+        est_win = [[{2: deque(),
+                     4: deque()},
+                    {2: deque(),
+                     4: deque()}],
+                   [{2: deque(),
+                     4: deque()},
+                    {2: deque(),
+                     4: deque()}]]
+
+        self.assertEqual(m.select_best_estimates(c(est_win), [[2, 4], [4, 2]]),
+                         [[0.0, 0.0],
+                          [0.0, 0.0]])
+
+        self.assertEqual(m.select_best_estimates(c(est_win), [[2, 2], [4, 4]]),
+                         [[0.0, 0.0],
+                          [0.0, 0.0]])

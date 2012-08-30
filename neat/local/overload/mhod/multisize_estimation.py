@@ -217,3 +217,29 @@ def select_window(variances, acceptable_variances, window_sizes):
                 selected_size = window_size
             selected_windows[i][j] = selected_size
     return selected_windows
+
+
+@contract
+def select_best_estimates(estimate_windows, selected_windows):
+    """ Select the best estimates according to the selected windows.
+
+    :param estimate_windows: The estimate windows.
+     :type estimate_windows: list(list(dict))
+
+    :param selected_windows: The selected window sizes.
+     :type selected_windows: list(list(int))
+
+    :return: The selected best estimates.
+     :rtype: list(list(number))
+    """
+    n = len(estimate_windows)
+    selected_estimates = n * [0]
+    for i in range(n):
+        selected_estimates[i] = n * [0]
+        for j in range(n):
+            estimates = estimate_windows[i][j][selected_windows[i][j]]
+            if estimates:
+                selected_estimates[i][j] = estimates[-1]
+            else:
+                selected_estimates[i][j] = 0.0
+    return selected_estimates
