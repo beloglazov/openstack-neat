@@ -136,3 +136,30 @@ def update_estimate_windows(estimate_windows, request_windows, previous_state):
                     list(islice(request_window, slice_from, None)),
                     window_size, state))
     return estimate_windows
+
+
+@contract
+def update_variances(variances, estimate_windows, previous_state):
+    """ Updated and return the updated variances.
+
+    :param variances: The previous variances.
+     :type variances: list(list(dict))
+
+    :param estimate_windows: The current estimate windows.
+     :type estimate_windows: list(list(dict))
+
+    :param previous_state: The previous state.
+     :type previous_state: int,>=0
+
+    :return: The updated variances.
+     :rtype: list(list(dict))
+    """
+    estimate_window = estimate_windows[previous_state]
+    for state, variance_map in enumerate(variances[previous_state]):
+        for window_size in variance_map:
+            estimates = estimate_window[state][window_size]
+            if len(estimates) < window_size:
+                variance_map[window_size] = 1.0
+            else:
+                variance_map[window_size] = variance(list(estimates), window_size)
+    return variances
