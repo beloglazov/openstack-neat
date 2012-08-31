@@ -73,3 +73,15 @@ class Core(TestCase):
         self.assertEqual(c.current_state([1, 0, 0]), 0)
         self.assertEqual(c.current_state([0, 1, 0]), 1)
         self.assertEqual(c.current_state([0, 0, 1]), 2)
+
+    def test_utilization_to_states(self):
+        state_config = [0.4, 0.7]
+        data = [0.25, 0.30, 0.62, 0.59, 0.67, 0.73, 0.85, 0.97, 0.73, 0.68, 0.69,
+                0.52, 0.51, 0.25, 0.38, 0.46, 0.52, 0.55, 0.58, 0.65, 0.70]
+        states = [0, 0, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 2]
+        self.assertEqual(c.utilization_to_states(state_config, data), states)
+
+        state_config = [1.0]
+        data = [0.5, 0.5, 1.0, 1.0, 0.5]
+        states = [0, 0, 1, 1, 0]
+        self.assertEqual(c.utilization_to_states(state_config, data), states)

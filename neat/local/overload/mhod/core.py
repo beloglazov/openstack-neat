@@ -36,10 +36,10 @@ def init_state(window_sizes, number_of_states):
     """
     state = {}
     state['previous_state'] = 0
-    state['request_windows'] = init_request_windows(number_of_states)
-    state['estimate_windows'] = init_deque_structure(window_sizes, number_of_states)
-    state['variances'] = init_variances(window_sizes, number_of_states)
-    state['acceptable_variances'] = init_variances(window_sizes, number_of_states)
+    state['request_windows'] = estimation.init_request_windows(number_of_states)
+    state['estimate_windows'] = estimation.init_deque_structure(window_sizes, number_of_states)
+    state['variances'] = estimation.init_variances(window_sizes, number_of_states)
+    state['acceptable_variances'] = estimation.init_variances(window_sizes, number_of_states)
     return state
 
 
@@ -205,3 +205,23 @@ def current_state(state_vector):
      :rtype: int,>=0
     """
     return state_vector.index(1)
+
+
+@contract
+def utilization_to_states(state_config, utilization):
+    """ Get the state history corresponding to the utilization history.
+
+    Adds the 0 state to the beginning to simulate the first transition.
+
+    (map (partial utilization-to-state state-config) utilization))
+
+    :param state_config: The state configuration.
+     :type state_config: list(float)
+
+    :param utilization: The history of the host's CPU utilization.
+     :type utilization: list(float)
+
+    :return: The state history.
+     :rtype: list(int)
+    """
+    return [utilization_to_state(state_config, x) for x in utilization]
