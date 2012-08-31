@@ -18,6 +18,38 @@
 from contracts import contract
 from neat.contracts_extra import *
 
+from neat.local.overload.mhod.multisize_estimation import *
+
+
+@contract
+def init_state(window_sizes, number_of_states):
+    """ Initialize the state dictionary of the MHOD algorithm.
+
+    :param window_sizes: The required window sizes.
+     :type window_sizes: list(int)
+
+    :param number_of_states: The number of states.
+     :type number_of_states: int,>0
+
+    :return: The initialization state dictionary.
+     :rtype: dict(str: *)
+
+    (reset! state-previous-state 0)
+    (reset! state-request-windows (multisize-estimation/init-request-windows number-of-states))
+    (reset! state-estimate-windows (multisize-estimation/init-3-level-data window-sizes number-of-states))
+    (reset! state-variances (multisize-estimation/init-variances window-sizes number-of-states))
+    (reset! state-acceptable-variances (multisize-estimation/init-variances window-sizes number-of-states))
+
+    """
+    state = {}
+    state['previous_state'] = 0
+    state['request_windows'] = init_request_windows(number_of_states)
+    state['estimate_windows'] = init_deque_structure(window_sizes, number_of_states)
+    state['variances'] = init_variances(window_sizes, number_of_states)
+    state['acceptable_variances'] = init_variances(window_sizes, number_of_states)
+    return state
+
+
 
 @contract
 def execute(state_config, otf, window_sizes, bruteforce_step,
