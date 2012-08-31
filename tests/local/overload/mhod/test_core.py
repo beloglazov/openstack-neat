@@ -90,3 +90,7 @@ class Core(TestCase):
         state_config = [0.4, 0.7]
         states = [0, 0, 0, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 2]
         self.assertEqual(c.get_time_in_state_n(state_config, states), 5)
+
+    def test_issue_command_deterministic(self):
+        self.assertEqual(c.issue_command_deterministic([1]), False)
+        self.assertEqual(c.issue_command_deterministic([]), True)

@@ -19,6 +19,8 @@ from contracts import contract
 from neat.contracts_extra import *
 
 import neat.local.overload.mhod.multisize_estimation as estimation
+import neat.local.overload.mhod.bruteforce as bruteforce
+from neat.local.overload.mhod.l_2_states import ls
 
 
 @contract
@@ -157,6 +159,13 @@ def execute(state_config, otf, window_sizes, bruteforce_step,
         state_history = utilization_to_states(state_config, utilization)
         time_in_states = total_time
         time_in_state_n = get_time_in_state_n(state_config, state_history)
+        tmp = set(p[state])
+        if len(tmp) == 1 and tmp[0] == 0:
+            return false
+        else:
+            policy = bruteforce.optimize(step, 1.0, otf, (migration_time / time_step), ls,
+                                         p, state_vector, time_in_states, time_in_state_n)
+
 
     return false
 
@@ -245,3 +254,16 @@ def get_time_in_state_n(state_config, state_history):
      :rtype: int
     """
     return state_history.count(len(state_config))
+
+
+@contract
+def issue_command_deterministic(p):
+    """ Issue a migration command according to the policy PMF p.
+
+    :param p: A policy PMF.
+     :type p: list(number)
+
+    :return: A migration command.
+     :rtype: bool
+    """
+    return len(p) == 0
