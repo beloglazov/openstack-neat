@@ -34,3 +34,9 @@ class Common(TestCase):
                                 config,
                                 0,
                                 iterations) == state
+
+    def test_frange(self):
+        self.assertEqual([round(x, 1) for x in common.frange(0, 1.0, 0.5)],
+                         [0.0, 0.5, 1.0])
+        self.assertEqual([round(x, 1) for x in common.frange(0, 1.0, 0.2)],
+                         [0.0, 0.2, 0.4, 0.6, 0.8, 1.0])

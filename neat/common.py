@@ -58,3 +58,21 @@ def start(init_state, execute, config, time_interval, iterations):
             time.sleep(time_interval)
 
     return state
+
+
+@contract
+def frange(start, end, step):
+    """ A range generator for floats.
+
+    :param start: The starting value.
+     :type start: number
+
+    :param end: The end value.
+     :type end: number
+
+    :param step: The step.
+     :type step: number
+    """
+    while start <= end:
+        yield start
+        start += step
