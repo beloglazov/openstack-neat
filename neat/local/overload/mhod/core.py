@@ -18,7 +18,7 @@
 from contracts import contract
 from neat.contracts_extra import *
 
-from neat.local.overload.mhod.multisize_estimation import *
+import neat.local.overload.mhod.multisize_estimation as estimation
 
 
 @contract
@@ -127,12 +127,34 @@ def execute(state_config, otf, window_sizes, bruteforce_step,
               command)))
         false))))
     """
-    if len(utilization) < 30:
-        return false
     min_window_size = min(window_sizes)
     max_window_size = max(window_sizes)
     state_vector = build_state_vector(state_config, utilization)
+    state = current_state(state_vector)
+    selected_windows = estimation.select_window(state['variances'],
+                                                state['acceptable_variances'],
+                                                window_sizes)
+    p = estimation.select_best_estimates(state['estimate_windows'],
+                                         selected_windows)
 
+    state['request_windows'] = estimation.update_request_windows(state['request_windows'],
+                                                                 max_window_size,
+                                                                 state['previous_state'],
+                                                                 state)
+    state['estimate_windows'] = estimation.update_estimate_windows(state['estimate_windows'],
+                                                                   state['request_windows'],
+                                                                   state['previous_state'])
+    state['variances'] = estimation.update_variances(state['variances'],
+                                                     state['estimate_windows'],
+                                                     state['previous_state'])
+    state['acceptable_variances'] = estimation.update_acceptable_variances(state['acceptable_variances'],
+                                                                           state['estimate_windows'],
+                                                                           state['previous_state'])
+    state['previous_state'] = state
+
+    if len(utilization) >= 30:
+        pass
+    return false
 
 @contract
 def build_state_vector(state_config, utilization):
