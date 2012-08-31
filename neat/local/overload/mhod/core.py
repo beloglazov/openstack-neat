@@ -33,13 +33,6 @@ def init_state(window_sizes, number_of_states):
 
     :return: The initialization state dictionary.
      :rtype: dict(str: *)
-
-    (reset! state-previous-state 0)
-    (reset! state-request-windows (multisize-estimation/init-request-windows number-of-states))
-    (reset! state-estimate-windows (multisize-estimation/init-3-level-data window-sizes number-of-states))
-    (reset! state-variances (multisize-estimation/init-variances window-sizes number-of-states))
-    (reset! state-acceptable-variances (multisize-estimation/init-variances window-sizes number-of-states))
-
     """
     state = {}
     state['previous_state'] = 0
@@ -48,7 +41,6 @@ def init_state(window_sizes, number_of_states):
     state['variances'] = init_variances(window_sizes, number_of_states)
     state['acceptable_variances'] = init_variances(window_sizes, number_of_states)
     return state
-
 
 
 @contract
@@ -74,10 +66,10 @@ def execute(state_config, otf, window_sizes, bruteforce_step,
     :param migration_time: The VM migration time in seconds.
      :type migration_time: int
 
-    :param state: The history of the host's CPU utilization.
-     :type state: list(float)
+    :param utilization: The history of the host's CPU utilization.
+     :type utilization: list(float)
 
-     :param state: The state of the algorithm.
+    :param state: The state of the algorithm.
      :type state: dict
 
     :return: The updated state and decision of the algorithm.
@@ -134,6 +126,49 @@ def execute(state_config, otf, window_sizes, bruteforce_step,
                   command (issue-command-deterministic policy)]
               command)))
         false))))
-     """
+    """
+    if len(utilization) < 30:
+        return false
     min_window_size = min(window_sizes)
     max_window_size = max(window_sizes)
+
+
+@contract
+def build_state_vector(state_config, utilization):
+    """ Build the current state PMF corresponding to the utilization history and state config.
+
+    :param state_config: The state configuration.
+     :type state_config: list(float)
+
+    :param utilization: The history of the host's CPU utilization.
+     :type utilization: list(float)
+
+    :return: The current state vector.
+     :rtype: list(int)
+
+  (let [state (utilization-to-state state-config (last utilization))]
+    (map #(if (= state %) 1 0)
+         (range (inc (count state-config))))))
+    """
+    pass
+
+
+@contract
+def utilization_to_state(state_config, utilization):
+    """ Transform a utilization value into the corresponding state.
+
+    :param state_config: The state configuration.
+     :type state_config: list(float)
+
+    :param utilization: A utilization value.
+     :type utilization: number,>=0
+
+    :return: The state corresponding to the utilization value.
+     :rtype: int
+    """
+    prev = -1
+    for state, threshold in enumerate(state_config):
+        if utilization >= prev and utilization < threshold:
+            return state
+        prev = state
+    return prev + 1
