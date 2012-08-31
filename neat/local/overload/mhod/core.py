@@ -145,12 +145,9 @@ def build_state_vector(state_config, utilization):
 
     :return: The current state vector.
      :rtype: list(int)
-
-  (let [state (utilization-to-state state-config (last utilization))]
-    (map #(if (= state %) 1 0)
-         (range (inc (count state-config))))))
     """
-    pass
+    state = utilization_to_state(state_config, utilization[-1])
+    return [int(state == x) for x in range(len(state_config) + 1)]
 
 
 @contract

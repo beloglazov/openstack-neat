@@ -30,7 +30,6 @@ class Core(TestCase):
 
     def test_utilization_to_state(self):
         state_config = [0.4, 0.7]
-
         self.assertEqual(c.utilization_to_state(state_config, 0.0), 0)
         self.assertEqual(c.utilization_to_state(state_config, 0.1), 0)
         self.assertEqual(c.utilization_to_state(state_config, 0.2), 0)
@@ -57,16 +56,15 @@ class Core(TestCase):
         self.assertEqual(c.utilization_to_state([1.0], 1.0), 1)
         self.assertEqual(c.utilization_to_state([1.0], 1.1), 1)
 
-
-    # def test_build_state_vector(self):
-    #     state_config = [0.4, 0.7]
-    #     self.assertEqual(c.build_state_vector(state_config, [0.0, 0.1]), [1, 0, 0])
-    #     self.assertEqual(c.build_state_vector(state_config, [0.0, 0.2]), [1, 0, 0])
-    #     self.assertEqual(c.build_state_vector(state_config, [0.0, 0.3]), [1, 0, 0])
-    #     self.assertEqual(c.build_state_vector(state_config, [0.0, 0.4]), [0, 1, 0])
-    #     self.assertEqual(c.build_state_vector(state_config, [0.0, 0.5]), [0, 1, 0])
-    #     self.assertEqual(c.build_state_vector(state_config, [0.0, 0.6]), [0, 1, 0])
-    #     self.assertEqual(c.build_state_vector(state_config, [0.0, 0.7]), [0, 0, 1])
-    #     self.assertEqual(c.build_state_vector(state_config, [0.0, 0.8]), [0, 0, 1])
-    #     self.assertEqual(c.build_state_vector(state_config, [0.0, 0.9]), [0, 0, 1])
-    #     self.assertEqual(c.build_state_vector(state_config, [0.0, 1.0]), [0, 0, 1])
+    def test_build_state_vector(self):
+        state_config = [0.4, 0.7]
+        self.assertEqual(c.build_state_vector(state_config, [0.0, 0.1]), [1, 0, 0])
+        self.assertEqual(c.build_state_vector(state_config, [0.0, 0.2]), [1, 0, 0])
+        self.assertEqual(c.build_state_vector(state_config, [0.0, 0.3]), [1, 0, 0])
+        self.assertEqual(c.build_state_vector(state_config, [0.0, 0.4]), [0, 1, 0])
+        self.assertEqual(c.build_state_vector(state_config, [0.0, 0.5]), [0, 1, 0])
+        self.assertEqual(c.build_state_vector(state_config, [0.0, 0.6]), [0, 1, 0])
+        self.assertEqual(c.build_state_vector(state_config, [0.0, 0.7]), [0, 0, 1])
+        self.assertEqual(c.build_state_vector(state_config, [0.0, 0.8]), [0, 0, 1])
+        self.assertEqual(c.build_state_vector(state_config, [0.0, 0.9]), [0, 0, 1])
+        self.assertEqual(c.build_state_vector(state_config, [0.0, 1.0]), [0, 0, 1])
