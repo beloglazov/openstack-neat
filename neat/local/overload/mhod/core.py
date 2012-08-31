@@ -76,61 +76,8 @@ def execute(state_config, otf, window_sizes, bruteforce_step,
 
     :return: The updated state and decision of the algorithm.
      :rtype: tuple(dict, bool)
-
-(defn markov-multisize [step otf window-sizes state-config time-step migration-time host vms]
-  {:pre [(posnum? step)
-         (posnum? otf)
-         (coll? window-sizes)
-         (coll? state-config)
-         (not-negnum? time-step)
-         (not-negnum? migration-time)
-         (map? host)
-         (coll? vms)]
-   :post [(boolean? %)]}
-  (let [utilization (host-utilization-history host vms)
-        total-time (count utilization)
-        min-window-size (apply min window-sizes)
-        max-window-size (apply max window-sizes)
-        state-vector (build-state-vector state-config utilization)
-        state (current-state state-vector)
-        selected-windows (multisize-estimation/select-window
-                           @state-variances @state-acceptable-variances window-sizes)
-        p (multisize-estimation/select-best-estimates @state-estimate-windows selected-windows)]
-    (do
-      (swap! state-request-windows multisize-estimation/update-request-windows
-             max-window-size @state-previous-state state)
-      (swap! state-estimate-windows multisize-estimation/update-estimate-windows
-             @state-request-windows @state-previous-state)
-      (swap! state-variances multisize-estimation/update-variances
-             @state-estimate-windows @state-previous-state)
-      (swap! state-acceptable-variances multisize-estimation/update-acceptable-variances
-             @state-estimate-windows @state-previous-state)
-      (reset! state-previous-state state)
-
-      (swap! state-selected-window-history multisize-estimation/update-selected-window-history
-             selected-windows)
-      (swap! state-best-estimate-history multisize-estimation/update-best-estimate-history p)
-      (swap! state-time-history conj total-time)
-
-      (if (>= total-time 30)
-        (let [
-              state-history (utilization-to-states state-config utilization)
-              time-in-states total-time
-              time-in-state-n (time-in-state-n state-config state-history)
-
-              ls (if (= 1 (count state-config))
-                   l-probabilities-2/ls
-                   l-probabilities-3/ls)]
-          (if (every? #{0} (nth p state))
-            false
-            (let [policy (bruteforce/optimize step 1.0 otf (/ migration-time time-step) ls p state-vector
-                                              time-in-states time-in-state-n)
-                  command (issue-command-deterministic policy)]
-              command)))
-        false))))
     """
     total_time = len(utilization)
-    min_window_size = min(window_sizes)
     max_window_size = max(window_sizes)
     state_vector = build_state_vector(state_config, utilization)
     state = current_state(state_vector)
@@ -160,14 +107,12 @@ def execute(state_config, otf, window_sizes, bruteforce_step,
         time_in_states = total_time
         time_in_state_n = get_time_in_state_n(state_config, state_history)
         tmp = set(p[state])
-        if len(tmp) == 1 and tmp[0] == 0:
-            return false
-        else:
+        if len(tmp) != 1 or tmp[0] != 0:
             policy = bruteforce.optimize(step, 1.0, otf, (migration_time / time_step), ls,
                                          p, state_vector, time_in_states, time_in_state_n)
-
-
+            return issue_command_deterministic(policy)
     return false
+
 
 @contract
 def build_state_vector(state_config, utilization):
@@ -257,13 +202,13 @@ def get_time_in_state_n(state_config, state_history):
 
 
 @contract
-def issue_command_deterministic(p):
+def issue_command_deterministic(policy):
     """ Issue a migration command according to the policy PMF p.
 
-    :param p: A policy PMF.
-     :type p: list(number)
+    :param policy: A policy PMF.
+     :type policy: list(number)
 
     :return: A migration command.
      :rtype: bool
     """
-    return len(p) == 0
+    return len(policy) == 0
