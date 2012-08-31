@@ -85,3 +85,8 @@ class Core(TestCase):
         data = [0.5, 0.5, 1.0, 1.0, 0.5]
         states = [0, 0, 1, 1, 0]
         self.assertEqual(c.utilization_to_states(state_config, data), states)
+
+    def test_get_time_in_state_n(self):
+        state_config = [0.4, 0.7]
+        states = [0, 0, 0, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 2]
+        self.assertEqual(c.get_time_in_state_n(state_config, states), 5)

@@ -127,6 +127,7 @@ def execute(state_config, otf, window_sizes, bruteforce_step,
               command)))
         false))))
     """
+    total_time = len(utilization)
     min_window_size = min(window_sizes)
     max_window_size = max(window_sizes)
     state_vector = build_state_vector(state_config, utilization)
@@ -153,7 +154,10 @@ def execute(state_config, otf, window_sizes, bruteforce_step,
     state['previous_state'] = state
 
     if len(utilization) >= 30:
-        pass
+        state_history = utilization_to_states(state_config, utilization)
+        time_in_states = total_time
+        time_in_state_n = get_time_in_state_n(state_config, state_history)
+
     return false
 
 @contract
@@ -225,3 +229,19 @@ def utilization_to_states(state_config, utilization):
      :rtype: list(int)
     """
     return [utilization_to_state(state_config, x) for x in utilization]
+
+
+@contract
+def get_time_in_state_n(state_config, state_history):
+    """ Get the number of time steps the system has been in the state N.
+
+    :param state_config: The state configuration.
+     :type state_config: list(float)
+
+    :param state_history: The state history.
+     :type state_history: list(int)
+
+    :return: The total time the system has been in the state N.
+     :rtype: int
+    """
+    return state_history.count(len(state_config))
