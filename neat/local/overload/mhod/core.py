@@ -131,6 +131,7 @@ def execute(state_config, otf, window_sizes, bruteforce_step,
         return false
     min_window_size = min(window_sizes)
     max_window_size = max(window_sizes)
+    state_vector = build_state_vector(state_config, utilization)
 
 
 @contract
@@ -169,3 +170,16 @@ def utilization_to_state(state_config, utilization):
             return state
         prev = state
     return prev + 1
+
+
+@contract
+def current_state(state_vector):
+    """ Get the current state corresponding to the state probability vector.
+
+    :param state_vector: The state PMF vector.
+     :type state_vector: list(int)
+
+    :return: The current state.
+     :rtype: int,>=0
+    """
+    return state_vector.index(1)
