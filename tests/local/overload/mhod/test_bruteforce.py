@@ -18,6 +18,7 @@ from pyqcy import *
 from operator import le
 
 import neat.local.overload.mhod.bruteforce as b
+import neat.local.overload.mhod.nlp as nlp
 
 
 class Bruteforce(TestCase):
@@ -45,3 +46,26 @@ class Bruteforce(TestCase):
                          [1.0, 0.0])
         self.assertEqual([round(x, 1) for x in b.solve2(fn4, (fn4, le, 10), 0.1, 1.0)],
                          [1.0, 0.1])
+
+    def test_optimize(self):
+        with MockTransaction:
+            step = 0.1
+            limit = 1
+            otf = 0.3
+            migration_time = 20
+            ls = [lambda x: x, lambda x: x]
+            p = [[0, 1]]
+            state_vector = [0, 1]
+            time_in_states = 10
+            time_in_state_n = 5
+            objective = mock('objective')
+            constraint = mock('constraint')
+            solution = [1, 2, 3]
+            expect(nlp).build_objective(ls, state_vector, p).and_return(objective).once()
+            expect(nlp).build_constraint(otf, migration_time, ls, state_vector,
+                                         p, time_in_states, time_in_state_n). \
+                        and_return(constraint).once()
+            expect(b).solve2(objective, constraint, step, limit).and_return(solution).once()
+            self.assertEqual(b.optimize(step, limit, otf, migration_time, ls,
+                                        p, state_vector, time_in_states, time_in_state_n),
+                solution)
