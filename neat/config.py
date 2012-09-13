@@ -47,9 +47,13 @@ REQUIRED_FIELDS = [
     'compute_password',
     'sleep_command',
     'algorithm_underload_detection',
+    'algorithm_underload_detection_parameters',
     'algorithm_overload_detection',
+    'algorithm_overload_detection_parameters',
     'algorithm_vm_selection',
+    'algorithm_vm_selection_parameters',
     'algorithm_vm_placement',
+    'algorithm_vm_placement_parameters',
 ]
 
 
@@ -61,7 +65,7 @@ def read_config(paths):
      :type paths: list(str)
 
     :return: A dictionary of the configuration options.
-     :rtype: dict(str: *)
+     :rtype: dict(str: str)
     """
     configParser = ConfigParser.ConfigParser()
     for path in paths:
@@ -74,7 +78,7 @@ def validate_config(config, required_fields):
     """ Check that the config contains all the required fields.
 
     :param config: A config dictionary to check.
-     :type config: dict(str: *)
+     :type config: dict(str: str)
 
     :param required_fields: A list of required fields.
      :type required_fields: list(str)
@@ -99,7 +103,7 @@ def read_and_validate_config(paths, required_fields):
      :type required_fields: list(str)
 
     :return: A dictionary of the configuration options.
-     :rtype: dict(str: *)
+     :rtype: dict(str: str)
     """
     config = read_config(paths)
     if not validate_config(config, required_fields):
