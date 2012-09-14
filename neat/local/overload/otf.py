@@ -30,19 +30,89 @@ def init_state():
 
 
 @contract
-def init_otf(threshold, time_step, migration_time):
-    """ Initialize the OTF threshold algorithm.
+def otf_factory(time_step, migration_time, params):
+    """ Creates the OTF algorithm.
+
+    :param time_step: The length of the simulation time step in seconds.
+     :type time_step: int,>=0
+
+    :param migration_time: The VM migration time in time seconds.
+     :type migration_time: int,>=0
+
+    :param params: A dictionary containing the algorithm's parameters.
+     :type params: dict(str: *)
+
+    :return: A function implementing the OTF algorithm.
+     :rtype: function
     """
-    migration_time_normalized = migration_time / time_step
-    return lambda state, utilization: otf(threshold, time_step, migration_time)
+    return lambda state, utilization: {}, otf(params['threshold'],
+                                              utilization)
 
 
 @contract
-def init_otf_migration_time(threshold, time_step, migration_time):
-    """ Initialize the OTF threshold algorithm.
+def otf_limit_factory(time_step, migration_time, params):
+    """ Creates the OTF algorithm with limiting.
+
+    :param time_step: The length of the simulation time step in seconds.
+     :type time_step: int,>=0
+
+    :param migration_time: The VM migration time in time seconds.
+     :type migration_time: int,>=0
+
+    :param params: A dictionary containing the algorithm's parameters.
+     :type params: dict(str: *)
+
+    :return: A function implementing the OTF algorithm with limiting.
+     :rtype: function
+    """
+    return lambda state, utilization: {}, otf(params['threshold'],
+                                              params['limit'],
+                                              utilization)
+
+
+@contract
+def otf_migration_time_factory(time_step, migration_time, params):
+    """ Creates the OTF algorithm considering the migration time.
+
+    :param time_step: The length of the simulation time step in seconds.
+     :type time_step: int,>=0
+
+    :param migration_time: The VM migration time in time seconds.
+     :type migration_time: int,>=0
+
+    :param params: A dictionary containing the algorithm's parameters.
+     :type params: dict(str: *)
+
+    :return: A function implementing the OTF algorithm.
+     :rtype: function
     """
     migration_time_normalized = migration_time / time_step
-    return lambda state, utilization: otf(threshold, time_step, migration_time)
+    return lambda state, utilization: {}, otf(params['threshold'],
+                                              migration_time_normalized,
+                                              utilization)
+
+
+@contract
+def otf_limit_migration_time_factory(time_step, migration_time, params):
+    """ Creates the OTF algorithm with limiting and migration time.
+
+    :param time_step: The length of the simulation time step in seconds.
+     :type time_step: int,>=0
+
+    :param migration_time: The VM migration time in time seconds.
+     :type migration_time: int,>=0
+
+    :param params: A dictionary containing the algorithm's parameters.
+     :type params: dict(str: *)
+
+    :return: A function implementing the OTF algorithm.
+     :rtype: function
+    """
+    migration_time_normalized = migration_time / time_step
+    return lambda state, utilization: {}, otf(params['threshold'],
+                                              params['limit'],
+                                              migration_time_normalized,
+                                              utilization)
 
 
 @contract
@@ -92,7 +162,7 @@ def otf_migration_time(threshold, migration_time, utilization):
     :param threshold: The threshold on the OTF value.
      :type threshold: float,>=0
 
-    :param migration_time: The VM migration time in time steps..
+    :param migration_time: The VM migration time in time steps.
      :type migration_time: int,>=0
 
     :param utilization: The history of the host's CPU utilization.
