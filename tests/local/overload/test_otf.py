@@ -57,40 +57,40 @@ class Otf(TestCase):
 
     def test_otf_factory(self):
         alg = otf.otf_factory(300, 20, {'threshold': 0.5})
-        self.assertEquals(alg([0.9, 0.8, 1.1, 1.2, 1.3]), (True, {}))
-        self.assertEquals(alg([0.9, 0.8, 1.1, 1.2, 0.3]), (False, {}))
+        self.assertEqual(alg([0.9, 0.8, 1.1, 1.2, 1.3]), (True, {}))
+        self.assertEqual(alg([0.9, 0.8, 1.1, 1.2, 0.3]), (False, {}))
 
     def test_otf_limit_factory(self):
         alg = otf.otf_limit_factory(300, 20, {'threshold': 0.5, 'limit': 10})
-        self.assertEquals(alg([0.9, 0.8, 1.1, 1.2, 1.3]), (False, {}))
-        self.assertEquals(alg([0.9, 0.8, 1.1, 1.2, 0.3]), (False, {}))
+        self.assertEqual(alg([0.9, 0.8, 1.1, 1.2, 1.3]), (False, {}))
+        self.assertEqual(alg([0.9, 0.8, 1.1, 1.2, 0.3]), (False, {}))
 
         alg = otf.otf_limit_factory(300, 20, {'threshold': 0.5, 'limit': 5})
-        self.assertEquals(alg([0.9, 0.8, 1.1, 1.2, 1.3]), (True, {}))
-        self.assertEquals(alg([0.9, 0.8, 1.1, 1.2, 0.3]), (False, {}))
+        self.assertEqual(alg([0.9, 0.8, 1.1, 1.2, 1.3]), (True, {}))
+        self.assertEqual(alg([0.9, 0.8, 1.1, 1.2, 0.3]), (False, {}))
 
     def test_otf_migration_time_factory(self):
         alg = otf.otf_migration_time_factory(30, 3000, {'threshold': 0.5})
-        self.assertEquals(alg([0.9, 0.8, 1.1, 1.2, 1.3]), (True, {}))
-        self.assertEquals(alg([0.9, 0.8, 1.1, 1.2, 0.3]), (True, {}))
+        self.assertEqual(alg([0.9, 0.8, 1.1, 1.2, 1.3]), (True, {}))
+        self.assertEqual(alg([0.9, 0.8, 1.1, 1.2, 0.3]), (True, {}))
 
         alg = otf.otf_migration_time_factory(300, 1, {'threshold': 0.5})
-        self.assertEquals(alg([0.9, 0.8, 1.1, 1.2, 1.3]), (True, {}))
-        self.assertEquals(alg([0.9, 0.8, 1.1, 1.2, 0.3]), (False, {}))
+        self.assertEqual(alg([0.9, 0.8, 1.1, 1.2, 1.3]), (True, {}))
+        self.assertEqual(alg([0.9, 0.8, 1.1, 1.2, 0.3]), (False, {}))
 
     def test_otf_limit_migration_time_factory(self):
         alg = otf.otf_limit_migration_time_factory(30, 3000, {'threshold': 0.5, 'limit': 10})
-        self.assertEquals(alg([0.9, 0.8, 1.1, 1.2, 1.3]), (False, {}))
-        self.assertEquals(alg([0.9, 0.8, 1.1, 1.2, 0.3]), (False, {}))
+        self.assertEqual(alg([0.9, 0.8, 1.1, 1.2, 1.3]), (False, {}))
+        self.assertEqual(alg([0.9, 0.8, 1.1, 1.2, 0.3]), (False, {}))
 
         alg = otf.otf_limit_migration_time_factory(300, 1, {'threshold': 0.5, 'limit': 10})
-        self.assertEquals(alg([0.9, 0.8, 1.1, 1.2, 1.3]), (False, {}))
-        self.assertEquals(alg([0.9, 0.8, 1.1, 1.2, 0.3]), (False, {}))
+        self.assertEqual(alg([0.9, 0.8, 1.1, 1.2, 1.3]), (False, {}))
+        self.assertEqual(alg([0.9, 0.8, 1.1, 1.2, 0.3]), (False, {}))
 
         alg = otf.otf_limit_migration_time_factory(30, 3000, {'threshold': 0.5, 'limit': 5})
-        self.assertEquals(alg([0.9, 0.8, 1.1, 1.2, 1.3]), (True, {}))
-        self.assertEquals(alg([0.9, 0.8, 1.1, 1.2, 0.3]), (True, {}))
+        self.assertEqual(alg([0.9, 0.8, 1.1, 1.2, 1.3]), (True, {}))
+        self.assertEqual(alg([0.9, 0.8, 1.1, 1.2, 0.3]), (True, {}))
 
         alg = otf.otf_limit_migration_time_factory(300, 1, {'threshold': 0.5, 'limit': 5})
-        self.assertEquals(alg([0.9, 0.8, 1.1, 1.2, 1.3]), (True, {}))
-        self.assertEquals(alg([0.9, 0.8, 1.1, 1.2, 0.3]), (False, {}))
+        self.assertEqual(alg([0.9, 0.8, 1.1, 1.2, 1.3]), (True, {}))
+        self.assertEqual(alg([0.9, 0.8, 1.1, 1.2, 0.3]), (False, {}))
