@@ -20,16 +20,6 @@ from neat.contracts_extra import *
 
 
 @contract
-def init_state():
-    """ Initialize the state dictionary of the OTF algorithm.
-
-    :return: The initialization state dictionary.
-     :rtype: dict(str: *)
-    """
-    return {}
-
-
-@contract
 def otf_factory(time_step, migration_time, params):
     """ Creates the OTF algorithm.
 
