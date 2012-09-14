@@ -12,17 +12,26 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from contracts import new_contract
+from mocktest import *
+from pyqcy import *
 
-import collections
-import libvirt
-import sqlalchemy
-import neat.db
+import neat.local.overload.mhod.l_2_states as l
 
 
-new_contract('deque', collections.deque)
-new_contract('function', lambda x: hasattr(x, '__call__'))
-new_contract('virConnect', libvirt.virConnect)
-new_contract('virDomain', libvirt.virDomain)
-new_contract('Table', sqlalchemy.Table)
-new_contract('Database', neat.db.Database)
+class L2States(TestCase):
+
+    def test_l0(self):
+        p = [[0.4, 0.6],
+             [0.9, 0.1]]
+        p0 = [1, 0]
+
+        self.assertAlmostEqual(l.l0(p0, p, [0.2, 0.8]), 1.690, 3)
+        self.assertAlmostEqual(l.l0(p0, p, [0.62, 0.38]), 1.404, 3)
+
+    def test_l1(self):
+        p = [[0.4, 0.6],
+             [0.9, 0.1]]
+        p0 = [1, 0]
+
+        self.assertAlmostEqual(l.l1(p0, p, [0.2, 0.8]), 0.828, 3)
+        self.assertAlmostEqual(l.l1(p0, p, [0.62, 0.38]), 0.341, 3)

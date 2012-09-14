@@ -110,3 +110,21 @@ def physical_cpu_mhz_total(vir_connection):
      :rtype: int
     """
     return physical_cpu_count(vir_connection) * physical_cpu_mhz(vir_connection)
+
+
+@contract
+def frange(start, end, step):
+    """ A range generator for floats.
+
+    :param start: The starting value.
+     :type start: number
+
+    :param end: The end value.
+     :type end: number
+
+    :param step: The step.
+     :type step: number
+    """
+    while start <= end:
+        yield start
+        start += step

@@ -65,3 +65,9 @@ class Common(TestCase):
             expect(common).physical_cpu_count(connection).and_return(x).once()
             expect(common).physical_cpu_mhz(connection).and_return(y).once()
             assert common.physical_cpu_mhz_total(connection) == x * y
+
+    def test_frange(self):
+        self.assertEqual([round(x, 1) for x in common.frange(0, 1.0, 0.5)],
+                         [0.0, 0.5, 1.0])
+        self.assertEqual([round(x, 1) for x in common.frange(0, 1.0, 0.2)],
+                         [0.0, 0.2, 0.4, 0.6, 0.8, 1.0])
