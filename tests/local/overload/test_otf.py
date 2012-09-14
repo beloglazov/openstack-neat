@@ -20,57 +20,77 @@ import neat.local.overload.otf as otf
 
 class Otf(TestCase):
 
+    @qc
+    def overloading_steps(
+        x=list_(
+            of=float_(min=0.0, max=2.0),
+            min_length=0, max_length=10
+        )
+    ):
+        assert otf.overloading_steps(x) == len(filter(lambda y: y >= 1.0, x))
 
-    pass
+    def test_otf(self):
+        self.assertTrue(otf.otf(0.5, [0.9, 0.8, 1.1, 1.2, 1.3]))
+        self.assertFalse(otf.otf(0.5, [0.9, 0.8, 1.1, 1.2, 0.3]))
 
+    def test_otf_limit(self):
+        self.assertFalse(otf.otf_limit(0.5, 10, [0.9, 0.8, 1.1, 1.2, 1.3]))
+        self.assertFalse(otf.otf_limit(0.5, 10, [0.9, 0.8, 1.1, 1.2, 0.3]))
+        self.assertTrue(otf.otf_limit(0.5, 5, [0.9, 0.8, 1.1, 1.2, 1.3]))
+        self.assertFalse(otf.otf_limit(0.5, 5, [0.9, 0.8, 1.1, 1.2, 0.3]))
 
-# (def host {:mips 3000})
-# (def time-step 300) ;in seconds
-# (def migration-time 20)
-# (def vm1 {:mips 2000
-#           :utilization [0.5 0.6 0.4]})
-# (def vm2 {:mips 2000
-#           :utilization [0.2 0.3 0.6]})
-# (def vms (list vm1 vm2))
+    def test_otf_migration_time(self):
+        self.assertTrue(otf.otf_migration_time(0.5, 100, [0.9, 0.8, 1.1, 1.2, 1.3]))
+        self.assertTrue(otf.otf_migration_time(0.5, 100, [0.9, 0.8, 1.1, 1.2, 0.3]))
+        self.assertTrue(otf.otf_migration_time(0.5, 1, [0.9, 0.8, 1.1, 1.2, 1.3]))
+        self.assertFalse(otf.otf_migration_time(0.5, 1, [0.9, 0.8, 1.1, 1.2, 0.3]))
 
-# (fact
-#   (otf 0.5 0 0 host [{:mips 3000
-#                       :utilization [0.9 0.8 1.1 1.2 1.3]}]) => true
-#   (otf 0.5 0 0 host [{:mips 3000
-#                       :utilization [0.9 0.8 1.1 1.2 0.3]}]) => false)
+    def test_otf_limit_migration_time(self):
+        self.assertFalse(otf.otf_limit_migration_time(0.5, 10, 100, [0.9, 0.8, 1.1, 1.2, 1.3]))
+        self.assertFalse(otf.otf_limit_migration_time(0.5, 10, 100, [0.9, 0.8, 1.1, 1.2, 0.3]))
+        self.assertFalse(otf.otf_limit_migration_time(0.5, 10, 1, [0.9, 0.8, 1.1, 1.2, 1.3]))
+        self.assertFalse(otf.otf_limit_migration_time(0.5, 10, 1, [0.9, 0.8, 1.1, 1.2, 0.3]))
+        self.assertTrue(otf.otf_limit_migration_time(0.5, 5, 100, [0.9, 0.8, 1.1, 1.2, 1.3]))
+        self.assertTrue(otf.otf_limit_migration_time(0.5, 5, 100, [0.9, 0.8, 1.1, 1.2, 0.3]))
+        self.assertTrue(otf.otf_limit_migration_time(0.5, 5, 1, [0.9, 0.8, 1.1, 1.2, 1.3]))
+        self.assertFalse(otf.otf_limit_migration_time(0.5, 5, 1, [0.9, 0.8, 1.1, 1.2, 0.3]))
 
-    # def test_init_state(self):
-    #     state = c.init_state([20, 40], 2)
-    #     self.assertEquals(state['previous_state'], 0)
-    #     self.assertTrue('request_windows' in state)
-    #     self.assertTrue('estimate_windows' in state)
-    #     self.assertTrue('variances' in state)
-    #     self.assertTrue('acceptable_variances' in state)
+    def test_otf_factory(self):
+        alg = otf.otf_factory(300, 20, {'threshold': 0.5})
+        self.assertEquals(alg([0.9, 0.8, 1.1, 1.2, 1.3]), (True, {}))
+        self.assertEquals(alg([0.9, 0.8, 1.1, 1.2, 0.3]), (False, {}))
 
-    # def test_utilization_to_state(self):
-    #     state_config = [0.4, 0.7]
-    #     self.assertEqual(c.utilization_to_state(state_config, 0.0), 0)
-    #     self.assertEqual(c.utilization_to_state(state_config, 0.1), 0)
-    #     self.assertEqual(c.utilization_to_state(state_config, 0.2), 0)
-    #     self.assertEqual(c.utilization_to_state(state_config, 0.3), 0)
-    #     self.assertEqual(c.utilization_to_state(state_config, 0.4), 1)
-    #     self.assertEqual(c.utilization_to_state(state_config, 0.5), 1)
-    #     self.assertEqual(c.utilization_to_state(state_config, 0.6), 1)
-    #     self.assertEqual(c.utilization_to_state(state_config, 0.7), 2)
-    #     self.assertEqual(c.utilization_to_state(state_config, 0.8), 2)
-    #     self.assertEqual(c.utilization_to_state(state_config, 0.9), 2)
-    #     self.assertEqual(c.utilization_to_state(state_config, 1.0), 2)
-    #     self.assertEqual(c.utilization_to_state(state_config, 1.1), 2)
+    def test_otf_limit_factory(self):
+        alg = otf.otf_limit_factory(300, 20, {'threshold': 0.5, 'limit': 10})
+        self.assertEquals(alg([0.9, 0.8, 1.1, 1.2, 1.3]), (False, {}))
+        self.assertEquals(alg([0.9, 0.8, 1.1, 1.2, 0.3]), (False, {}))
 
-    #     self.assertEqual(c.utilization_to_state([1.0], 0.0), 0)
-    #     self.assertEqual(c.utilization_to_state([1.0], 0.1), 0)
-    #     self.assertEqual(c.utilization_to_state([1.0], 0.2), 0)
-    #     self.assertEqual(c.utilization_to_state([1.0], 0.3), 0)
-    #     self.assertEqual(c.utilization_to_state([1.0], 0.4), 0)
-    #     self.assertEqual(c.utilization_to_state([1.0], 0.5), 0)
-    #     self.assertEqual(c.utilization_to_state([1.0], 0.6), 0)
-    #     self.assertEqual(c.utilization_to_state([1.0], 0.7), 0)
-    #     self.assertEqual(c.utilization_to_state([1.0], 0.8), 0)
-    #     self.assertEqual(c.utilization_to_state([1.0], 0.9), 0)
-    #     self.assertEqual(c.utilization_to_state([1.0], 1.0), 1)
-    #     self.assertEqual(c.utilization_to_state([1.0], 1.1), 1)
+        alg = otf.otf_limit_factory(300, 20, {'threshold': 0.5, 'limit': 5})
+        self.assertEquals(alg([0.9, 0.8, 1.1, 1.2, 1.3]), (True, {}))
+        self.assertEquals(alg([0.9, 0.8, 1.1, 1.2, 0.3]), (False, {}))
+
+    def test_otf_migration_time_factory(self):
+        alg = otf.otf_migration_time_factory(30, 3000, {'threshold': 0.5})
+        self.assertEquals(alg([0.9, 0.8, 1.1, 1.2, 1.3]), (True, {}))
+        self.assertEquals(alg([0.9, 0.8, 1.1, 1.2, 0.3]), (True, {}))
+
+        alg = otf.otf_migration_time_factory(300, 1, {'threshold': 0.5})
+        self.assertEquals(alg([0.9, 0.8, 1.1, 1.2, 1.3]), (True, {}))
+        self.assertEquals(alg([0.9, 0.8, 1.1, 1.2, 0.3]), (False, {}))
+
+    def test_otf_limit_migration_time_factory(self):
+        alg = otf.otf_limit_migration_time_factory(30, 3000, {'threshold': 0.5, 'limit': 10})
+        self.assertEquals(alg([0.9, 0.8, 1.1, 1.2, 1.3]), (False, {}))
+        self.assertEquals(alg([0.9, 0.8, 1.1, 1.2, 0.3]), (False, {}))
+
+        alg = otf.otf_limit_migration_time_factory(300, 1, {'threshold': 0.5, 'limit': 10})
+        self.assertEquals(alg([0.9, 0.8, 1.1, 1.2, 1.3]), (False, {}))
+        self.assertEquals(alg([0.9, 0.8, 1.1, 1.2, 0.3]), (False, {}))
+
+        alg = otf.otf_limit_migration_time_factory(30, 3000, {'threshold': 0.5, 'limit': 5})
+        self.assertEquals(alg([0.9, 0.8, 1.1, 1.2, 1.3]), (True, {}))
+        self.assertEquals(alg([0.9, 0.8, 1.1, 1.2, 0.3]), (True, {}))
+
+        alg = otf.otf_limit_migration_time_factory(300, 1, {'threshold': 0.5, 'limit': 5})
+        self.assertEquals(alg([0.9, 0.8, 1.1, 1.2, 1.3]), (True, {}))
+        self.assertEquals(alg([0.9, 0.8, 1.1, 1.2, 0.3]), (False, {}))

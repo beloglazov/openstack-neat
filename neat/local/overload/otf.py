@@ -45,8 +45,9 @@ def otf_factory(time_step, migration_time, params):
     :return: A function implementing the OTF algorithm.
      :rtype: function
     """
-    return lambda state, utilization: {}, otf(params['threshold'],
-                                              utilization)
+    return lambda utilization, state=None: (otf(params['threshold'],
+                                                utilization),
+                                            {})
 
 
 @contract
@@ -65,9 +66,10 @@ def otf_limit_factory(time_step, migration_time, params):
     :return: A function implementing the OTF algorithm with limiting.
      :rtype: function
     """
-    return lambda state, utilization: {}, otf(params['threshold'],
-                                              params['limit'],
-                                              utilization)
+    return lambda utilization, state=None: (otf_limit(params['threshold'],
+                                                      params['limit'],
+                                                      utilization),
+                                            {})
 
 
 @contract
@@ -86,10 +88,11 @@ def otf_migration_time_factory(time_step, migration_time, params):
     :return: A function implementing the OTF algorithm.
      :rtype: function
     """
-    migration_time_normalized = migration_time / time_step
-    return lambda state, utilization: {}, otf(params['threshold'],
-                                              migration_time_normalized,
-                                              utilization)
+    migration_time_normalized = float(migration_time) / time_step
+    return lambda utilization, state=None: (otf_migration_time(params['threshold'],
+                                                               migration_time_normalized,
+                                                               utilization),
+                                            {})
 
 
 @contract
@@ -108,11 +111,12 @@ def otf_limit_migration_time_factory(time_step, migration_time, params):
     :return: A function implementing the OTF algorithm.
      :rtype: function
     """
-    migration_time_normalized = migration_time / time_step
-    return lambda state, utilization: {}, otf(params['threshold'],
-                                              params['limit'],
-                                              migration_time_normalized,
-                                              utilization)
+    migration_time_normalized = float(migration_time) / time_step
+    return lambda utilization, state=None: (otf_limit_migration_time(params['threshold'],
+                                                                     params['limit'],
+                                                                     migration_time_normalized,
+                                                                     utilization),
+                                            {})
 
 
 @contract
@@ -128,8 +132,7 @@ def otf(threshold, utilization):
     :return: The updated state and decision of the algorithm.
      :rtype: bool
     """
-    overloading_steps = len([1 for x in utilization if x >= 1])
-    return overloading_steps / len(utilization) > threshold
+    return float(overloading_steps(utilization)) / len(utilization) > threshold
 
 
 @contract
@@ -151,8 +154,7 @@ def otf_limit(threshold, limit, utilization):
     cnt = len(utilization)
     if cnt < limit:
         return False
-    overloading_steps = len([1 for x in utilization if x >= 1])
-    return overloading_steps / cnt > threshold
+    return float(overloading_steps(utilization)) / cnt > threshold
 
 
 @contract
@@ -163,7 +165,7 @@ def otf_migration_time(threshold, migration_time, utilization):
      :type threshold: float,>=0
 
     :param migration_time: The VM migration time in time steps.
-     :type migration_time: int,>=0
+     :type migration_time: number,>=0
 
     :param utilization: The history of the host's CPU utilization.
      :type utilization: list(float)
@@ -171,8 +173,7 @@ def otf_migration_time(threshold, migration_time, utilization):
     :return: The updated state and decision of the algorithm.
      :rtype: bool
     """
-    overloading_steps = len([1 for x in utilization if x >= 1])
-    return (migration_time + overloading_steps) / \
+    return (migration_time + float(overloading_steps(utilization))) / \
         (migration_time + len(utilization)) > threshold
 
 
@@ -187,7 +188,7 @@ def otf_limit_migration_time(threshold, limit, migration_time, utilization):
      :type limit: int,>=0
 
     :param migration_time: The VM migration time in time steps.
-     :type migration_time: int,>=0
+     :type migration_time: number,>=0
 
     :param utilization: The history of the host's CPU utilization.
      :type utilization: list(float)
@@ -198,5 +199,18 @@ def otf_limit_migration_time(threshold, limit, migration_time, utilization):
     cnt = len(utilization)
     if cnt < limit:
         return False
-    return (migration_time + overloading_steps) / \
+    return (migration_time + float(overloading_steps(utilization))) / \
         (migration_time + cnt) > threshold
+
+
+@contract
+def overloading_steps(utilization):
+    """ Get the number of overloading steps (utilization >= 100%).
+
+    :param utilization: The history of the host's CPU utilization.
+     :type utilization: list(float)
+
+    :return: The number of overloading steps.
+     :rtype: int
+    """
+    return len([1 for x in utilization if x >= 1])
