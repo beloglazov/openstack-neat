@@ -34,6 +34,7 @@ class Trivial(TestCase):
         self.assertTrue(trivial.threshold(0.5, [0.9, 0.8, 1.1, 1.2, 0.6]))
         self.assertFalse(trivial.threshold(0.5, [0.9, 0.8, 1.1, 1.2, 0.5]))
         self.assertFalse(trivial.threshold(0.5, [0.9, 0.8, 1.1, 1.2, 0.3]))
+        self.assertFalse(trivial.threshold(0.5, []))
 
     def test_threshold_factory(self):
         alg = trivial.threshold_factory(300, 20, {'threshold': 0.5})
@@ -41,3 +42,4 @@ class Trivial(TestCase):
         self.assertEquals(alg([0.9, 0.8, 1.1, 1.2, 0.6]), (True, {}))
         self.assertEquals(alg([0.9, 0.8, 1.1, 1.2, 0.5]), (False, {}))
         self.assertEquals(alg([0.9, 0.8, 1.1, 1.2, 0.3]), (False, {}))
+        self.assertEquals(alg([]), (False, {}))

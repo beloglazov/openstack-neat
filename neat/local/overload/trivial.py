@@ -72,4 +72,6 @@ def threshold(threshold, utilization):
     :return: The decision of the algorithm.
      :rtype: bool
     """
-    return utilization[-1] > threshold
+    if utilization:
+        return utilization[-1] > threshold
+    return False
