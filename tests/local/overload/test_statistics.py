@@ -20,26 +20,23 @@ import neat.local.overload.statistics as stats
 
 class Statistics(TestCase):
 
-    pass
+    def test_loess_parameter_estimates(self):
+        data = [1.05, 1.09, 1.07, 1.12, 1.02, 1.18, 1.15, 1.04, 1.1, 1.16, 1.08]
+        # print stats.loess_parameter_estimates(data)
 
-    # @qc(10)
-    # def overloading_steps(
-    #     time_step=int_(min=0, max=10),
-    #     migration_time=int_(min=0, max=10),
-    #     utilization=list_(of=float)
-    # ):
-    #     alg = trivial.no_migrations_factory(time_step, migration_time, {'threshold': 0.5})
-    #     assert alg(utilization) == (False, {})
+    def test_tricube_weights(self):
+        for actual, expected in zip(
+                stats.tricube_weights(5),
+                [1.492, 1.492, 1.492, 1.048, 1.000]):
+            self.assertAlmostEqual(actual, expected, 2)
 
-    # def test_threshold(self):
-    #     self.assertTrue(trivial.threshold(0.5, [0.9, 0.8, 1.1, 1.2, 1.3]))
-    #     self.assertTrue(trivial.threshold(0.5, [0.9, 0.8, 1.1, 1.2, 0.6]))
-    #     self.assertFalse(trivial.threshold(0.5, [0.9, 0.8, 1.1, 1.2, 0.5]))
-    #     self.assertFalse(trivial.threshold(0.5, [0.9, 0.8, 1.1, 1.2, 0.3]))
+        for actual, expected in zip(
+                stats.tricube_weights(10),
+                [6.736, 6.736, 6.736, 2.869, 1.758, 1.317, 1.119, 1.033, 1.004, 1.000]):
+            self.assertAlmostEqual(actual, expected, 2)
 
-    # def test_threshold_factory(self):
-    #     alg = trivial.threshold_factory(300, 20, {'threshold': 0.5})
-    #     self.assertEquals(alg([0.9, 0.8, 1.1, 1.2, 1.3]), (True, {}))
-    #     self.assertEquals(alg([0.9, 0.8, 1.1, 1.2, 0.6]), (True, {}))
-    #     self.assertEquals(alg([0.9, 0.8, 1.1, 1.2, 0.5]), (False, {}))
-    #     self.assertEquals(alg([0.9, 0.8, 1.1, 1.2, 0.3]), (False, {}))
+    def test_tricube_bisquare_weights(self):
+        for actual, expected in zip(
+                stats.tricube_bisquare_weights([1., 1., 2., 2., 4., 6., 9.]),
+                [3.035, 3.035, 3.035, 1.579, 1.417, 1.802, 5.224]):
+            self.assertAlmostEqual(actual, expected, 2)
