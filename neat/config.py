@@ -46,13 +46,13 @@ REQUIRED_FIELDS = [
     'compute_user',
     'compute_password',
     'sleep_command',
-    'algorithm_underload_detection',
+    'algorithm_underload_detection_factory',
     'algorithm_underload_detection_parameters',
-    'algorithm_overload_detection',
+    'algorithm_overload_detection_factory',
     'algorithm_overload_detection_parameters',
-    'algorithm_vm_selection',
+    'algorithm_vm_selection_factory',
     'algorithm_vm_selection_parameters',
-    'algorithm_vm_placement',
+    'algorithm_vm_placement_factory',
     'algorithm_vm_placement_parameters',
 ]
 
