@@ -21,8 +21,13 @@ import neat.local.overload.statistics as stats
 class Statistics(TestCase):
 
     def test_loess_parameter_estimates(self):
-        data = [1.05, 1.09, 1.07, 1.12, 1.02, 1.18, 1.15, 1.04, 1.1, 1.16, 1.08]
-        # print stats.loess_parameter_estimates(data)
+        data = [2., 4., 7., -20., 22., -1., 0., -1., 7., 15., 8., 4.,
+                -4., 11., 11., 12., 3., 12., 18., 1.]
+        print stats.loess_parameter_estimates(data)
+
+  # (loess-parameter-estimates data3) => (just (roughly 2.2639)
+  #                                            (roughly 0.3724)))
+
 
     def test_tricube_weights(self):
         for actual, expected in zip(

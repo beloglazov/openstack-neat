@@ -25,15 +25,17 @@ from scipy.odr import *
 
 @contract
 def loess_parameter_estimates(data):
-    """
+    """ Calculate Loess parameter estimates.
 
     :param data: A data set.
-     :type data: list(number)
+     :type data: list(float)
 
     :return: The parameter estimates.
-     :rtype: list(number)
+     :rtype: list(float)
     """
-    x = range(1, len(data) + 1)
+    n = len(data)
+    x = range(1, n + 1)
+    weights = tricube_weights(n)
     slope, intercept, _, _, _ = stats.linregress(x, data)
     print slope
     print intercept
@@ -43,8 +45,20 @@ def loess_parameter_estimates(data):
         return B[0] * x + B[1]
 
     linear = Model(f)
-    mydata = Data(x, data) #, we=weights)
+    mydata = Data(x, data, we=weights)
     return ODR(mydata, linear, beta0=[slope, intercept]).run().beta.tolist()
+
+# (defn loess-parameter-estimates [data]
+#   {:pre [(coll? data)]
+#    :post [(coll? %)]}
+#   (let [n (count data)
+#         xs (take n (range 1 (inc n)))
+#         regression (Regression. (double-array xs)
+#                                 (double-array data)
+#                                 (double-array (tricube-weights n)))]
+#     (do
+#       (.linear regression)
+#       (seq (.getBestEstimates regression)))))
 
 
 @contract
