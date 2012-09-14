@@ -33,7 +33,7 @@ class Collector(TestCase):
     ):
         with MockTransaction:
             state = {'property': 'value'}
-            config = {'data_collector_interval': time_interval}
+            config = {'data_collector_interval': str(time_interval)}
             paths = [collector.DEFAILT_CONFIG_PATH, collector.CONFIG_PATH]
             fields = collector.REQUIRED_FIELDS
             expect(collector).read_and_validate_config(paths, fields). \

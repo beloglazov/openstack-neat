@@ -113,7 +113,7 @@ def start():
         init_state,
         execute,
         config,
-        config.get('data_collector_interval'))
+        int(config.get('data_collector_interval')))
 
 
 @contract
@@ -182,10 +182,11 @@ def execute(config, state):
     vms_added = get_added_vms(vms_previous, vms_current)
     vms_removed = get_removed_vms(vms_previous, vms_current)
     cleanup_local_data(vms_removed)
+    data_length = int(config.get('data_collector_data_length'))
     added_vm_data = fetch_remote_data(config.get('db'),
-                                      config.get('data_collector_data_length'),
+                                      data_length,
                                       vms_added)
-    write_data_locally(path, added_vm_data, config.get('data_collector_data_length'))
+    write_data_locally(path, added_vm_data, data_length)
     current_time = time.time()
     (cpu_time, cpu_mhz) = get_cpu_mhz(state['vir_connection'],
                                       state['physical_cpus'],
@@ -196,7 +197,7 @@ def execute(config, state):
                                       added_vm_data)
     state['previous_time'] = current_time
     state['previous_cpu_time'] = cpu_time
-    append_data_locally(path, cpu_mhz, config.get('data_collector_data_length'))
+    append_data_locally(path, cpu_mhz, data_length)
     append_data_remotely(config.get('db'), cpu_mhz)
     return state
 

@@ -119,7 +119,7 @@ def start():
         init_state,
         execute,
         config,
-        config.get('local_manager_interval'))
+        int(config.get('local_manager_interval')))
 
 
 @contract
