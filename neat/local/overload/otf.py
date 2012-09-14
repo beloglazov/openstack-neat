@@ -119,7 +119,7 @@ def otf(threshold, utilization):
     :param utilization: The history of the host's CPU utilization.
      :type utilization: list(float)
 
-    :return: The updated state and decision of the algorithm.
+    :return: The decision of the algorithm.
      :rtype: bool
     """
     return float(overloading_steps(utilization)) / len(utilization) > threshold
@@ -138,7 +138,7 @@ def otf_limit(threshold, limit, utilization):
     :param utilization: The history of the host's CPU utilization.
      :type utilization: list(float)
 
-    :return: The updated state and decision of the algorithm.
+    :return: The decision of the algorithm.
      :rtype: bool
     """
     cnt = len(utilization)
@@ -160,7 +160,7 @@ def otf_migration_time(threshold, migration_time, utilization):
     :param utilization: The history of the host's CPU utilization.
      :type utilization: list(float)
 
-    :return: The updated state and decision of the algorithm.
+    :return: The decision of the algorithm.
      :rtype: bool
     """
     return (migration_time + float(overloading_steps(utilization))) / \
@@ -183,7 +183,7 @@ def otf_limit_migration_time(threshold, limit, migration_time, utilization):
     :param utilization: The history of the host's CPU utilization.
      :type utilization: list(float)
 
-    :return: The updated state and decision of the algorithm.
+    :return: The decision of the algorithm.
      :rtype: bool
     """
     cnt = len(utilization)
