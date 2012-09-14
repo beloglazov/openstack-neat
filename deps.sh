@@ -15,3 +15,4 @@
 # limitations under the License.
 
 sudo pip2 install --upgrade pyqcy mocktest PyContracts sniffer pyinotify SQLAlchemy
+sudo pacman -S python2-scipy
