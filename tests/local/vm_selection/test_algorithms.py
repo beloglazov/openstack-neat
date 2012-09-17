@@ -21,6 +21,63 @@ import neat.local.vm_selection.algorithms as selection
 class Selection(TestCase):
 
     @qc(10)
+    def minimum_migration_time_factory(
+        x=dict_(
+            keys=str_(of='abc123-', min_length=36, max_length=36),
+            values=int_(min=0, max=3000),
+            min_length=1, max_length=5
+        )
+    ):
+        alg = selection.minimum_migration_time_factory(300, 20, dict())
+        values = x.values()
+        vm_index = values.index(min(values))
+        vm = x.keys()[vm_index]
+        assert alg(dict(), x) == (vm, {})
+
+    @qc(10)
+    def minimum_utilization_factory(
+        x=dict_(
+            keys=str_(of='abc123-', min_length=36, max_length=36),
+            values=list_(of=int_(min=0, max=3000), min_length=1, max_length=10),
+            min_length=1, max_length=5
+        )
+    ):
+        alg = selection.minimum_utilization_factory(300, 20, dict())
+        last_utilization = []
+        for utilization in x.values():
+            last_utilization.append(utilization[-1])
+        vm_index = last_utilization.index(min(last_utilization))
+        vm = x.keys()[vm_index]
+        assert alg(x, dict()) == (vm, {})
+
+    @qc(10)
+    def random_factory(
+        x=dict_(
+            keys=str_(of='abc123-', min_length=36, max_length=36),
+            values=list_(of=int_(min=0, max=3000), min_length=0, max_length=10),
+            min_length=1, max_length=3
+        )
+    ):
+        with MockTransaction:
+            alg = selection.random_factory(300, 20, dict())
+            vm = x.keys()[random.randrange(len(x))]
+            expect(selection).choice(x.keys()).and_return(vm).once()
+            assert alg(x, dict()) == (vm, {})
+
+    @qc(10)
+    def minimum_migration_time(
+        x=dict_(
+            keys=str_(of='abc123-', min_length=36, max_length=36),
+            values=int_(min=0, max=3000),
+            min_length=1, max_length=5
+        )
+    ):
+        values = x.values()
+        vm_index = values.index(min(values))
+        vm = x.keys()[vm_index]
+        assert selection.minimum_migration_time(x) == vm
+
+    @qc(10)
     def minimum_utilization(
         x=dict_(
             keys=str_(of='abc123-', min_length=36, max_length=36),
