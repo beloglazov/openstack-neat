@@ -24,6 +24,98 @@ import numpy as np
 
 
 @contract
+def loess_factory(time_step, migration_time, params):
+    """ Creates the Loess based overload detection algorithm.
+
+    :param time_step: The length of the simulation time step in seconds.
+     :type time_step: int,>=0
+
+    :param migration_time: The VM migration time in time seconds.
+     :type migration_time: int,>=0
+
+    :param params: A dictionary containing the algorithm's parameters.
+     :type params: dict(str: *)
+
+    :return: A function implementing the OTF algorithm.
+     :rtype: function
+    """
+    migration_time_normalized = float(migration_time) / time_step
+    return lambda utilization, state=None: (loess(params['param'],
+                                                  params['limit'],
+                                                  migration_time_normalized,
+                                                  utilization),
+                                            {})
+
+
+@contract
+def loess_robust_factory(time_step, migration_time, params):
+    """ Creates the robust Loess based overload detection algorithm.
+
+    :param time_step: The length of the simulation time step in seconds.
+     :type time_step: int,>=0
+
+    :param migration_time: The VM migration time in time seconds.
+     :type migration_time: int,>=0
+
+    :param params: A dictionary containing the algorithm's parameters.
+     :type params: dict(str: *)
+
+    :return: A function implementing the OTF algorithm.
+     :rtype: function
+    """
+    migration_time_normalized = float(migration_time) / time_step
+    return lambda utilization, state=None: (loess_robust(params['param'],
+                                                         params['limit'],
+                                                         migration_time_normalized,
+                                                         utilization),
+                                            {})
+
+
+@contract
+def mad_threshold_factory(time_step, migration_time, params):
+    """ Creates the MAD based utilization threshold algorithm.
+
+    :param time_step: The length of the simulation time step in seconds.
+     :type time_step: int,>=0
+
+    :param migration_time: The VM migration time in time seconds.
+     :type migration_time: int,>=0
+
+    :param params: A dictionary containing the algorithm's parameters.
+     :type params: dict(str: *)
+
+    :return: A function implementing the static threshold algorithm.
+     :rtype: function
+    """
+    return lambda utilization, state=None: (mad_threshold(params['threshold'],
+                                                          params['limit'],
+                                                          utilization),
+                                            {})
+
+
+@contract
+def iqr_threshold_factory(time_step, migration_time, params):
+    """ Creates the IQR based utilization threshold algorithm.
+
+    :param time_step: The length of the simulation time step in seconds.
+     :type time_step: int,>=0
+
+    :param migration_time: The VM migration time in time seconds.
+     :type migration_time: int,>=0
+
+    :param params: A dictionary containing the algorithm's parameters.
+     :type params: dict(str: *)
+
+    :return: A function implementing the static threshold algorithm.
+     :rtype: function
+    """
+    return lambda utilization, state=None: (iqr_threshold(params['threshold'],
+                                                          params['limit'],
+                                                          utilization),
+                                            {})
+
+
+@contract
 def loess(param, limit, migration_time, utilization):
     """ The Loess based overload detection algorithm.
 
