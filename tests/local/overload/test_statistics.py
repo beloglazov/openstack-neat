@@ -20,6 +20,18 @@ import neat.local.overload.statistics as stats
 
 class Statistics(TestCase):
 
+    def test_mad(self):
+        data = [1, 1, 2, 2, 4, 6, 9]
+        assert stats.mad(data) == 1.
+
+    def test_iqr(self):
+        data = [105, 109, 107, 112, 102, 118, 115, 104, 110, 116, 108]
+        assert stats.iqr(data) == 10.
+
+        data = [2., 4., 7., -20., 22., -1., 0., -1., 7., 15., 8., 4.,
+                -4., 11., 11., 12., 3., 12., 18., 1.]
+        assert stats.iqr(data) == 12.
+
     def test_loess_parameter_estimates(self):
         data = [2., 4., 7., -20., 22., -1., 0., -1., 7., 15., 8., 4.,
                 -4., 11., 11., 12., 3., 12., 18., 1.]

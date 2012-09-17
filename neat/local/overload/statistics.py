@@ -24,6 +24,37 @@ import numpy as np
 
 
 @contract
+def mad(data):
+    """ Calculate the Median Absolute Deviation from the data.
+
+    :param data: The data to analyze.
+     :type data: list(number)
+
+    :return: The calculated MAD.
+     :rtype: float
+    """
+    data_median = median(data)
+    return float(median([abs(data_median - x) for x in data]))
+
+
+@contract
+def iqr(data):
+    """ Calculate the Interquartile Range from the data.
+
+    :param data: The data to analyze.
+     :type data: list(number)
+
+    :return: The calculated IQR.
+     :rtype: float
+    """
+    sorted_data = sorted(data)
+    n = len(data) + 1
+    q1 = int(round(0.25 * n)) - 1
+    q3 = int(round(0.75 * n)) - 1
+    return float(sorted_data[q3] - sorted_data[q1])
+
+
+@contract
 def loess_parameter_estimates(data):
     """ Calculate Loess parameter estimates.
 
