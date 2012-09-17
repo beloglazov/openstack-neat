@@ -12,12 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+""" Trivial underload detection algorithms.
+"""
+
 from contracts import contract
 from neat.contracts_extra import *
 
 
 @contract
-def threshold(threshold, data, cpu_mhz):
+def threshold(threshold, utilization):
     """ Static threshold-based underload detection algorithm.
 
     The algorithm returns True, if the last value of the host's
@@ -26,11 +29,7 @@ def threshold(threshold, data, cpu_mhz):
     :param threshold: The static underload CPU utilization threshold.
      :type threshold: int,>=0,<=1
 
-    :param threshold: The static underload CPU utilization threshold.
-     :type threshold: dict(str : list(int))
-
-    :return: A decision of whether the host is overloaded.
+    :return: A decision of whether the host is underloaded.
      :rtype: bool
     """
-    utilization = sum(values[-1] for _, values in data)
-    return utilization < threshold * cpu_mhz
+    return utilization[-1] < threshold
