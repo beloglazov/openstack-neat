@@ -20,6 +20,27 @@ from neat.contracts_extra import *
 
 
 @contract
+def threshold_factory(time_step, migration_time, params):
+    """ Creates the threshold underload detection algorithm.
+
+    :param time_step: The length of the simulation time step in seconds.
+     :type time_step: int,>=0
+
+    :param migration_time: The VM migration time in time seconds.
+     :type migration_time: int,>=0
+
+    :param params: A dictionary containing the algorithm's parameters.
+     :type params: dict(str: *)
+
+    :return: A function implementing the OTF algorithm.
+     :rtype: function
+    """
+    return lambda utilization, state=None: (threshold(params['threshold'],
+                                                      utilization),
+                                            {})
+
+
+@contract
 def threshold(threshold, utilization):
     """ Static threshold-based underload detection algorithm.
 
