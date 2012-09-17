@@ -21,17 +21,9 @@ import neat.local.underload.trivial as trivial
 class Trivial(TestCase):
 
     def test_threshold(self):
-        print "ok"
-        assert trivial.threshold(0.5, 0.0) == True
-        assert trivial.threshold(0.5, 0.4) == True
-        assert trivial.threshold(0.5, 0.5) == True
-        assert trivial.threshold(0.5, 0.6) == False
-        assert trivial.threshold(0.5, 1.0) == True
-
-    def test_threshold2(self):
-        print "ok"
-        assert trivial.threshold(0.5, 0.0) == True
-        assert trivial.threshold(0.5, 0.4) == True
-        assert trivial.threshold(0.5, 0.5) == True
-        assert trivial.threshold(0.5, 0.6) == False
-        assert trivial.threshold(0.5, 1.0) == True
+        assert trivial.threshold(0.5, []) == False
+        assert trivial.threshold(0.5, [0.0, 0.0]) == True
+        assert trivial.threshold(0.5, [0.0, 0.4]) == True
+        assert trivial.threshold(0.5, [0.0, 0.5]) == True
+        assert trivial.threshold(0.5, [0.0, 0.6]) == False
+        assert trivial.threshold(0.5, [0.0, 1.0]) == False

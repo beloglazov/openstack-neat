@@ -27,9 +27,14 @@ def threshold(threshold, utilization):
     CPU utilization is lower than the specified threshold.
 
     :param threshold: The static underload CPU utilization threshold.
-     :type threshold: int,>=0,<=1
+     :type threshold: float,>=0,<=1
+
+    :param utilization: The history of the host's CPU utilization.
+     :type utilization: list(float)
 
     :return: A decision of whether the host is underloaded.
      :rtype: bool
     """
-    return utilization[-1] < threshold
+    if utilization:
+        return utilization[-1] <= threshold
+    return False
