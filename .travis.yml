@@ -3,7 +3,7 @@ python:
   - 2.7
 install:
   - sudo apt-get upgrade gcc
-  - sudo apt-get install python-libvirt libatlas-base-dev liblapack-dev gfortran python-dev
+  - sudo apt-get install python-libvirt libatlas-base-dev liblapack-dev gfortran libz-dev libpng-dev libfreetype6-dev python-dev
   - cp /usr/lib/python2.7/dist-packages/*libvirt* ~/virtualenv/python2.7/local/lib/python2.7/site-packages/
   - pip install --use-mirrors pyqcy mocktest PyContracts nose SQLAlchemy numpy scipy
   - python setup.py install
