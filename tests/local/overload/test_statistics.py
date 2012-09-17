@@ -23,25 +23,30 @@ class Statistics(TestCase):
     def test_loess_parameter_estimates(self):
         data = [2., 4., 7., -20., 22., -1., 0., -1., 7., 15., 8., 4.,
                 -4., 11., 11., 12., 3., 12., 18., 1.]
-        print stats.loess_parameter_estimates(data)
+        estimates = stats.loess_parameter_estimates(data)
+        self.assertAlmostEqual(estimates[0], 2.2639, 3)
+        self.assertAlmostEqual(estimates[1], 0.3724, 3)
 
-  # (loess-parameter-estimates data3) => (just (roughly 2.2639)
-  #                                            (roughly 0.3724)))
-
+    def test_loess_robust_parameter_estimates(self):
+        data = [2., 4., 7., -20., 22., -1., 0., -1., 7., 15., 8., 4.,
+                -4., 11., 11., 12., 3., 12., 18., 1.]
+        estimates = stats.loess_robust_parameter_estimates(data)
+        self.assertAlmostEqual(estimates[0], 2.4547, 3)
+        self.assertAlmostEqual(estimates[1], 0.3901, 3)
 
     def test_tricube_weights(self):
         for actual, expected in zip(
                 stats.tricube_weights(5),
-                [1.492, 1.492, 1.492, 1.048, 1.000]):
+                [0.669, 0.669, 0.669, 0.953, 1.0]):
             self.assertAlmostEqual(actual, expected, 2)
 
         for actual, expected in zip(
                 stats.tricube_weights(10),
-                [6.736, 6.736, 6.736, 2.869, 1.758, 1.317, 1.119, 1.033, 1.004, 1.000]):
+                [0.148, 0.148, 0.148, 0.348, 0.568, 0.759, 0.892, 0.967, 0.995, 1.0]):
             self.assertAlmostEqual(actual, expected, 2)
 
     def test_tricube_bisquare_weights(self):
         for actual, expected in zip(
                 stats.tricube_bisquare_weights([1., 1., 2., 2., 4., 6., 9.]),
-                [3.035, 3.035, 3.035, 1.579, 1.417, 1.802, 5.224]):
+                [0.329, 0.329, 0.329, 0.633, 0.705, 0.554, 0.191]):
             self.assertAlmostEqual(actual, expected, 2)

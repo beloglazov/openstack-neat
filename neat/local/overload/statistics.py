@@ -19,8 +19,8 @@ from contracts import contract
 from neat.contracts_extra import *
 
 from numpy import median
-from scipy import stats
-from scipy.odr import *
+from scipy.optimize import leastsq
+import numpy as np
 
 
 @contract
@@ -33,32 +33,44 @@ def loess_parameter_estimates(data):
     :return: The parameter estimates.
      :rtype: list(float)
     """
+    def f(p, x, y, weights):
+        return weights * (y - (p[0] + p[1] * x))
+
     n = len(data)
-    x = range(1, n + 1)
-    weights = tricube_weights(n)
-    slope, intercept, _, _, _ = stats.linregress(x, data)
-    print slope
-    print intercept
+    estimates, _ = leastsq(f, [1., 1.], args=(
+        np.array(range(1, n + 1)),
+        np.array(data),
+        np.array(tricube_weights(n))))
 
-    def f(B, x):
-        ''' Linear function y = a*x + b '''
-        return B[0] * x + B[1]
+    return estimates.tolist()
 
-    linear = Model(f)
-    mydata = Data(x, data, we=weights)
-    return ODR(mydata, linear, beta0=[slope, intercept]).run().beta.tolist()
 
-# (defn loess-parameter-estimates [data]
-#   {:pre [(coll? data)]
-#    :post [(coll? %)]}
-#   (let [n (count data)
-#         xs (take n (range 1 (inc n)))
-#         regression (Regression. (double-array xs)
-#                                 (double-array data)
-#                                 (double-array (tricube-weights n)))]
-#     (do
-#       (.linear regression)
-#       (seq (.getBestEstimates regression)))))
+@contract
+def loess_robust_parameter_estimates(data):
+    """ Calculate Loess robust parameter estimates.
+
+    :param data: A data set.
+     :type data: list(float)
+
+    :return: The parameter estimates.
+     :rtype: list(float)
+    """
+    def f(p, x, y, weights):
+        return weights * (y - (p[0] + p[1] * x))
+
+    n = len(data)
+    x = np.array(range(1, n + 1))
+    y = np.array(data)
+    weights = np.array(tricube_weights(n))
+    estimates, _ = leastsq(f, [1., 1.], args=(x, y, weights))
+
+    p = estimates.tolist()
+    residuals = (y - (p[0] + p[1] * x))
+
+    weights2 = np.array(tricube_bisquare_weights(residuals.tolist()))
+    estimates2, _ = leastsq(f, [1., 1.], args=(x, y, weights2))
+
+    return estimates2.tolist()
 
 
 @contract
@@ -72,14 +84,9 @@ def tricube_weights(n):
      :rtype: list(float)
     """
     spread = top = float(n - 1)
-    infinity = float('inf')
     weights = []
     for i in range(2, n):
-        k = (1 - ((top - i) / spread) ** 3) ** 3
-        if k > 0:
-            weights.append(1 / k)
-        else:
-            weights.append(infinity)
+        weights.append((1 - ((top - i) / spread) ** 3) ** 3)
     return [weights[0], weights[0]] + weights
 
 
@@ -96,12 +103,7 @@ def tricube_bisquare_weights(data):
     n = len(data)
     s6 = 6 * median(map(abs, data))
     weights = tricube_weights(n)
-    infinity = float('inf')
     weights2 = []
     for i in range(2, n):
-        k = (1 - (data[i] / s6) ** 2) ** 2
-        if k > 0:
-            weights2.append(weights[i] / k)
-        else:
-            weights2.append(infinity)
+            weights2.append(weights[i] * (1 - (data[i] / s6) ** 2) ** 2)
     return [weights2[0], weights2[0]] + weights2
