@@ -20,6 +20,40 @@ import neat.local.overload.statistics as stats
 
 class Statistics(TestCase):
 
+    def test_mad_threshold(self):
+        with MockTransaction:
+            expect(stats).mad.and_return(0.125).exactly(6).times()
+            assert stats.mad_threshold(1., 3, []) == False
+            assert stats.mad_threshold(1., 3, [0., 0., 0.]) == False
+            assert stats.mad_threshold(1.6, 3, [0., 0., 0.5]) == False
+            assert stats.mad_threshold(1.6, 3, [0., 0., 0.6]) == False
+            assert stats.mad_threshold(1.6, 3, [0., 0., 0.8]) == True
+            assert stats.mad_threshold(1.6, 3, [0., 0., 0.9]) == True
+            assert stats.mad_threshold(1.6, 3, [0., 0., 1.0]) == True
+
+    def test_iqr_threshold(self):
+        with MockTransaction:
+            expect(stats).iqr.and_return(0.125).exactly(6).times()
+            assert stats.iqr_threshold(1., 3, []) == False
+            assert stats.iqr_threshold(1., 3, [0., 0., 0.]) == False
+            assert stats.iqr_threshold(1.6, 3, [0., 0., 0.5]) == False
+            assert stats.iqr_threshold(1.6, 3, [0., 0., 0.6]) == False
+            assert stats.iqr_threshold(1.6, 3, [0., 0., 0.8]) == True
+            assert stats.iqr_threshold(1.6, 3, [0., 0., 0.9]) == True
+            assert stats.iqr_threshold(1.6, 3, [0., 0., 1.0]) == True
+
+    def test_utilization_threshold_abstract(self):
+        f = lambda x: 0.8
+        assert stats.utilization_threshold_abstract(f, 3, []) == False
+        assert stats.utilization_threshold_abstract(f, 3, [0., 0., 0.]) == False
+        assert stats.utilization_threshold_abstract(f, 3, [0., 0., 1.0]) == True
+        assert stats.utilization_threshold_abstract(f, 3, [0., 0., 0., 0.]) == False
+        assert stats.utilization_threshold_abstract(f, 3, [0., 0., 0., 0.5]) == False
+        assert stats.utilization_threshold_abstract(f, 3, [0., 0., 0., 0.7]) == False
+        assert stats.utilization_threshold_abstract(f, 3, [0., 0., 0., 0.8]) == True
+        assert stats.utilization_threshold_abstract(f, 3, [0., 0., 0., 0.9]) == True
+        assert stats.utilization_threshold_abstract(f, 3, [0., 0., 0., 1.0]) == True
+
     def test_mad(self):
         data = [1, 1, 2, 2, 4, 6, 9]
         assert stats.mad(data) == 1.

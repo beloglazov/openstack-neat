@@ -24,6 +24,69 @@ import numpy as np
 
 
 @contract
+def mad_threshold(param, limit, utilization):
+    """ The MAD based threshold algorithm.
+
+    :param param: The safety parameter.
+     :type param: float
+
+    :param limit: The minimum allowed length of the utilization history.
+     :type limit: int
+
+    :param utilization: The utilization history to analize.
+     :type utilization: list(float)
+
+    :return: A decision of whether the host is overloaded.
+     :rtype: bool
+    """
+    return utilization_threshold_abstract(lambda x: 1 - param * mad(x),
+                                          limit,
+                                          utilization)
+
+
+@contract
+def iqr_threshold(param, limit, utilization):
+    """ The IQR based threshold algorithm.
+
+    :param param: The safety parameter.
+     :type param: float
+
+    :param limit: The minimum allowed length of the utilization history.
+     :type limit: int
+
+    :param utilization: The utilization history to analize.
+     :type utilization: list(float)
+
+    :return: A decision of whether the host is overloaded.
+     :rtype: bool
+    """
+    return utilization_threshold_abstract(lambda x: 1 - param * iqr(x),
+                                          limit,
+                                          utilization)
+
+
+@contract
+def utilization_threshold_abstract(f, limit, utilization):
+    """ The abstract utilization threshold algorithm.
+
+    :param f: A function to calculate the utilization threshold.
+     :type f: function
+
+    :param limit: The minimum allowed length of the utilization history.
+     :type limit: int
+
+    :param utilization: The utilization history to analize.
+     :type utilization: list(float)
+
+    :return: A decision of whether the host is overloaded.
+     :rtype: bool
+    """
+    if (len(utilization) < limit):
+        return False
+    return f(utilization) <= utilization[-1]
+
+
+@contract
 def mad(data):
     """ Calculate the Median Absolute Deviation from the data.
 
