@@ -24,6 +24,88 @@ import numpy as np
 
 
 @contract
+def loess(param, limit, migration_time, utilization):
+    """ The Loess based overload detection algorithm.
+
+    :param param: The safety parameter.
+     :type param: float
+
+    :param limit: The minimum allowed length of the utilization history.
+     :type limit: int
+
+    :param migration_time: The VM migration time in time steps.
+     :type migration_time: float
+
+    :param utilization: The utilization history to analize.
+     :type utilization: list(float)
+
+    :return: A decision of whether the host is overloaded.
+     :rtype: bool
+    """
+    return loess_abstract(loess_parameter_estimates,
+                          param,
+                          limit,
+                          migration_time,
+                          utilization)
+
+
+@contract
+def loess_robust(param, limit, migration_time, utilization):
+    """ The robust Loess based overload detection algorithm.
+
+    :param param: The safety parameter.
+     :type param: float
+
+    :param limit: The minimum allowed length of the utilization history.
+     :type limit: int
+
+    :param migration_time: The VM migration time in time steps.
+     :type migration_time: float
+
+    :param utilization: The utilization history to analize.
+     :type utilization: list(float)
+
+    :return: A decision of whether the host is overloaded.
+     :rtype: bool
+    """
+    return loess_abstract(loess_robust_parameter_estimates,
+                          param,
+                          limit,
+                          migration_time,
+                          utilization)
+
+
+@contract
+def loess_abstract(estimator, param, limit, migration_time, utilization):
+    """ The abstract Loess algorithm.
+
+    :param estimator: A parameter estimation function.
+     :type estimator: function
+
+    :param param: The safety parameter.
+     :type param: float
+
+    :param limit: The minimum allowed length of the utilization history.
+     :type limit: int
+
+    :param migration_time: The VM migration time in time steps.
+     :type migration_time: float
+
+    :param utilization: The utilization history to analize.
+     :type utilization: list(float)
+
+    :return: A decision of whether the host is overloaded.
+     :rtype: bool
+    """
+    length = len(utilization)
+    if length < limit:
+        return False
+    estimates = estimator(utilization)
+    prediction = (estimates[0] + estimates[1] * (length + migration_time))
+    return param * prediction >= 1.
+
+
+@contract
 def mad_threshold(param, limit, utilization):
     """ The MAD based threshold algorithm.
 

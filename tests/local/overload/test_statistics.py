@@ -20,6 +20,26 @@ import neat.local.overload.statistics as stats
 
 class Statistics(TestCase):
 
+    def test_loess(self):
+        assert stats.loess(1.2, 3, 0.5, []) == False
+
+        data = [1.05, 1.09, 1.07, 1.12, 1.02, 1.18, 1.15, 1.04, 1.10, 1.16, 1.08]
+        assert stats.loess(1.2, 3, 0.5, data) == True
+
+        data = [0.55, 0.60, 0.62, 0.59, 0.67, 0.73, 0.85, 0.97, 0.73, 0.68, 0.69,
+                0.52, 0.51, 0.55, 0.48, 0.46, 0.52, 0.55, 0.58, 0.65, 0.70]
+        assert stats.loess(1.2, 3, 0.5, data) == False
+
+    def test_loess_robust(self):
+        assert stats.loess_robust(1.2, 3, 0.5, []) == False
+
+        data = [1.05, 1.09, 1.07, 1.12, 1.02, 1.18, 1.15, 1.04, 1.10, 1.16, 1.08]
+        assert stats.loess_robust(1.2, 3, 0.5, data) == True
+
+        data = [0.55, 0.60, 0.62, 0.59, 0.67, 0.73, 0.85, 0.97, 0.73, 0.68, 0.69,
+                0.52, 0.51, 0.55, 0.48, 0.46, 0.52, 0.55, 0.58, 0.65, 0.70]
+        assert stats.loess_robust(1.2, 3, 0.5, data) == False
+
     def test_mad_threshold(self):
         with MockTransaction:
             expect(stats).mad.and_return(0.125).exactly(6).times()
