@@ -103,6 +103,7 @@ from contracts import contract
 from neat.contracts_extra import *
 
 import json
+import numpy
 
 import neat.common as common
 from neat.config import *
@@ -185,7 +186,13 @@ def execute(config, state):
      :rtype: dict(str: *)
     """
     path = common.build_local_vm_path(config.get('local_data_directory'))
-    vm_data = get_local_data(path)
+    vm_cpu_mhz = get_local_data(path)
+    vm_ram = get_ram(config.get('vir_connection'), vm_cpu_mhz.keys())
+    vm_cpu_mhz = cleanup_vm_data(vm_cpu_mhz, vm_ram.keys())
+
+    if not vm_cpu_mhz:
+        return
+
     physical_cpu_mhz_total = config.get('physical_cpu_mhz_total')
     time_step = int(config.get('data_collector_interval'))
     underload_detection_params = json.loads(config.get('algorithm_underload_detection_params'))
@@ -274,3 +281,19 @@ def get_max_ram(vir_connection, uuid):
     if domain:
         return domain.getMaxMemory() / 1024
     return None
+
+
+@contract
+def calculate_migration_time(vms, bandwidth):
+    """ Calculate the mean migration time from VM RAM usage data.
+
+    :param vms: A map of VM UUIDs to the corresponding maximum RAM in MB.
+     :type vms: dict(str: int)
+
+    :param bandwidth: The network bandwidth in MB/s.
+     :type bandwidth: float,>0
+
+    :return: The mean VM migration time in seconds.
+     :rtype: float
+    """
+    return float(numpy.mean(vms.values()) / bandwidth)
