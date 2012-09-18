@@ -194,7 +194,8 @@ def execute(config, state):
     if not vm_cpu_mhz:
         return
 
-    physical_cpu_mhz_total = config.get('physical_cpu_mhz_total')
+    physical_cpu_mhz_total = int(config.get('physical_cpu_mhz_total'))
+    host_cpu_utilization = vm_mhz_to_percentage(vm_cpu_mhz, physical_cpu_mhz_total)
     time_step = int(config.get('data_collector_interval'))
     migration_time = calculate_migration_time(vm_ram, float(config.get('network_migration_bandwidth')))
 
@@ -230,17 +231,17 @@ def execute(config, state):
         vm_selection = state['vm_selection']
         vm_selection_state = state['vm_selection_state']
 
-    underload, underload_detection_state = underload_detection(vm_cpu_mhz, underload_detection_state)
+    underload, underload_detection_state = underload_detection(host_cpu_utilization, underload_detection_state)
     state['underload_detection_state'] = underload_detection_state
 
     if underload:
         # Send a request to the global manager with all the VMs to migrate
         pass
     else:
-        overload, overload_detection_state = overload_detection(vm_cpu_mhz, overload_detection_state)
+        overload, overload_detection_state = overload_detection(host_cpu_utilization, overload_detection_state)
         state['overload_detection_state'] = overload_detection_state
         if overload:
-            vms = vm_selection(vm_cpu_mhz, vm_ram, vm_selection_state)
+            vms = vm_selection(host_cpu_utilization, vm_ram, vm_selection_state)
             # send a request to the global manager with the selected VMs to migrate
 
     return state
