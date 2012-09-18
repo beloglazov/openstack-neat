@@ -78,3 +78,24 @@ class LocalManager(TestCase):
 
         assert manager.get_local_data(path) == data
         shutil.rmtree(path)
+
+    @qc(10)
+    def get_max_ram(
+        uuid=str_(of='abc123-', min_length=36, max_length=36),
+        x=int_(min=0)
+    ):
+        with MockTransaction:
+            connection = libvirt.virConnect()
+            domain = mock('domain')
+            expect(connection).lookupByUUIDString(uuid).and_return(domain).once()
+            expect(domain).getMaxMemory().and_return(x).once()
+            assert manager.get_max_ram(connection, uuid) == int(x / 1024)
+
+    @qc(1)
+    def get_max_ram_none(
+        uuid=str_(of='abc123-', min_length=36, max_length=36)
+    ):
+        with MockTransaction:
+            connection = libvirt.virConnect()
+            expect(connection).lookupByUUIDString(uuid).and_return(None).once()
+            assert manager.get_max_ram(connection, uuid) is None

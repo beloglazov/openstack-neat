@@ -102,6 +102,8 @@ local manager performs the following steps:
 from contracts import contract
 from neat.contracts_extra import *
 
+import json
+
 import neat.common as common
 from neat.config import *
 from neat.db_utils import *
@@ -185,6 +187,9 @@ def execute(config, state):
     path = common.build_local_vm_path(config.get('local_data_directory'))
     vm_data = get_local_data(path)
     physical_cpu_mhz_total = config.get('physical_cpu_mhz_total')
+    time_step = int(config.get('data_collector_interval'))
+    underload_detection_params = json.loads(config.get('algorithm_underload_detection_params'))
+    underload_detection = config.get('algorithm_underload_detection_factory')(physical_cpu_mhz_total, vm_data)
     if config.get('algorithm_underload_detection')(physical_cpu_mhz_total, vm_data):
         # Send a request to the global manager with all the VMs to migrate
         pass
@@ -209,3 +214,22 @@ def get_local_data(path):
         with open(os.path.join(path, uuid), 'r') as f:
             result[uuid] = [int(x) for x in f.read().strip().splitlines()]
     return result
+
+
+@contract
+def get_max_ram(vir_connection, uuid):
+    """ Get the maximum RAM allocated to a VM specified by the UUID using libvirt.
+
+    :param vir_connection: A libvirt connection object.
+     :type vir_connection: virConnect
+
+    :param uuid: The UUID of a VM.
+     :type uuid: str[36]
+
+    :return: The maximum RAM of the VM in MB.
+     :rtype: int|None
+    """
+    domain = vir_connection.lookupByUUIDString(uuid)
+    if domain:
+        return domain.getMaxMemory() / 1024
+    return None
