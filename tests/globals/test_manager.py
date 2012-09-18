@@ -16,6 +16,7 @@ from mocktest import *
 from pyqcy import *
 
 import neat.globals.manager as manager
+import neat.common as common
 
 
 class GlobalManager(TestCase):
@@ -27,7 +28,7 @@ class GlobalManager(TestCase):
     ):
         with MockTransaction:
             state = {'property': 'value'}
-            config = {'local_manager_interval': time_interval}
+            config = {'global_manager_interval': time_interval}
             paths = [manager.DEFAILT_CONFIG_PATH, manager.CONFIG_PATH]
             fields = manager.REQUIRED_FIELDS
             expect(manager).read_and_validate_config(paths, fields). \
@@ -37,3 +38,13 @@ class GlobalManager(TestCase):
                                  config,
                                  time_interval).and_return(state).once()
             assert manager.start() == state
+
+    @qc(1)
+    def init_state():
+        with MockTransaction:
+            db = mock('db')
+            expect(manager).init_db('db').and_return(db).once()
+            config = {'sql_connection': 'db'}
+            state = manager.init_state(config)
+            assert state['previous_time'] == 0
+            assert state['db'] == db
