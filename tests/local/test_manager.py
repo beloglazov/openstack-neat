@@ -138,6 +138,13 @@ class LocalManager(TestCase):
             expect(connection).lookupByUUIDString(uuid).and_return(None).once()
             assert manager.get_max_ram(connection, uuid) is None
 
+    def test_vm_mhz_to_percentage(self):
+        self.assertEqual(manager.vm_mhz_to_percentage({'a': [100, 200, 300],
+                                                       'b': [100, 300, 200],
+                                                       'c': [100, 100, 700]},
+                                                      3000),
+                         [0.1, 0.2, 0.4])
+
     @qc(10)
     def calculate_migration_time(
         data=dict_(

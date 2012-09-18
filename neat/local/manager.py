@@ -104,6 +104,7 @@ from neat.contracts_extra import *
 
 import json
 import numpy
+import itertools
 
 import neat.common as common
 from neat.config import *
@@ -195,14 +196,53 @@ def execute(config, state):
 
     physical_cpu_mhz_total = config.get('physical_cpu_mhz_total')
     time_step = int(config.get('data_collector_interval'))
-    underload_detection_params = json.loads(config.get('algorithm_underload_detection_params'))
-    underload_detection = config.get('algorithm_underload_detection_factory')(physical_cpu_mhz_total, vm_data)
-    if config.get('algorithm_underload_detection')(physical_cpu_mhz_total, vm_data):
+    migration_time = calculate_migration_time(vm_ram, float(config.get('network_migration_bandwidth')))
+
+    if state['previous_time'] == 0:
+        underload_detection_params = json.loads(config.get('algorithm_underload_detection_params'))
+        underload_detection_state = None
+        underload_detection = config.get('algorithm_underload_detection_factory')(
+            time_step,
+            migration_time,
+            underload_detection_params)
+        state['underload_detection'] = underload_detection
+
+        overload_detection_params = json.loads(config.get('algorithm_overload_detection_params'))
+        overload_detection_state = None
+        overload_detection = config.get('algorithm_overload_detection_factory')(
+            time_step,
+            migration_time,
+            overload_detection_params)
+        state['overload_detection'] = overload_detection
+
+        vm_selection_params = json.loads(config.get('algorithm_vm_selection_params'))
+        vm_selection_state = None
+        vm_selection = config.get('algorithm_vm_selection_factory')(
+            time_step,
+            migration_time,
+            vm_selection_params)
+        state['vm_selection'] = vm_selection
+    else:
+        underload_detection = state['underload_detection']
+        underload_detection_state = state['underload_detection_state']
+        overload_detection = state['overload_detection']
+        overload_detection_state = state['overload_detection_state']
+        vm_selection = state['vm_selection']
+        vm_selection_state = state['vm_selection_state']
+
+    underload, underload_detection_state = underload_detection(vm_cpu_mhz, underload_detection_state)
+    state['underload_detection_state'] = underload_detection_state
+
+    if underload:
         # Send a request to the global manager with all the VMs to migrate
         pass
-    elif config.get('algorithm_overload_detection')(physical_cpu_mhz_total, vm_data):
-        vms = config.get('algorithm_vm_selection')(physical_cpu_mhz_total, vm_data)
-        # send a request to the global manager with the selected VMs to migrate
+    else:
+        overload, overload_detection_state = overload_detection(vm_cpu_mhz, overload_detection_state)
+        state['overload_detection_state'] = overload_detection_state
+        if overload:
+            vms = vm_selection(vm_cpu_mhz, vm_ram, vm_selection_state)
+            # send a request to the global manager with the selected VMs to migrate
+
     return state
 
 
@@ -281,6 +321,23 @@ def get_max_ram(vir_connection, uuid):
     if domain:
         return domain.getMaxMemory() / 1024
     return None
+
+
+@contract
+def vm_mhz_to_percentage(vms, physical_cpu_mhz):
+    """ Convert VM CPU utilization to the host's CPU utilization.
+
+    :param vms: A map from VM UUIDs to their CPU utilization in MHz.
+     :type vms: dict(str: list(int))
+
+    :param physical_cpu_mhz: The total frequency of the physical CPU in MHz.
+     :type physical_cpu_mhz: int
+
+    :return: The history of the host's CPU utilization in percentages.
+     :rtype: list(float)
+    """
+    data = itertools.izip_longest(*vms.values(), fillvalue=0)
+    return [float(sum(x)) / physical_cpu_mhz for x in data]
 
 
 @contract
