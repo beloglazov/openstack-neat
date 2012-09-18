@@ -63,7 +63,7 @@ class LocalManager(TestCase):
             assert state['physical_cpu_mhz_total'] == mhz
 
     @qc(1)
-    def get_data_locally(
+    def get_local_data(
         data=dict_(
             keys=str_(of='abc123-', min_length=36, max_length=36),
             values=list_(of=int_(min=1, max=3000),
@@ -78,6 +78,44 @@ class LocalManager(TestCase):
 
         assert manager.get_local_data(path) == data
         shutil.rmtree(path)
+
+    @qc(10)
+    def cleanup_vm_data(
+        data=dict_(
+            keys=str_(of='abc123-', min_length=36, max_length=36),
+            values=list_(of=int_(min=1, max=3000),
+                         min_length=0, max_length=10),
+            min_length=0, max_length=5
+        )
+    ):
+        original_data = dict(data)
+        uuids = data.keys()
+        if data:
+            n = random.randrange(len(data))
+            for _ in range(n):
+                uuid = random.choice(uuids)
+                del data[uuid]
+                uuids.remove(uuid)
+
+        assert manager.cleanup_vm_data(original_data, uuids) == data
+
+    @qc(10)
+    def get_ram(
+        data=dict_(
+            keys=str_(of='abc123-', min_length=36, max_length=36),
+            values=int_(min=1, max=100),
+            min_length=0, max_length=10
+        )
+    ):
+        with MockTransaction:
+            def mock_get_max_ram(vir_connection, uuid):
+                return data[uuid]
+
+            connection = libvirt.virConnect()
+            when(manager).get_max_ram(connection, any_string). \
+                then_call(mock_get_max_ram)
+
+            assert manager.get_ram(connection, data.keys()) == data
 
     @qc(10)
     def get_max_ram(

@@ -217,6 +217,47 @@ def get_local_data(path):
 
 
 @contract
+def cleanup_vm_data(vm_data, uuids):
+    """ Remove records for the VMs that are not in the list of UUIDs.
+
+    :param vm_data: A map of VM UUIDs to some data.
+     :type vm_data: dict(str: *)
+
+    :param uuids: A list of VM UUIDs.
+     :type uuids: list(str)
+
+    :return: The cleaned up map of VM UUIDs to data.
+     :rtype: dict(str: *)
+    """
+    for uuid, _ in vm_data.items():
+        if uuid not in uuids:
+            del vm_data[uuid]
+    return vm_data
+
+
+@contract
+def get_ram(vir_connection, vms):
+    """ Get the maximum RAM for a set of VM UUIDs.
+
+    :param vir_connection: A libvirt connection object.
+     :type vir_connection: virConnect
+
+    :param vms: A list of VM UUIDs.
+     :type vms: list(str)
+
+    :return: The maximum RAM for the VM UUIDs.
+     :rtype: dict(str : int)
+    """
+    vms_ram = {}
+    for uuid in vms:
+        ram = get_max_ram(vir_connection, uuid)
+        if ram:
+            vms_ram[uuid] = ram
+
+    return vms_ram
+
+
+@contract
 def get_max_ram(vir_connection, uuid):
     """ Get the maximum RAM allocated to a VM specified by the UUID using libvirt.
 
