@@ -18,9 +18,9 @@ from pyqcy import *
 import shutil
 import libvirt
 
+import neat.locals.manager as manager
 import neat.common as common
 import neat.locals.collector as collector
-import neat.locals.manager as manager
 
 
 class LocalManager(TestCase):

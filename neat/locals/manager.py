@@ -133,7 +133,7 @@ def init_state(config):
     :param config: A config dictionary.
      :type config: dict(str: *)
 
-    :return: A dictionary containing the initial state of the data collector.
+    :return: A dictionary containing the initial state of the local manager.
      :rtype: dict
     """
     vir_connection = libvirt.openReadOnly(None)
@@ -148,7 +148,7 @@ def init_state(config):
 
 @contract
 def execute(config, state):
-    """ Execute a local manager iteration.
+    """ Execute an iteration of the local manager.
 
 1. Read the data on resource usage by the VMs running on the host from
    the <local_data_directory>/vm directory.
@@ -199,7 +199,7 @@ def execute(config, state):
     time_step = int(config.get('data_collector_interval'))
     migration_time = calculate_migration_time(vm_ram, float(config.get('network_migration_bandwidth')))
 
-    if state['previous_time'] == 0:
+    if 'underload_detection' not in state:
         underload_detection_params = json.loads(config.get('algorithm_underload_detection_params'))
         underload_detection_state = None
         underload_detection = config.get('algorithm_underload_detection_factory')(
