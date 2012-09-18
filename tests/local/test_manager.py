@@ -19,7 +19,7 @@ import shutil
 import libvirt
 
 import neat.common as common
-import neat.collector as collector
+import neat.local.collector as collector
 import neat.local.manager as manager
 
 

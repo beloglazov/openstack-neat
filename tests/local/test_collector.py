@@ -20,7 +20,7 @@ import shutil
 import libvirt
 
 import neat.common as common
-import neat.collector as collector
+import neat.local.collector as collector
 import neat.db_utils as db_utils
 
 
@@ -67,7 +67,7 @@ class Collector(TestCase):
     @qc(1)
     def get_previous_vms():
         local_data_directory = os.path.join(
-            os.path.dirname(__file__), 'resources', 'vms')
+            os.path.dirname(__file__), '..', 'resources', 'vms')
         previous_vms = collector.get_previous_vms(local_data_directory)
         assert 'ec452be0-e5d0-11e1-aff1-0800200c9a66' in previous_vms
         assert 'e615c450-e5d0-11e1-aff1-0800200c9a66' in previous_vms
@@ -142,7 +142,7 @@ class Collector(TestCase):
     @qc(1)
     def cleanup_local_data():
         local_data_directory = os.path.join(
-            os.path.dirname(__file__), 'resources', 'vms')
+            os.path.dirname(__file__), '..', 'resources', 'vms')
         local_data_directory_tmp = os.path.join(
             local_data_directory, 'tmp')
         shutil.rmtree(local_data_directory_tmp, True)
@@ -194,7 +194,7 @@ class Collector(TestCase):
         ),
         data_length=int_(min=0, max=10)
     ):
-        path = os.path.join(os.path.dirname(__file__), 'resources', 'vms', 'tmp')
+        path = os.path.join(os.path.dirname(__file__), '..', 'resources', 'vms', 'tmp')
         shutil.rmtree(path, True)
         os.mkdir(path)
         collector.write_data_locally(path, x, data_length)
@@ -226,7 +226,7 @@ class Collector(TestCase):
         ),
         data_length=int_(min=0, max=10)
     ):
-        path = os.path.join(os.path.dirname(__file__), 'resources', 'vms', 'tmp')
+        path = os.path.join(os.path.dirname(__file__), '..', 'resources', 'vms', 'tmp')
         shutil.rmtree(path, True)
         os.mkdir(path)
         original_data = {}
