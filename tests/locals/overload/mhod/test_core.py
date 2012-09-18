@@ -15,7 +15,7 @@
 from mocktest import *
 from pyqcy import *
 
-import neat.local.overload.mhod.core as c
+import neat.locals.overload.mhod.core as c
 
 
 class Core(TestCase):

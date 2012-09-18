@@ -15,7 +15,7 @@
 from mocktest import *
 from pyqcy import *
 
-import neat.local.overload.trivial as trivial
+import neat.locals.overload.trivial as trivial
 
 
 class Trivial(TestCase):

@@ -20,7 +20,7 @@ import shutil
 import libvirt
 
 import neat.common as common
-import neat.local.collector as collector
+import neat.locals.collector as collector
 import neat.db_utils as db_utils
 
 

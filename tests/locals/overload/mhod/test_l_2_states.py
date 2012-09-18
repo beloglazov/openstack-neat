@@ -15,7 +15,7 @@
 from mocktest import *
 from pyqcy import *
 
-import neat.local.overload.mhod.l_2_states as l
+import neat.locals.overload.mhod.l_2_states as l
 
 
 class L2States(TestCase):

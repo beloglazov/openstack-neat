@@ -15,7 +15,7 @@
 from mocktest import *
 from pyqcy import *
 
-import neat.local.underload.trivial as trivial
+import neat.locals.underload.trivial as trivial
 
 
 class Trivial(TestCase):
@@ -30,9 +30,9 @@ class Trivial(TestCase):
         self.assertEqual(alg([0.0, 1.0]), (False, {}))
 
     def test_threshold(self):
-        assert trivial.threshold(0.5, []) == False
-        assert trivial.threshold(0.5, [0.0, 0.0]) == True
-        assert trivial.threshold(0.5, [0.0, 0.4]) == True
-        assert trivial.threshold(0.5, [0.0, 0.5]) == True
-        assert trivial.threshold(0.5, [0.0, 0.6]) == False
-        assert trivial.threshold(0.5, [0.0, 1.0]) == False
+        self.assertEqual(trivial.threshold(0.5, []), False)
+        self.assertEqual(trivial.threshold(0.5, [0.0, 0.0]), True)
+        self.assertEqual(trivial.threshold(0.5, [0.0, 0.4]), True)
+        self.assertEqual(trivial.threshold(0.5, [0.0, 0.5]), True)
+        self.assertEqual(trivial.threshold(0.5, [0.0, 0.6]), False)
+        self.assertEqual(trivial.threshold(0.5, [0.0, 1.0]), False)

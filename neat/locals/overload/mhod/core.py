@@ -18,9 +18,9 @@
 from contracts import contract
 from neat.contracts_extra import *
 
-import neat.local.overload.mhod.multisize_estimation as estimation
-import neat.local.overload.mhod.bruteforce as bruteforce
-from neat.local.overload.mhod.l_2_states import ls
+import neat.locals.overload.mhod.multisize_estimation as estimation
+import neat.locals.overload.mhod.bruteforce as bruteforce
+from neat.locals.overload.mhod.l_2_states import ls
 
 
 @contract

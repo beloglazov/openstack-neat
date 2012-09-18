@@ -15,7 +15,7 @@
 from mocktest import *
 from pyqcy import *
 
-import neat.local.overload.statistics as stats
+import neat.locals.overload.statistics as stats
 
 
 class Statistics(TestCase):

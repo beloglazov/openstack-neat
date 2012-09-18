@@ -19,8 +19,8 @@ import shutil
 import libvirt
 
 import neat.common as common
-import neat.local.collector as collector
-import neat.local.manager as manager
+import neat.locals.collector as collector
+import neat.locals.manager as manager
 
 
 class LocalManager(TestCase):

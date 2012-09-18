@@ -17,7 +17,7 @@ from pyqcy import *
 
 import operator
 
-import neat.local.overload.mhod.nlp as nlp
+import neat.locals.overload.mhod.nlp as nlp
 
 
 class Nlp(TestCase):

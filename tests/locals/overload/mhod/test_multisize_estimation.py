@@ -18,7 +18,7 @@ from pyqcy import *
 from collections import deque
 from copy import deepcopy
 
-import neat.local.overload.mhod.multisize_estimation as m
+import neat.locals.overload.mhod.multisize_estimation as m
 
 
 def c(data):

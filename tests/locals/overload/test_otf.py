@@ -15,7 +15,7 @@
 from mocktest import *
 from pyqcy import *
 
-import neat.local.overload.otf as otf
+import neat.locals.overload.otf as otf
 
 
 class Otf(TestCase):

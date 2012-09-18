@@ -15,7 +15,7 @@
 from mocktest import *
 from pyqcy import *
 
-import neat.local.vm_selection.algorithms as selection
+import neat.locals.vm_selection.algorithms as selection
 
 
 class Selection(TestCase):

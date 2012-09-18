@@ -17,8 +17,8 @@ from pyqcy import *
 
 from operator import le
 
-import neat.local.overload.mhod.bruteforce as b
-import neat.local.overload.mhod.nlp as nlp
+import neat.locals.overload.mhod.bruteforce as b
+import neat.locals.overload.mhod.nlp as nlp
 
 
 class Bruteforce(TestCase):
