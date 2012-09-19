@@ -137,7 +137,6 @@ def start():
         'config': config,
         'state': init_state(config)}
     bottle.run(host=config['global_manager_host'], port=config['global_manager_port'])
-    # bottle.run(host='localhost', port=8080, reloader=True)
 
 
 @bottle.put('/')
