@@ -16,31 +16,43 @@ from mocktest import *
 from pyqcy import *
 
 import neat.globals.manager as manager
-import neat.common as common
+import bottle
 
 
 class GlobalManager(TestCase):
 
-    @qc(10)
-    def start(
-            iterations=int_(min=0, max=10),
-            time_interval=int_(min=0)
-    ):
+    def test_raise_error(self):
+        for error_code in [400, 401, 403, 405, 422]:
+            try:
+                manager.raise_error(error_code)
+            except bottle.HTTPResponse as e:
+                assert e.status == error_code
+            else:
+                assert False
+        try:
+            manager.raise_error(1)
+        except bottle.HTTPResponse as e:
+            assert e.status == 500
+        else:
+            assert False
+
+    def test_start(self):
         with MockTransaction:
+            app = mock('app')
             state = {'property': 'value'}
-            config = {'global_manager_interval': time_interval}
+            config = {'global_manager_host': 'localhost',
+                      'global_manager_port': 8080}
             paths = [manager.DEFAILT_CONFIG_PATH, manager.CONFIG_PATH]
             fields = manager.REQUIRED_FIELDS
             expect(manager).read_and_validate_config(paths, fields). \
-                and_return(config).once()
-            expect(common).start(manager.init_state,
-                                 manager.execute,
-                                 config,
-                                 time_interval).and_return(state).once()
-            assert manager.start() == state
+              and_return(config).once()
+            expect(manager).init_state(config). \
+              and_return(state).once()
+            expect(bottle).app().and_return(app).once()
+            expect(bottle).run(host='localhost', port=8080).once()
+            manager.start()
 
-    @qc(1)
-    def init_state():
+    def test_init_state(self):
         with MockTransaction:
             db = mock('db')
             expect(manager).init_db('db').and_return(db).once()

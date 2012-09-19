@@ -70,24 +70,60 @@ the beginning of the global manager's execution.
 from contracts import contract
 from neat.contracts_extra import *
 
+import bottle
+
 import neat.common as common
 from neat.config import *
 from neat.db_utils import *
 
 
-@contract
-def start():
-    """ Start the global manager loop.
+ERRORS = {
+    400: 'Bad input parameter: incorrect or missing parameters',
+    401: 'Unauthorized: user credentials are missing',
+    403: 'Forbidden: user credentials do not much the ones ' +
+         'specified in the configuration file',
+    405: 'Method not allowed: the request is made with ' +
+         'a method other than the only supported PUT',
+    422: 'Unprocessable entity: one or more VMs could not ' +
+         'be found using the list of UUIDs specified in ' +
+         'the vm_uuids parameter'}
 
-    :return: The final state.
-     :rtype: dict(str: *)
+
+@contract
+def raise_error(status_code):
+    """ Raise and HTTPResponse exception with the specified status code.
+
+    :param status_code: An HTTP status code of the error.
+     :type status_code: int
+    """
+    if status_code in ERRORS:
+        raise bottle.HTTPResponse(ERRORS[status_code], status_code)
+    raise bottle.HTTPResponse('Unknown error', 500)
+
+
+def start():
+    """ Start the global manager web service.
     """
     config = read_and_validate_config([DEFAILT_CONFIG_PATH, CONFIG_PATH], REQUIRED_FIELDS)
-    return common.start(
-        init_state,
-        execute,
-        config,
-        int(config.get('global_manager_interval')))
+    bottle.debug(True)
+    bottle.app().state = {
+        'config': config,
+        'state': init_state(config)}
+    bottle.run(host=config['global_manager_host'], port=config['global_manager_port'])
+    # bottle.run(host='localhost', port=8080, reloader=True)
+
+
+@bottle.put('/')
+def index():
+    raise bottle.HTTPResponse(bottle.app().state + 'unprocessable entity', 422)
+    return str('asd' not in bottle.request.forms)
+
+
+@bottle.route('/', method='ANY')
+def error():
+    raise bottle.HTTPResponse('Method not allowed: the request has been made' +
+                              'with a method other than the only supported PUT',
+                              405)
 
 
 @contract
