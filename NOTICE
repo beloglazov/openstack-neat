@@ -12,10 +12,6 @@ module distributions developed by Tarek Ziadé, released under the
 Python Software Foundation License, and available from
 https://bitbucket.org/tarek/distribute
 
-This software uses sniffer, a Python auto-testing tool developed by
-Jeff Hui, released under the MIT License, and available from
-https://github.com/jeffh/sniffer
-
 This software uses pyqcy, a QuickCheck-like testing framework for
 Python developed by Karol Kuczmarski, released under the FreeBSD
 License, and available from https://github.com/Xion/pyqcy
@@ -33,6 +29,10 @@ available from http://www.sqlalchemy.org/
 This software uses Bottle, a micro web-framework for Python developed
 by Marcel Hellkamp, released under the MIT License, and available from
 http://bottlepy.org/
+
+This software uses Requests, a Python HTTP client library developed by
+Kenneth Reitz, released under the ISC License, and available from
+http://python-requests.org.
 
 This software uses python-novaclient, a Python Nova API client
 implementation developed by Jacob Kaplan-Moss and Rackspace -
