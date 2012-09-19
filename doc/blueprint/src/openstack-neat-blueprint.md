@@ -411,18 +411,18 @@ The following third party libraries are planned to be used to implement the requ
 
 1. [distribute](https://bitbucket.org/tarek/distribute) -- a library for working with Python
    module distributions, released under the Python Software Foundation License.
-2. [sniffer](https://github.com/jeffh/sniffer) -- a Python auto-testing tool, released under the MIT
-   License.
-3. [pyqcy](https://github.com/Xion/pyqcy) -- a QuickCheck-like testing framework for Python,
+2. [pyqcy](https://github.com/Xion/pyqcy) -- a QuickCheck-like testing framework for Python,
    released under the FreeBSD License.
-4. [mocktest](https://github.com/gfxmonk/mocktest) -- a mocking library for Python, released under
+3. [mocktest](https://github.com/gfxmonk/mocktest) -- a mocking library for Python, released under
    the LGPL License.
-5. [PyContracts](https://github.com/AndreaCensi/contracts) -- a Python library for Design by
+4. [PyContracts](https://github.com/AndreaCensi/contracts) -- a Python library for Design by
    Contract (DbC), released under the GNU Lesser General Public License.
-6. [SQLAlchemy](http://www.sqlalchemy.org/) -- a Python SQL toolkit and Object Relational Mapper
+5. [SQLAlchemy](http://www.sqlalchemy.org/) -- a Python SQL toolkit and Object Relational Mapper
    (used by the core OpenStack service), released under the MIT License.
-7. [Bottle](http://bottlepy.org/) -- a micro web-framework for Python, authentication using the same
+6. [Bottle](http://bottlepy.org/) -- a micro web-framework for Python, authentication using the same
    credentials used to authenticate in the Nova API, released under the MIT License.
+7. [Requests](http://python-requests.org/) -- a Python HTTP client library, released under the ISC
+   License.
 8. [python-novaclient](https://github.com/openstack/python-novaclient) -- a Python Nova API client
    implementation, released under the Apache 2.0 License.
 9. [Sphinx](http://sphinx.pocoo.org/) -- a documentation generator for Python, released under the
