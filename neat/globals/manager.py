@@ -71,8 +71,8 @@ from contracts import contract
 from neat.contracts_extra import *
 
 import bottle
+from hashlib import sha1
 
-import neat.common as common
 from neat.config import *
 from neat.db_utils import *
 
@@ -99,6 +99,33 @@ def raise_error(status_code):
     if status_code in ERRORS:
         raise bottle.HTTPResponse(ERRORS[status_code], status_code)
     raise bottle.HTTPResponse('Unknown error', 500)
+
+
+@contract
+def validate_params(params, config):
+    """ Validate the input request parameters.
+
+    :param params: A dictionary of input parameters.
+     :type params: dict(str: *)
+
+    :param config: A config dictionary.
+     :type config: dict(str: str)
+
+    :return: Whether the parameters are valid.
+     :rtype: bool
+    """
+    if 'username' not in params or 'password' not in params:
+        raise_error(401)
+        return False
+    if 'reason' not in params or \
+        params['reason'] == 1 and 'vm_uuids' not in params:
+        raise_error(400)
+        return False
+    if sha1(params['username']).hexdigest() != config['admin_user'] or \
+        sha1(params['password']).hexdigest() != config['admin_password']:
+        raise_error(403)
+        return False
+    return True
 
 
 def start():
