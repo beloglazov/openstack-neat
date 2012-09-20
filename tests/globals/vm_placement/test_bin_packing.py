@@ -15,12 +15,123 @@
 from mocktest import *
 from pyqcy import *
 
-import neat.globals.vm_placement.bin_packing as algs
+import neat.globals.vm_placement.bin_packing as packing
 
 
 class BinPacking(TestCase):
 
-    pass
+    def test_best_fit_decreasing(self):
+        hosts_cpu = {
+            'host1': 3000,
+            'host2': 1000,
+            'host3': 2000}
+        hosts_ram = {
+            'host1': 1024,
+            'host2': 4096,
+            'host3': 2048}
+        inactive_hosts_cpu = {}
+        inactive_hosts_ram = {}
+        vms_cpu = {
+            'vm1': 2000,
+            'vm2': 1000,
+            'vm3': 3000}
+        vms_ram = {
+            'vm1': 512,
+            'vm2': 512,
+            'vm3': 512}
+
+        assert packing.best_fit_decreasing(
+            hosts_cpu, hosts_ram, inactive_hosts_cpu, inactive_hosts_ram,
+            vms_cpu, vms_ram) == {
+            'vm1': 'host3',
+            'vm2': 'host2',
+            'vm3': 'host1'}
+
+        hosts_cpu = {
+            'host1': 3000,
+            'host2': 1000,
+            'host3': 2000}
+        hosts_ram = {
+            'host1': 4096,
+            'host2': 1024,
+            'host3': 2048}
+        inactive_hosts_cpu = {}
+        inactive_hosts_ram = {}
+        vms_cpu = {
+            'vm1': 1000,
+            'vm2': 1000,
+            'vm3': 1000}
+        vms_ram = {
+            'vm1': 1536,
+            'vm2': 512,
+            'vm3': 1536}
+
+        assert packing.best_fit_decreasing(
+            hosts_cpu, hosts_ram, inactive_hosts_cpu, inactive_hosts_ram,
+            vms_cpu, vms_ram) == {
+            'vm1': 'host1',
+            'vm2': 'host2',
+            'vm3': 'host3'}
+
+        hosts_cpu = {
+            'host1': 3000,
+            'host2': 1000,
+            'host3': 2000}
+        hosts_ram = {
+            'host1': 4096,
+            'host2': 1024,
+            'host3': 2048}
+        inactive_hosts_cpu = {}
+        inactive_hosts_ram = {}
+        vms_cpu = {
+            'vm1': 1000,
+            'vm2': 1000,
+            'vm3': 1000}
+        vms_ram = {
+            'vm1': 1536,
+            'vm2': 1536,
+            'vm3': 1536}
+
+        assert packing.best_fit_decreasing(
+            hosts_cpu, hosts_ram, inactive_hosts_cpu, inactive_hosts_ram,
+            vms_cpu, vms_ram) == {
+            'vm1': 'host1',
+            'vm2': 'host1',
+            'vm3': 'host3'}
+
+        hosts_cpu = {
+            'host1': 3000,
+            'host2': 1000,
+            'host3': 2000}
+        hosts_ram = {
+            'host1': 4096,
+            'host2': 1024,
+            'host3': 2048}
+        inactive_hosts_cpu = {
+            'host4': 3000,
+            'host5': 1000,
+            'host6': 2000}
+        inactive_hosts_ram = {
+            'host4': 4096,
+            'host5': 1024,
+            'host6': 2048}
+        vms_cpu = {
+            'vm1': 1000,
+            'vm2': 1000,
+            'vm3': 1000}
+        vms_ram = {
+            'vm1': 2048,
+            'vm2': 4096,
+            'vm3': 2048}
+
+        assert packing.best_fit_decreasing(
+            hosts_cpu, hosts_ram, inactive_hosts_cpu, inactive_hosts_ram,
+            vms_cpu, vms_ram) == {
+            'vm1': 'host6',
+            'vm2': 'host1',
+            'vm3': 'host3'}
+
+
     # @qc(10)
     # def minimum_migration_time_factory(
     #     x=dict_(

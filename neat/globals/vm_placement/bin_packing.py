@@ -35,42 +35,73 @@ def best_fit_decreasing_factory(time_step, migration_time, params):
     :return: A function implementing the BFD algorithm.
      :rtype: function
     """
+    # recalculate the available CPU capacity according to the threshold
     return lambda hosts_cpu, hosts_ram, vms_cpu, vms_ram, state=None: \
-        (best_fit_decreasing(hosts_cpu, hosts_ram, vms_cpu, vms_ram), {})
+        (best_fit_decreasing(params['cpu_threshold'],
+                             hosts_cpu, hosts_ram, vms_cpu, vms_ram), {})
 
 
 @contract
-def best_fit_decreasing(cpu_threshold, hosts_cpu, hosts_ram, vms_cpu, vms_ram):
+def best_fit_decreasing(hosts_cpu, hosts_ram, inactive_hosts_cpu, inactive_hosts_ram,
+                        vms_cpu, vms_ram):
     """ The Best Fit Decreasing (BFD) heuristic for placing VMs on hosts.
-
-    :param cpu_threshold: The host maximum CPU utilization for placing VMs.
-     :type cpu_threshold: float
 
     :param hosts_cpu: A map of host names and their available CPU frequency in MHz.
      :type hosts_cpu: dict(str: int)
 
     :param hosts_ram: A map of host names and their available RAM capacity in MB.
-     :type hosts_ram: dict(str: number)
+     :type hosts_ram: dict(str: int)
+
+    :param inactive_hosts_cpu: A map of inactive hosts and their available CPU frequency in MHz.
+     :type inactive_hosts_cpu: dict(str: int)
+
+    :param inactive_hosts_ram: A map of inactive hosts and their available RAM capacity in MB.
+     :type inactive_hosts_ram: dict(str: int)
 
     :param vms_cpu: A map of VM UUID and their CPU utilization in MHz.
-     :type vms_cpu: dict(str: float)
+     :type vms_cpu: dict(str: int)
 
     :param vms_ram: A map of VM UUID and their RAM usage in MB.
-     :type vms_ram: dict(str: number)
+     :type vms_ram: dict(str: int)
 
-    :return: A map of VM UUIDs to host names.
+    :return: A map of VM UUIDs to host names, or an empty dict if cannot be solved.
      :rtype: dict(str: str)
     """
-    vms = sorted(((v, k) for k, v in vms_cpu.items()), reverse=True)
-    hosts = sorted(((v, k) for k, v in hosts_cpu.items()))
+    vms = sorted(((v, vms_ram[k], k) for k, v in vms_cpu.items()), reverse=True)
+    hosts = sorted(((v, hosts_ram[k], k) for k, v in hosts_cpu.items()))
+    inactive_hosts = sorted(((v, inactive_hosts_ram[k], k) for k, v
+                             in inactive_hosts_cpu.items()))
+    print vms
+    print hosts
     mapping = {}
-    for (vm_cpu, vm_uuid), host in zip(vms, hosts):
-        if host[0] * cpu_threshold >= vm_cpu and \
-           hosts_ram[host[1]] >= vms_ram[vm_uuid]:
-            mapping[vm_uuid] = host[1]
-            host[0] -= vm_cpu
-            hosts_ram[host[1]] -= vms_ram[vm_uuid]
+    for vm_cpu, vm_ram, vm_uuid in vms:
+        mapped = False
+        while not mapped or inactive_hosts:
+            for _, _, host in hosts:
+                print "-----"
+                print vm_uuid
+                print vm_cpu
+                print vms_ram[vm_uuid]
+                print host
+                print hosts_cpu[host]
+                print hosts_ram[host]
+                if hosts_cpu[host] >= vm_cpu and \
+                  hosts_ram[host] >= vm_ram:
+                    print "mapped " + vm_uuid + " to " + host
+                    mapping[vm_uuid] = host
+                    hosts_cpu[host] -= vm_cpu
+                    hosts_ram[host] -= vm_ram
+                    mapped = True
+                    break
+            else:
+                if inactive_hosts:
+                    activated_host = inactive_hosts.pop(0)
+                    hosts.append(activated_host)
+                    hosts = sorted(hosts)
+                    print " +++ added a new host: " + str(activated_host)
+                    print "hosts: " + str(hosts)
 
+    print mapping
     if len(vms) == len(mapping):
         return mapping
     return {}
