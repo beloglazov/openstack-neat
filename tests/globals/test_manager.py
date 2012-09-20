@@ -50,57 +50,57 @@ class GlobalManager(TestCase):
         with MockTransaction:
             expect(manager).raise_error(401).and_return(1).exactly(3).times()
             manager.validate_params({}, {})
-            manager.validate_params({'username': 'test'}, {})
-            manager.validate_params({'password': 'test'}, {})
+            manager.validate_params({}, {'username': 'test'})
+            manager.validate_params({}, {'password': 'test'})
 
         with MockTransaction:
             expect(manager).raise_error(400).exactly(5).times()
-            manager.validate_params({'username': 'test', 'password': 'test'}, {})
-            manager.validate_params({'username': 'test',
-                                     'password': 'test',
-                                     'reason': 1}, {})
-            manager.validate_params({'username': 'test',
-                                     'password': 'test',
-                                     'reason': 0}, {})
-            manager.validate_params({'username': 'test',
-                                     'password': 'test',
-                                     'reason': 1,
-                                     'host': 'test'}, {})
-            manager.validate_params({'username': 'test',
-                                     'password': 'test',
-                                     'reason': 0,
-                                     'vm_uuids': []}, {})
+            manager.validate_params({}, {'username': 'test', 'password': 'test'})
+            manager.validate_params({}, {'username': 'test',
+                                         'password': 'test',
+                                         'reason': 1})
+            manager.validate_params({}, {'username': 'test',
+                                         'password': 'test',
+                                         'reason': 0})
+            manager.validate_params({}, {'username': 'test',
+                                         'password': 'test',
+                                         'reason': 1,
+                                         'host': 'test'})
+            manager.validate_params({}, {'username': 'test',
+                                         'password': 'test',
+                                         'reason': 0,
+                                         'vm_uuids': []})
 
         with MockTransaction:
             expect(manager).raise_error(403).exactly(2).times()
-            manager.validate_params({'username': 'test1',
+            manager.validate_params({'admin_user': sha1('test').hexdigest(),
+                                     'admin_password': sha1('test2').hexdigest()},
+                                    {'username': 'test1',
                                      'password': 'test2',
                                      'reason': 0,
-                                     'host': 'test'},
-                                    {'admin_user': sha1('test').hexdigest(),
-                                     'admin_password': sha1('test2').hexdigest()})
-            manager.validate_params({'username': 'test1',
+                                     'host': 'test'})
+            manager.validate_params({'admin_user': sha1('test1').hexdigest(),
+                                     'admin_password': sha1('test').hexdigest()},
+                                    {'username': 'test1',
                                      'password': 'test2',
                                      'reason': 0,
-                                     'host': 'test'},
-                                    {'admin_user': sha1('test1').hexdigest(),
-                                     'admin_password': sha1('test').hexdigest()})
+                                     'host': 'test'})
 
             assert manager.validate_params(
+                {'admin_user': sha1('test1').hexdigest(),
+                 'admin_password': sha1('test2').hexdigest()},
                 {'username': 'test1',
                  'password': 'test2',
                  'reason': 1,
-                 'vm_uuids': ['qwe', 'asd']},
-                {'admin_user': sha1('test1').hexdigest(),
-                 'admin_password': sha1('test2').hexdigest()}) == True
+                 'vm_uuids': ['qwe', 'asd']}) == True
 
             assert manager.validate_params(
+                {'admin_user': sha1('test1').hexdigest(),
+                 'admin_password': sha1('test2').hexdigest()},
                 {'username': 'test1',
                  'password': 'test2',
                  'reason': 0,
-                 'host': 'test'},
-                {'admin_user': sha1('test1').hexdigest(),
-                 'admin_password': sha1('test2').hexdigest()}) == True
+                 'host': 'test'}) == True
 
     def test_start(self):
         with MockTransaction:
@@ -126,3 +126,29 @@ class GlobalManager(TestCase):
             state = manager.init_state(config)
             assert state['previous_time'] == 0
             assert state['db'] == db
+
+    def test_service(self):
+        app = mock('app')
+        state = {'property': 'value'}
+        config = {'global_manager_host': 'localhost',
+                  'global_manager_port': 8080}
+        app.state = {'state': state,
+                     'config': config}
+
+        with MockTransaction:
+            params = {'reason': 0,
+                      'host': 'host'}
+            expect(manager).get_params(Any).and_return(params).once()
+            expect(bottle).app().and_return(app).once()
+            expect(manager).validate_params(config, params).and_return(True).once()
+            expect(manager).execute_underload(config, state, 'host').once()
+            manager.service()
+
+        with MockTransaction:
+            params = {'reason': 1,
+                      'vm_uuids': 'vm_uuids'}
+            expect(manager).get_params(Any).and_return(params).once()
+            expect(bottle).app().and_return(app).once()
+            expect(manager).validate_params(config, params).and_return(True).once()
+            expect(manager).execute_overload(config, state, 'vm_uuids').once()
+            manager.service()
