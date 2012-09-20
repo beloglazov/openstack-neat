@@ -38,6 +38,14 @@ class GlobalManager(TestCase):
         else:
             assert False
 
+    def test_error(self):
+        try:
+            manager.error()
+        except bottle.HTTPResponse as e:
+            assert e.status == 405
+        else:
+            assert False
+
     def test_validate_params(self):
         with MockTransaction:
             expect(manager).raise_error(401).and_return(1).exactly(3).times()
