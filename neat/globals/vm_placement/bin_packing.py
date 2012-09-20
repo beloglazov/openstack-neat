@@ -40,8 +40,11 @@ def best_fit_decreasing_factory(time_step, migration_time, params):
 
 
 @contract
-def best_fit_decreasing(hosts_cpu, hosts_ram, vms_cpu, vms_ram):
+def best_fit_decreasing(cpu_threshold, hosts_cpu, hosts_ram, vms_cpu, vms_ram):
     """ The Best Fit Decreasing (BFD) heuristic for placing VMs on hosts.
+
+    :param cpu_threshold: The host maximum CPU utilization for placing VMs.
+     :type cpu_threshold: float
 
     :param hosts_cpu: A map of host names and their available CPU frequency in MHz.
      :type hosts_cpu: dict(str: int)
@@ -56,6 +59,18 @@ def best_fit_decreasing(hosts_cpu, hosts_ram, vms_cpu, vms_ram):
      :type vms_ram: dict(str: number)
 
     :return: A map of VM UUIDs to host names.
-     :rtype: str
+     :rtype: dict(str: str)
     """
-    pass
+    vms = sorted(((v, k) for k, v in vms_cpu.items()), reverse=True)
+    hosts = sorted(((v, k) for k, v in hosts_cpu.items()))
+    mapping = {}
+    for (vm_cpu, vm_uuid), host in zip(vms, hosts):
+        if host[0] * cpu_threshold >= vm_cpu and \
+           hosts_ram[host[1]] >= vms_ram[vm_uuid]:
+            mapping[vm_uuid] = host[1]
+            host[0] -= vm_cpu
+            hosts_ram[host[1]] -= vms_ram[vm_uuid]
+
+    if len(vms) == len(mapping):
+        return mapping
+    return {}
