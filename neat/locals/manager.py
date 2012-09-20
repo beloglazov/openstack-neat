@@ -235,7 +235,7 @@ def execute(config, state):
     state['underload_detection_state'] = underload_detection_state
 
     if underload:
-        # Send a request to the global manager with all the VMs to migrate
+        # Send a request to the global manager with the host name
         pass
     else:
         overload, overload_detection_state = overload_detection(host_cpu_utilization, overload_detection_state)
