@@ -193,13 +193,10 @@ def init_state(config):
 
 @contract
 def execute_underload(config, state, host):
-    """ Execute an iteration of the global manager
+    """ Process an underloaded host: migrate all VMs from the host.
 
-1. Parse the `vm_uuids` parameter and transform it into a list of
-   UUIDs of the VMs to migrate.
-
-2. Call the Nova API to obtain the current placement of VMs on the
-   hosts.
+1. Call the nova API to obtain the UUIDs of the VMs allocated to the
+   host.
 
 3. Call the function specified in the `algorithm_vm_placement_factory`
    configuration option and pass the UUIDs of the VMs to migrate and
@@ -208,11 +205,16 @@ def execute_underload(config, state, host):
 4. Call the Nova API to migrate the VMs according to the placement
    determined by the `algorithm_vm_placement_factory` algorithm.
 
+5. Switch off the host at the end of the VM migration.
+
     :param config: A config dictionary.
      :type config: dict(str: *)
 
     :param state: A state dictionary.
      :type state: dict(str: *)
+
+    :param state: A host name.
+     :type state: str
 
     :return: The updated state dictionary.
      :rtype: dict(str: *)
@@ -224,10 +226,7 @@ def execute_underload(config, state, host):
 def execute_overload(config, state, vm_uuids):
     """ Execute an iteration of the global manager
 
-1. Parse the `vm_uuids` parameter and transform it into a list of
-   UUIDs of the VMs to migrate.
-
-2. Call the Nova API to obtain the current placement of VMs on the
+1. Call the Nova API to obtain the current placement of VMs on the
    hosts.
 
 3. Call the function specified in the `algorithm_vm_placement_factory`
@@ -242,6 +241,9 @@ def execute_overload(config, state, vm_uuids):
 
     :param state: A state dictionary.
      :type state: dict(str: *)
+
+    :param vm_uuids: A list of VM UUIDs to migrate from the host.
+     :type vm_uuids: list(str)
 
     :return: The updated state dictionary.
      :rtype: dict(str: *)
