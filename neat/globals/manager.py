@@ -118,7 +118,8 @@ def validate_params(params, config):
         raise_error(401)
         return False
     if 'reason' not in params or \
-        params['reason'] == 1 and 'vm_uuids' not in params:
+        params['reason'] == 1 and 'vm_uuids' not in params or \
+        params['reason'] == 0 and 'host' not in params:
         raise_error(400)
         return False
     if sha1(params['username']).hexdigest() != config['admin_user'] or \
@@ -141,8 +142,13 @@ def start():
 
 @bottle.put('/')
 def index():
-    raise bottle.HTTPResponse(bottle.app().state + 'unprocessable entity', 422)
-    return str('asd' not in bottle.request.forms)
+    params = bottle.request.forms
+    validate_params(params)
+    execute(
+        bottle.app().state['config'],
+        bottle.app().state['state']
+
+        )
 
 
 @bottle.route('/', method='ANY')

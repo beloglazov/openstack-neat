@@ -46,22 +46,35 @@ class GlobalManager(TestCase):
             manager.validate_params({'password': 'test'}, {})
 
         with MockTransaction:
-            expect(manager).raise_error(400).exactly(2).times()
+            expect(manager).raise_error(400).exactly(5).times()
             manager.validate_params({'username': 'test', 'password': 'test'}, {})
             manager.validate_params({'username': 'test',
                                      'password': 'test',
                                      'reason': 1}, {})
+            manager.validate_params({'username': 'test',
+                                     'password': 'test',
+                                     'reason': 0}, {})
+            manager.validate_params({'username': 'test',
+                                     'password': 'test',
+                                     'reason': 1,
+                                     'host': 'test'}, {})
+            manager.validate_params({'username': 'test',
+                                     'password': 'test',
+                                     'reason': 0,
+                                     'vm_uuids': []}, {})
 
         with MockTransaction:
             expect(manager).raise_error(403).exactly(2).times()
             manager.validate_params({'username': 'test1',
                                      'password': 'test2',
-                                     'reason': 0},
+                                     'reason': 0,
+                                     'host': 'test'},
                                     {'admin_user': sha1('test').hexdigest(),
                                      'admin_password': sha1('test2').hexdigest()})
             manager.validate_params({'username': 'test1',
                                      'password': 'test2',
-                                     'reason': 0},
+                                     'reason': 0,
+                                     'host': 'test'},
                                     {'admin_user': sha1('test1').hexdigest(),
                                      'admin_password': sha1('test').hexdigest()})
 
@@ -70,15 +83,16 @@ class GlobalManager(TestCase):
                  'password': 'test2',
                  'reason': 1,
                  'vm_uuids': ['qwe', 'asd']},
-                 {'admin_user': sha1('test1').hexdigest(),
+                {'admin_user': sha1('test1').hexdigest(),
                  'admin_password': sha1('test2').hexdigest()}) == True
 
             assert manager.validate_params(
                 {'username': 'test1',
-                'password': 'test2',
-                'reason': 0},
+                 'password': 'test2',
+                 'reason': 0,
+                 'host': 'test'},
                 {'admin_user': sha1('test1').hexdigest(),
-                'admin_password': sha1('test2').hexdigest()}) == True
+                 'admin_password': sha1('test2').hexdigest()}) == True
 
     def test_start(self):
         with MockTransaction:
