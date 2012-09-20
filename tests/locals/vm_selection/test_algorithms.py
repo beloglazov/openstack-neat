@@ -104,13 +104,3 @@ class Selection(TestCase):
             vm = x.keys()[random.randrange(len(x))]
             expect(selection).choice(x.keys()).and_return(vm).once()
             assert selection.random(x) == vm
-
-
-    # def test_threshold_factory(self):
-    #     alg = trivial.threshold_factory(300, 20, {'threshold': 0.5})
-    #     self.assertEqual(alg([]), (False, {}))
-    #     self.assertEqual(alg([0.0, 0.0]), (True, {}))
-    #     self.assertEqual(alg([0.0, 0.4]), (True, {}))
-    #     self.assertEqual(alg([0.0, 0.5]), (True, {}))
-    #     self.assertEqual(alg([0.0, 0.6]), (False, {}))
-    #     self.assertEqual(alg([0.0, 1.0]), (False, {}))
