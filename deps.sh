@@ -14,5 +14,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-sudo pip2 install --upgrade pyqcy mocktest PyContracts sniffer pyinotify SQLAlchemy bottle requests Sphinx
+sudo pip2 install --upgrade pyqcy mocktest PyContracts sniffer pyinotify SQLAlchemy bottle requests Sphinx python-novaclient
 sudo pacman -S python2-scipy
