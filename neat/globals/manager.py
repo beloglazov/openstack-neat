@@ -225,12 +225,38 @@ def execute_underload(config, state, host):
     :return: The updated state dictionary.
      :rtype: dict(str: *)
     """
-
-    nt = client.Client("admin", "adminpassword", "admin", "http://controller:5000/v2.0/", service_type="compute")
-    vms = nt.servers.list(detailed=True)
-    vms[0].id  # uuid
-    vms[0].__getattr__('OS-EXT-SRV-ATTR:host')  # host name
+    vms = vms_by_host(state['nova'], host)
     return state
+
+
+@contract
+def vms_by_host(nova, host):
+    """ Get VMs from the specified host using the Nova API.
+
+    :param nova: A Nova client.
+     :type nova: *
+
+    :param host: A host name.
+     :type host: str
+
+    :return: A list of VM UUIDs from the specified host.
+     :rtype: list(str)
+    """
+    return [vm.id for vm in nova.servers.list()
+            if vm_hostname(vm) == host]
+
+
+@contract
+def vm_hostname(vm):
+    """ Get the name of the host where VM is running.
+
+    :param vm: A Nova VM object.
+     :type vm: *
+
+    :return: The hostname.
+     :rtype: str
+    """
+    return vm.__getattr__('OS-EXT-SRV-ATTR:host')
 
 
 @contract

@@ -18,6 +18,7 @@ import collections
 import libvirt
 import sqlalchemy
 import neat.db
+# import novaclient
 
 
 new_contract('deque', collections.deque)
@@ -26,3 +27,4 @@ new_contract('virConnect', libvirt.virConnect)
 new_contract('virDomain', libvirt.virDomain)
 new_contract('Table', sqlalchemy.Table)
 new_contract('Database', neat.db.Database)
+# new_contract('Client', novaclient.v1_1.client.Client)

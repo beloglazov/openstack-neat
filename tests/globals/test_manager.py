@@ -164,3 +164,30 @@ class GlobalManager(TestCase):
             expect(manager).validate_params(config, params).and_return(True).once()
             expect(manager).execute_overload(config, state, 'vm_uuids').once()
             manager.service()
+
+    @qc(20)
+    def vms_by_host(
+        x=dict_(
+            keys=str_(of='abc123-', min_length=36, max_length=36),
+            values=str_(of='abc123-', min_length=10, max_length=10),
+            min_length=0, max_length=3
+        ),
+        y=list_(str_(of='abc123-', min_length=36, max_length=36),
+                min_length=0, max_length=3),
+        host=str_(of='abc123-', min_length=5, max_length=5)
+    ):
+        with MockTransaction:
+            extra_vms = {}
+            for vm in y:
+                extra_vms[vm] = host
+            x.update(extra_vms)
+            vms = []
+            for vm_uuid, h in x.items():
+                vm = mock(vm_uuid)
+                vm.id = vm_uuid
+                expect(manager).vm_hostname(vm).and_return(h).once()
+                vms.append(vm)
+            nova = mock('nova')
+            nova.servers = mock('servers')
+            expect(nova.servers).list().and_return(vms).once()
+            assert set(manager.vms_by_host(nova, host)) == set(y)
