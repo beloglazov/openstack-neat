@@ -20,6 +20,57 @@ import neat.globals.vm_placement.bin_packing as packing
 
 class BinPacking(TestCase):
 
+    def test_best_fit_decreasing_factory(self):
+        alg = packing.best_fit_decreasing_factory(300, 20,
+                                                  {'cpu_threshold': 0.8,
+                                                   'ram_threshold': 0.9})
+
+        hosts_cpu_usage = {
+            'host1': 200,
+            'host2': 2200,
+            'host3': 1200}
+        hosts_cpu_total = {
+            'host1': 4000,
+            'host2': 4000,
+            'host3': 4000}
+        hosts_ram_usage = {
+            'host1': 3276,
+            'host2': 6348,
+            'host3': 5324}
+        hosts_ram_total = {
+            'host1': 8192,
+            'host2': 8192,
+            'host3': 8192}
+        inactive_hosts_cpu = {
+            'host4': 3000,
+            'host5': 1000,
+            'host6': 2000}
+        inactive_hosts_ram = {
+            'host4': 4096,
+            'host5': 1024,
+            'host6': 2048}
+        vms_cpu = {
+            'vm1': 1000,
+            'vm2': 1000,
+            'vm3': 1000}
+        vms_ram = {
+            'vm1': 2048,
+            'vm2': 4096,
+            'vm3': 2048}
+
+        self.assertEqual(alg(hosts_cpu_usage, hosts_cpu_total,
+                            hosts_ram_usage, hosts_ram_total,
+                            inactive_hosts_cpu, inactive_hosts_ram,
+                            vms_cpu, vms_ram), ({
+                                'vm1': 'host6',
+                                'vm2': 'host1',
+                                'vm3': 'host3'}, {}))
+
+    def test_get_available_resources(self):
+        self.assertEqual(packing.get_available_resources(0.8,
+            {'host1': 700, 'host2': 200}, {'host1': 1000, 'host2': 2000}),
+            {'host1': 100, 'host2': 1400})
+
     def test_best_fit_decreasing(self):
         hosts_cpu = {
             'host1': 3000,
@@ -107,6 +158,29 @@ class BinPacking(TestCase):
             'host1': 4096,
             'host2': 1024,
             'host3': 2048}
+        inactive_hosts_cpu = {}
+        inactive_hosts_ram = {}
+        vms_cpu = {
+            'vm1': 1000,
+            'vm2': 1000,
+            'vm3': 1000}
+        vms_ram = {
+            'vm1': 3072,
+            'vm2': 1536,
+            'vm3': 1536}
+
+        assert packing.best_fit_decreasing(
+            hosts_cpu, hosts_ram, inactive_hosts_cpu, inactive_hosts_ram,
+            vms_cpu, vms_ram) == {}
+
+        hosts_cpu = {
+            'host1': 3000,
+            'host2': 1000,
+            'host3': 2000}
+        hosts_ram = {
+            'host1': 4096,
+            'host2': 1024,
+            'host3': 2048}
         inactive_hosts_cpu = {
             'host4': 3000,
             'host5': 1000,
@@ -131,30 +205,31 @@ class BinPacking(TestCase):
             'vm2': 'host1',
             'vm3': 'host3'}
 
+        hosts_cpu = {
+            'host1': 3000,
+            'host2': 1000,
+            'host3': 2000}
+        hosts_ram = {
+            'host1': 4096,
+            'host2': 1024,
+            'host3': 2048}
+        inactive_hosts_cpu = {
+            'host4': 3000,
+            'host5': 1000,
+            'host6': 2000}
+        inactive_hosts_ram = {
+            'host4': 4096,
+            'host5': 1024,
+            'host6': 2048}
+        vms_cpu = {
+            'vm1': 1000,
+            'vm2': 1000,
+            'vm3': 1000}
+        vms_ram = {
+            'vm1': 2048,
+            'vm2': 5120,
+            'vm3': 2048}
 
-    # @qc(10)
-    # def minimum_migration_time_factory(
-    #     x=dict_(
-    #         keys=str_(of='abc123-', min_length=36, max_length=36),
-    #         values=int_(min=0, max=3000),
-    #         min_length=1, max_length=5
-    #     )
-    # ):
-    #     alg = selection.minimum_migration_time_factory(300, 20, dict())
-    #     values = x.values()
-    #     vm_index = values.index(min(values))
-    #     vm = x.keys()[vm_index]
-    #     assert alg(dict(), x) == (vm, {})
-
-    # @qc(10)
-    # def minimum_migration_time(
-    #     x=dict_(
-    #         keys=str_(of='abc123-', min_length=36, max_length=36),
-    #         values=int_(min=0, max=3000),
-    #         min_length=1, max_length=5
-    #     )
-    # ):
-    #     values = x.values()
-    #     vm_index = values.index(min(values))
-    #     vm = x.keys()[vm_index]
-    #     assert selection.minimum_migration_time(x) == vm
+        assert packing.best_fit_decreasing(
+            hosts_cpu, hosts_ram, inactive_hosts_cpu, inactive_hosts_ram,
+            vms_cpu, vms_ram) == {}
