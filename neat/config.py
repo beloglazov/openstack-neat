@@ -34,9 +34,10 @@ CONFIG_PATH = os.path.join(os.path.dirname(__file__), '..', 'neat.conf')
 # These fields must present in the configuration file
 REQUIRED_FIELDS = [
     'sql_connection',
-    'admin_tenant_name',
-    'admin_user',
-    'admin_password',
+    'os_admin_tenant_name',
+    'os_admin_user',
+    'os_admin_password',
+    'os_auth_url',
     'global_manager_host',
     'global_manager_port',
     'local_data_directory',
