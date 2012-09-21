@@ -72,6 +72,7 @@ from neat.contracts_extra import *
 
 import bottle
 from hashlib import sha1
+from novaclient.v1_1 import client
 
 from neat.config import *
 from neat.db_utils import *
@@ -188,7 +189,12 @@ def init_state(config):
      :rtype: dict
     """
     return {'previous_time': 0,
-            'db': init_db(config.get('sql_connection'))}
+            'db': init_db(config.get('sql_connection')),
+            'nova': client.Client(config.get('os_admin_user'),
+                                  config.get('os_admin_password'),
+                                  config.get('os_admin_tenant_name'),
+                                  config.get('os_auth_url'),
+                                  service_type="compute")}
 
 
 @contract
@@ -219,6 +225,11 @@ def execute_underload(config, state, host):
     :return: The updated state dictionary.
      :rtype: dict(str: *)
     """
+
+    nt = client.Client("admin", "adminpassword", "admin", "http://controller:5000/v2.0/", service_type="compute")
+    vms = nt.servers.list(detailed=True)
+    vms[0].id  # uuid
+    vms[0].__getattr__('OS-EXT-SRV-ATTR:host')  # host name
     return state
 
 

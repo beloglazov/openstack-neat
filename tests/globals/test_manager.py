@@ -17,6 +17,7 @@ from pyqcy import *
 
 import bottle
 from hashlib import sha1
+from novaclient.v1_1 import client
 
 import neat.globals.manager as manager
 
@@ -121,11 +122,22 @@ class GlobalManager(TestCase):
     def test_init_state(self):
         with MockTransaction:
             db = mock('db')
+            nova = mock('nova')
+            config = {'sql_connection': 'db',
+                      'os_admin_user': 'user',
+                      'os_admin_password': 'password',
+                      'os_admin_tenant_name': 'tenant',
+                      'os_auth_url': 'url'}
             expect(manager).init_db('db').and_return(db).once()
-            config = {'sql_connection': 'db'}
+            expect(client).Client('user',
+                                  'password',
+                                  'tenant',
+                                  'url',
+                                  service_type='compute').and_return(nova).once()
             state = manager.init_state(config)
             assert state['previous_time'] == 0
             assert state['db'] == db
+            assert state['nova'] == nova
 
     def test_service(self):
         app = mock('app')
