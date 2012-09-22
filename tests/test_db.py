@@ -84,3 +84,22 @@ class Db(TestCase):
 
         for uuid, data in final_data.items():
             assert db.select_cpu_mhz_for_vm(uuid, 11) == data
+
+    @qc(1)
+    def update_host():
+        db = db_utils.init_db('sqlite:///:memory:')
+        db.update_host('host1', 3000, 4000)
+        hosts = db.hosts.select().execute().fetchall()
+        assert len(hosts) == 1
+        host = hosts[0]
+        assert host['hostname'] == 'host1'
+        assert host['cpu_mhz'] == 3000
+        assert host['ram'] == 4000
+
+        db.update_host('host1', 3500, 8000)
+        hosts = db.hosts.select().execute().fetchall()
+        assert len(hosts) == 1
+        host = hosts[0]
+        assert host['hostname'] == 'host1'
+        assert host['cpu_mhz'] == 3500
+        assert host['ram'] == 8000

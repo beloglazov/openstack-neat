@@ -34,6 +34,12 @@ def init_db(sql_connection):
     metadata = MetaData()
     metadata.bind = engine
 
+    hosts = Table('hosts', metadata,
+                Column('id', Integer, primary_key=True),
+                Column('hostname', String(255), nullable=False),
+                Column('cpu_mhz', Integer, nullable=False),
+                Column('ram', Integer, nullable=False))
+
     vms = Table('vms', metadata,
                 Column('id', Integer, primary_key=True),
                 Column('uuid', String(36), nullable=False))
@@ -48,4 +54,4 @@ def init_db(sql_connection):
     metadata.create_all()
     connection = engine.connect()
 
-    return Database(connection, vms, vm_resource_usage)
+    return Database(connection, hosts, vms, vm_resource_usage)

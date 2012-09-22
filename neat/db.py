@@ -21,15 +21,20 @@ class Database(object):
     """ A class representing the database, where fields are tables.
     """
 
-    @contract(connection=Connection, vms=Table, vm_resource_usage=Table)
-    def __init__(self, connection, vms, vm_resource_usage):
+    @contract(connection=Connection,
+              hosts=Table,
+              vms=Table,
+              vm_resource_usage=Table)
+    def __init__(self, connection, hosts, vms, vm_resource_usage):
         """ Initialize the database.
 
         :param connection: A database connection table.
+        :param hosts: The hosts table.
         :param vms: The vms table.
         :param vm_resource_usage: The vm_resource_usage table.
         """
         self.connection = connection
+        self.hosts = hosts
         self.vms = vms
         self.vm_resource_usage = vm_resource_usage
 
@@ -86,3 +91,32 @@ class Database(object):
                 query.append({'vm_id': vm_id,
                               'cpu_mhz': cpu_mhz})
             self.vm_resource_usage.insert().execute(query)
+
+    @contract
+    def update_host(self, hostname, cpu_mhz, ram):
+        """ Insert new or update the corresponding host record.
+
+        :param hostname: A host name.
+         :type hostname: str
+
+        :param cpu_mhz: The total CPU frequency of the host in MHz.
+         :type cpu_mhz: int,>0
+
+        :param ram: The total amount of RAM of the host in MB.
+         :type ram: int,>0
+
+        :return: The ID of the host.
+         :rtype: int
+        """
+        sel = select([self.hosts.c.id]).where(self.hosts.c.hostname == hostname)
+        row = self.connection.execute(sel).fetchone()
+        if row == None:
+            return self.hosts.insert().execute(hostname=hostname,
+                                               cpu_mhz=cpu_mhz,
+                                               ram=ram).inserted_primary_key[0]
+        else:
+            self.connection.execute(self.hosts.update().
+                                    where(self.hosts.c.id == row['id']).
+                                    values(cpu_mhz=cpu_mhz,
+                                           ram=ram))
+            return row['id']
