@@ -38,6 +38,7 @@ REQUIRED_FIELDS = [
     'os_admin_user',
     'os_admin_password',
     'os_auth_url',
+    'compute_hosts',
     'global_manager_host',
     'global_manager_port',
     'local_data_directory',
