@@ -243,6 +243,11 @@ def execute_underload(config, state, host):
     vms = vms_by_host(state['nova'], host)
     # nova.hosts.get('compute1')[0].memory_mb - total ram
     # nova.hosts.get('compute1')[1].memory_mb - user ram
+    # libvirt on each host, get data and submit to the DB:
+    # conn.getHostname()
+    # Out[9]: 'compute1'
+    # connection.getInfo()
+    # Out[43]: ['x86_64', 1866, 2, 2392, 1, 1, 2, 1]
     return state
 
 
