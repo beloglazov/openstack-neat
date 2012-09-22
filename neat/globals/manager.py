@@ -71,6 +71,7 @@ from contracts import contract
 from neat.contracts_extra import *
 
 import bottle
+import re
 from hashlib import sha1
 from novaclient.v1_1 import client
 
@@ -194,7 +195,21 @@ def init_state(config):
                                   config.get('os_admin_password'),
                                   config.get('os_admin_tenant_name'),
                                   config.get('os_auth_url'),
-                                  service_type="compute")}
+                                  service_type="compute"),
+            'compute_hosts': parse_compute_hosts(config['compute_hosts'])}
+
+
+@contract
+def parse_compute_hosts(compute_hosts):
+    """ Transform a coma-separated list of host names into a list.
+
+    :param compute_hosts: A coma-separated list of host names.
+     :type compute_hosts: str
+
+    :return: A list of host names.
+     :rtype: list(str)
+    """
+    return filter(None, re.split('\W+', compute_hosts))
 
 
 @contract
@@ -226,6 +241,8 @@ def execute_underload(config, state, host):
      :rtype: dict(str: *)
     """
     vms = vms_by_host(state['nova'], host)
+    # nova.hosts.get('compute1')[0].memory_mb - total ram
+    # nova.hosts.get('compute1')[1].memory_mb - user ram
     return state
 
 

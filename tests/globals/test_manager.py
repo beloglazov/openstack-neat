@@ -123,21 +123,30 @@ class GlobalManager(TestCase):
         with MockTransaction:
             db = mock('db')
             nova = mock('nova')
+            hosts = ['host1', 'host2']
             config = {'sql_connection': 'db',
                       'os_admin_user': 'user',
                       'os_admin_password': 'password',
                       'os_admin_tenant_name': 'tenant',
-                      'os_auth_url': 'url'}
+                      'os_auth_url': 'url',
+                      'compute_hosts': 'host1, host2'}
             expect(manager).init_db('db').and_return(db).once()
             expect(client).Client('user',
                                   'password',
                                   'tenant',
                                   'url',
                                   service_type='compute').and_return(nova).once()
+            expect(manager).parse_compute_hosts('host1, host2').and_return(hosts).once()
             state = manager.init_state(config)
             assert state['previous_time'] == 0
             assert state['db'] == db
             assert state['nova'] == nova
+            assert state['compute_hosts'] == hosts
+
+    def test_parse_compute_hosts(self):
+        assert manager.parse_compute_hosts('') == []
+        assert manager.parse_compute_hosts('test1, test2') == ['test1', 'test2']
+        assert manager.parse_compute_hosts('t1,,  t2 , t3') == ['t1', 't2', 't3']
 
     def test_service(self):
         app = mock('app')
