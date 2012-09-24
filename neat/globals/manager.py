@@ -240,21 +240,58 @@ def execute_underload(config, state, host):
     :return: The updated state dictionary.
      :rtype: dict(str: *)
     """
-    vms_to_migrate = vms_by_host(state['nova'], host)
-    hosts_to_vms = vms_by_hosts(state['nova'], config['compute_hosts'])
+    underloaded_host = host
     hosts_cpu_total, hosts_ram_total = db.select_host_characteristics()
-    hosts_ram_usage = dict((host, host_used_ram(state['nova'], host))
-                           for host in host_ram_total.keys())
+
+    hosts_to_vms = vms_by_hosts(state['nova'], config['compute_hosts'])
+    vms_last_cpu = state['db'].select_last_cpu_mhz_for_vms()
+
     hosts_cpu_usage = {}
+    hosts_ram_usage = {}
     for host, vms in hosts_to_vms.items():
-        pass
-    # nova.hosts.get('compute1')[0].memory_mb - total ram
-    # nova.hosts.get('compute1')[1].memory_mb - user ram
-    # libvirt on each host, get data and submit to the DB:
-    # conn.getHostname()
-    # Out[9]: 'compute1'
-    # connection.getInfo()
-    # Out[43]: ['x86_64', 1866, 2, 2392, 1, 1, 2, 1]
+        host_cpu_mhz = sum(vms_last_cpu[x] for x in vms)
+        if host_cpu_mhz > 0:
+            host_cpu_usage[host] = host_cpu_mhz
+            host_ram_usage[host] = host_used_ram(state['nova'], host)
+        else:
+            # Exclude inactive hosts
+            del hosts_cpu_total[host]
+            del hosts_ram_total[host]
+
+    # Exclude the underloaded host
+    del hosts_cpu_usage[underloaded_host]
+    del hosts_cpu_total[underloaded_host]
+    del hosts_ram_usage[underloaded_host]
+    del hosts_ram_total[underloaded_host]
+
+    vms_to_migrate = vms_by_host(state['nova'], underloaded_host)
+    vms_cpu = {x: vms_last_cpu[x] for x in vms_to_migrate}
+
+    time_step = int(config.get('data_collector_interval'))
+    migration_time = calculate_migration_time(
+        vm_ram,
+        float(config.get('network_migration_bandwidth')))
+
+    if 'vm_placement' not in state:
+        vm_placement_params = json.loads(config.get('algorithm_vm_placement_params'))
+        vm_placement_state = None
+        vm_placement = config.get('algorithm_vm_placement_factory')(
+            time_step,
+            migration_time,
+            vm_placement_params)
+        state['vm_placement'] = vm_placement
+    else:
+        vm_placement = state['vm_placement']
+        vm_placement_state = state['vm_placement_state']
+
+    placement, vm_placement_state = vm_placement(
+        hosts_cpu_usage, hosts_cpu_total,
+        hosts_ram_usage, hosts_ram_total,
+        {}, {},
+        vms_cpu,
+        vm_placement_state)
+    state['vm_placement_state'] = vm_placement_state
+
     return state
 
 
@@ -304,7 +341,7 @@ def vms_by_hosts(nova, hosts):
     :return: A dict of host names to lists of VM UUIDs.
      :rtype: dict(str: list(str))
     """
-    result = dict((host, []) for host in hosts)
+    result = {host: [] for host in hosts}
     for vm in nova.servers.list():
         result[vm_hostname(vm)].append(vm.id)
     return result
@@ -349,4 +386,53 @@ def execute_overload(config, state, vm_uuids):
     :return: The updated state dictionary.
      :rtype: dict(str: *)
     """
+    underloaded_host = host
+    hosts_cpu_total, hosts_ram_total = db.select_host_characteristics()
+
+    hosts_to_vms = vms_by_hosts(state['nova'], config['compute_hosts'])
+    vms_last_cpu = state['db'].select_last_cpu_mhz_for_vms()
+
+    hosts_cpu_usage = {}
+    hosts_ram_usage = {}
+    inactive_hosts_cpu = {}
+    inactive_hosts_ram = {}
+    for host, vms in hosts_to_vms.items():
+        host_cpu_mhz = sum(vms_last_cpu[x] for x in vms)
+        if host_cpu_mhz > 0:
+            host_cpu_usage[host] = host_cpu_mhz
+            host_ram_usage[host] = host_used_ram(state['nova'], host)
+        else:
+            inactive_hosts_cpu[host] = hosts_cpu_total[host]
+            inactive_hosts_ram[host] = hosts_ram_total[host]
+            del hosts_cpu_total[host]
+            del hosts_ram_total[host]
+
+    #fix
+    vms_to_migrate = vms_by_host(state['nova'], underloaded_host)
+
+
+    time_step = int(config.get('data_collector_interval'))
+    migration_time = calculate_migration_time(
+        vm_ram,
+        float(config.get('network_migration_bandwidth')))
+
+    if 'vm_placement' not in state:
+        vm_placement_params = json.loads(config.get('algorithm_vm_placement_params'))
+        vm_placement_state = None
+        vm_placement = config.get('algorithm_vm_placement_factory')(
+            time_step,
+            migration_time,
+            vm_placement_params)
+        state['vm_placement'] = vm_placement
+    else:
+        vm_placement = state['vm_placement']
+        vm_placement_state = state['vm_placement_state']
+
+    placement, vm_placement_state = vm_placement(
+        hosts_cpu_usage, hosts_cpu_total,
+        hosts_ram_usage, hosts_ram_total,
+        inactive_hosts_cpu, inactive_hosts_ram,
+        vm_placement_state)
+    state['vm_placement_state'] = vm_placement_state
+
     return state
