@@ -240,10 +240,14 @@ def execute_underload(config, state, host):
     :return: The updated state dictionary.
      :rtype: dict(str: *)
     """
-    vms = vms_by_host(state['nova'], host)
+    vms_to_migrate = vms_by_host(state['nova'], host)
+    hosts_to_vms = vms_by_hosts(state['nova'], config['compute_hosts'])
     hosts_cpu_total, hosts_ram_total = db.select_host_characteristics()
     hosts_ram_usage = dict((host, host_used_ram(state['nova'], host))
                            for host in host_ram_total.keys())
+    hosts_cpu_usage = {}
+    for host, vms in hosts_to_vms.items():
+        pass
     # nova.hosts.get('compute1')[0].memory_mb - total ram
     # nova.hosts.get('compute1')[1].memory_mb - user ram
     # libvirt on each host, get data and submit to the DB:
