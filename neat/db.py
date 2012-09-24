@@ -61,6 +61,26 @@ class Database(object):
         return [x[0] for x in res]
 
     @contract
+    def select_last_cpu_mhz_for_vms(self):
+        """ Select the last value of CPU MHz for all the VMs.
+
+        :return: A dict of VM UUIDs to the last CPU MHz values.
+         :rtype: dict(str: int)
+        """
+        vru1 = self.vm_resource_usage
+        vru2 = self.vm_resource_usage.alias()
+        sel = select([vru1.c.vm_id, vru1.c.cpu_mhz], from_obj=[
+            vru1.outerjoin(vru2, and_(
+                vru1.c.vm_id == vru2.c.vm_id,
+                vru1.c.id < vru2.c.id))]). \
+             where(vru2.c.id == None)
+        vms_cpu_mhz = dict(self.connection.execute(sel).fetchall())
+        vms_uuids = dict(self.vms.select().execute().fetchall())
+
+        return dict((str(uuid), vms_cpu_mhz[id])
+                    for id, uuid in vms_uuids.items())
+
+    @contract
     def select_vm_id(self, uuid):
         """ Select the ID of a VM by the VM UUID, or insert a new record.
 

@@ -44,6 +44,24 @@ class Db(TestCase):
         assert db.select_cpu_mhz_for_vm(uuid, n) == cpu_mhz[:n]
 
     @qc(10)
+    def select_last_cpu_mhz_for_vm(
+        vms=dict_(
+            keys=str_(of='abc123-', min_length=36, max_length=36),
+            values=list_(of=int_(min=1, max=3000),
+                         min_length=0, max_length=10),
+            min_length=0, max_length=3
+        )
+    ):
+        db = db_utils.init_db('sqlite:///:memory:')
+        res = {}
+        for uuid, data in vms.items():
+            for value in data:
+                db.insert_cpu_mhz({uuid: value})
+            if data:
+                res[uuid] = data[-1]
+        assert db.select_last_cpu_mhz_for_vms() == res
+
+    @qc(10)
     def select_vm_id(
         uuid1=str_(of='abc123-', min_length=36, max_length=36),
         uuid2=str_(of='abc123-', min_length=36, max_length=36)
