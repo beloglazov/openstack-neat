@@ -50,7 +50,8 @@ class Collector(TestCase):
             vir_connection = mock('virConnect')
             expect(libvirt).openReadOnly(None).and_return(vir_connection).once()
             physical_cpus = 13
-            expect(common).physical_cpu_count(any_).and_return(physical_cpus).once()
+            expect(common).physical_cpu_count(vir_connection). \
+                and_return(physical_cpus).once()
             config = {'sql_connection': 'db'}
 
             hostname = 'host1'
