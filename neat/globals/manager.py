@@ -242,6 +242,8 @@ def execute_underload(config, state, host):
     """
     vms = vms_by_host(state['nova'], host)
     hosts_cpu_total, hosts_ram_total = db.select_host_characteristics()
+    hosts_ram_usage = dict((host, host_used_ram(state['nova'], host))
+                           for host in host_ram_total.keys())
     # nova.hosts.get('compute1')[0].memory_mb - total ram
     # nova.hosts.get('compute1')[1].memory_mb - user ram
     # libvirt on each host, get data and submit to the DB:
@@ -283,6 +285,25 @@ def vms_by_host(nova, host):
     """
     return [vm.id for vm in nova.servers.list()
             if vm_hostname(vm) == host]
+
+
+@contract
+def vms_by_hosts(nova, hosts):
+    """ Get a map of host names to VMs using the Nova API.
+
+    :param nova: A Nova client.
+     :type nova: *
+
+    :param hosts: A list of host names.
+     :type hosts: list(str)
+
+    :return: A dict of host names to lists of VM UUIDs.
+     :rtype: dict(str: list(str))
+    """
+    result = dict((host, []) for host in hosts)
+    for vm in nova.servers.list():
+        result[vm_hostname(vm)].append(vm.id)
+    return result
 
 
 @contract

@@ -201,6 +201,39 @@ class GlobalManager(TestCase):
             expect(nova.servers).list().and_return(vms).once()
             assert set(manager.vms_by_host(nova, host)) == set(y)
 
+    @qc(1)
+    def vms_by_hosts(
+        x=list_(str_(of='abc123-', min_length=36, max_length=36),
+                min_length=0, max_length=3),
+        y=list_(str_(of='abc123-', min_length=36, max_length=36),
+                min_length=0, max_length=3),
+        host1=str_(of='abc123-', min_length=5, max_length=10),
+        host2=str_(of='abc123-', min_length=5, max_length=10)
+    ):
+        with MockTransaction:
+            vms1 = {}
+            for vm in x:
+                vms1[vm] = host1
+            vms2 = {}
+            for vm in y:
+                vms2[vm] = host2
+            vms_all = dict(vms1)
+            vms_all.update(vms2)
+            vms = []
+            for vm_uuid, h in vms_all.items():
+                vm = mock(vm_uuid)
+                vm.id = vm_uuid
+                expect(manager).vm_hostname(vm).and_return(h).once()
+                vms.append(vm)
+            nova = mock('nova')
+            nova.servers = mock('servers')
+            expect(nova.servers).list().and_return(vms).once()
+            result = manager.vms_by_hosts(nova, [host1, host2])
+            result_sets = {}
+            for host, data in result.items():
+                result_sets[host] = set(data)
+            assert result_sets == {host1: set(x), host2: set(y)}
+
     def test_host_used_ram(self):
         with MockTransaction:
             hostname = 'hosthost'
