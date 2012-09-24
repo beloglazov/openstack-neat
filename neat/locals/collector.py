@@ -126,6 +126,8 @@ def init_state(config):
     :return: A dictionary containing the initial state of the data collector.
      :rtype: dict
     """
+    db = init_db(config.get('sql_connection'))
+    # update host data in the db
     vir_connection = libvirt.openReadOnly(None)
     if vir_connection is None:
         print 'Failed to open connection to the hypervisor'
@@ -134,7 +136,7 @@ def init_state(config):
             'previous_cpu_time': dict(),
             'vir_connect': vir_connection,
             'physical_cpus': common.physical_cpu_count(vir_connection),
-            'db': init_db(config.get('sql_connection'))}
+            'db': db}
 
 
 def execute(config, state):
@@ -464,3 +466,17 @@ def calculate_cpu_mhz(cpus, previous_time, current_time,
     """
     return int((current_cpu_time - previous_cpu_time) /
                ((current_time - previous_time) * 1000000000 * cpus))
+
+
+@contract()
+def get_host_characteristics(vir_connection):
+    """ Get the total CPU MHz and RAM of the host.
+
+    :param vir_connection: A libvirt connection object.
+     :type vir_connection: virConnect
+
+    :return: A tuple of the total CPU MHz and RAM of the host.
+     :rtype: tuple(int, int)
+    """
+    info = vir_connection.getInfo()
+    return info[2] * info[3], info[1]

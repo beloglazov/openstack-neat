@@ -385,3 +385,15 @@ class Collector(TestCase):
             calculate_cpu_mhz(cpus, previous_time, current_time,
                               previous_cpu_time, current_cpu_time) == \
             (cpu_time / (time_period * 1000000000 * cpus))
+
+    @qc(10)
+    def get_host_characteristics(
+        ram=int_(min=1, max=4000),
+        cores=int_(min=1, max=8),
+        mhz=int_(min=1, max=3000)
+    ):
+        with MockTransaction:
+            connection = libvirt.virConnect()
+            expect(connection).getInfo().and_return(
+                ['x86_64', ram, cores, mhz, 1, 1, 4, 2]).once()
+            assert collector.get_host_characteristics(connection) == (cores * mhz, ram)
