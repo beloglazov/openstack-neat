@@ -103,3 +103,14 @@ class Db(TestCase):
         assert host['hostname'] == 'host1'
         assert host['cpu_mhz'] == 3500
         assert host['ram'] == 8000
+
+    @qc(1)
+    def select_host_characteristics():
+        db = db_utils.init_db('sqlite:///:memory:')
+        assert db.select_host_characteristics() == {}
+
+        db.update_host('host1', 3000, 4000)
+        db.update_host('host2', 3500, 8000)
+        assert db.select_host_characteristics() == {
+            'host1': {'cpu_mhz': 3000, 'ram': 4000},
+            'host2': {'cpu_mhz': 3500, 'ram': 8000}}

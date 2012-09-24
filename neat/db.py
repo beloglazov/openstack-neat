@@ -120,3 +120,14 @@ class Database(object):
                                     values(cpu_mhz=cpu_mhz,
                                            ram=ram))
             return row['id']
+
+    @contract
+    def select_host_characteristics(self):
+        """ Select the characteristics of all the hosts.
+
+        :return: A dict of host names to their CPU MHz and RAM.
+         :rtype: dict(str: dict)
+        """
+        hosts = self.hosts.select().execute().fetchall()
+        return dict((str(x[1]), {'cpu_mhz': x[2],
+                                 'ram': x[3]}) for x in hosts)
