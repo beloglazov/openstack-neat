@@ -241,6 +241,7 @@ def execute_underload(config, state, host):
      :rtype: dict(str: *)
     """
     vms = vms_by_host(state['nova'], host)
+    hosts_cpu_total, hosts_ram_total = db.select_host_characteristics()
     # nova.hosts.get('compute1')[0].memory_mb - total ram
     # nova.hosts.get('compute1')[1].memory_mb - user ram
     # libvirt on each host, get data and submit to the DB:
@@ -252,8 +253,8 @@ def execute_underload(config, state, host):
 
 
 @contract
-def host_free_ram(nova, host):
-    """ Get the unused RAM of the host using the Nova API.
+def host_used_ram(nova, host):
+    """ Get the used RAM of the host using the Nova API.
 
     :param nova: A Nova client.
      :type nova: *
@@ -261,11 +262,10 @@ def host_free_ram(nova, host):
     :param host: A host name.
      :type host: str
 
-    :return: The unused RAM of the host.
+    :return: The used RAM of the host.
      :rtype: int
     """
-    nova_host = nova.hosts.get(host)
-    return nova_host[0].memory_mb - nova_host[1].memory_mb
+    return nova.hosts.get(host)[1].memory_mb
 
 
 @contract
