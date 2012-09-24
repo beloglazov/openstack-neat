@@ -48,19 +48,26 @@ class Collector(TestCase):
     def init_state():
         with MockTransaction:
             vir_connection = mock('virConnect')
-            db = mock('db')
-            expect(libvirt).openReadOnly(None). \
-                and_return(vir_connection).once()
+            expect(libvirt).openReadOnly(None).and_return(vir_connection).once()
             physical_cpus = 13
-            expect(common).physical_cpu_count(any_). \
-                and_return(physical_cpus).once()
-            expect(collector).init_db('db'). \
-                then_return(db).once()
+            expect(common).physical_cpu_count(any_).and_return(physical_cpus).once()
             config = {'sql_connection': 'db'}
+
+            hostname = 'host1'
+            mhz = 13540
+            ram = 8192
+            expect(vir_connection).getHostname().and_return(hostname).once()
+            expect(collector).get_host_characteristics(vir_connection). \
+                and_return((mhz, ram)).once()
+
+            db = mock('db')
+            expect(collector).init_db('db').and_return(db).once()
+            expect(db).update_host(hostname, mhz, ram).once()
+
             state = collector.init_state(config)
             assert state['previous_time'] == 0
             assert isinstance(state['previous_cpu_time'], dict)
-            assert state['vir_connect'] == vir_connection
+            assert state['vir_connection'] == vir_connection
             assert state['physical_cpus'] == physical_cpus
             assert state['db'] == db
 

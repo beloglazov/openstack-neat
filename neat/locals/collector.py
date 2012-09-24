@@ -126,15 +126,20 @@ def init_state(config):
     :return: A dictionary containing the initial state of the data collector.
      :rtype: dict
     """
-    db = init_db(config.get('sql_connection'))
-    # update host data in the db
     vir_connection = libvirt.openReadOnly(None)
     if vir_connection is None:
         print 'Failed to open connection to the hypervisor'
         sys.exit(1)
+
+    hostname = vir_connection.getHostname()
+    host_cpu_mhz, host_ram = get_host_characteristics(vir_connection)
+
+    db = init_db(config.get('sql_connection'))
+    db.update_host(hostname, host_cpu_mhz, host_ram)
+
     return {'previous_time': 0,
             'previous_cpu_time': dict(),
-            'vir_connect': vir_connection,
+            'vir_connection': vir_connection,
             'physical_cpus': common.physical_cpu_count(vir_connection),
             'db': db}
 
