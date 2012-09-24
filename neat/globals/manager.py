@@ -252,6 +252,23 @@ def execute_underload(config, state, host):
 
 
 @contract
+def host_free_ram(nova, host):
+    """ Get the unused RAM of the host using the Nova API.
+
+    :param nova: A Nova client.
+     :type nova: *
+
+    :param host: A host name.
+     :type host: str
+
+    :return: The unused RAM of the host.
+     :rtype: int
+    """
+    nova_host = nova.hosts.get(host)
+    return nova_host[0].memory_mb - nova_host[1].memory_mb
+
+
+@contract
 def vms_by_host(nova, host):
     """ Get VMs from the specified host using the Nova API.
 
@@ -278,7 +295,7 @@ def vm_hostname(vm):
     :return: The hostname.
      :rtype: str
     """
-    return vm.__getattr__('OS-EXT-SRV-ATTR:host')
+    return getattr(vm, 'OS-EXT-SRV-ATTR:host')
 
 
 @contract

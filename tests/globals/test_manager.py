@@ -200,3 +200,15 @@ class GlobalManager(TestCase):
             nova.servers = mock('servers')
             expect(nova.servers).list().and_return(vms).once()
             assert set(manager.vms_by_host(nova, host)) == set(y)
+
+    def test_host_free_ram(self):
+        with MockTransaction:
+            hostname = 'hosthost'
+            nova = mock('nova')
+            nova.hosts = mock('hosts')
+            host1 = mock('host1')
+            host1.memory_mb = 4000
+            host2 = mock('host2')
+            host2.memory_mb = 3000
+            expect(nova.hosts).get(hostname).and_return([host1, host2]).once()
+            assert manager.host_free_ram(nova, hostname) == 1000
