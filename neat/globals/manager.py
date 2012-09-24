@@ -266,6 +266,7 @@ def execute_underload(config, state, host):
 
     vms_to_migrate = vms_by_host(state['nova'], underloaded_host)
     vms_cpu = {x: vms_last_cpu[x] for x in vms_to_migrate}
+    vms_ram = vms_ram_limit(state['nova'], vms_to_migrate)
 
     time_step = int(config.get('data_collector_interval'))
     migration_time = calculate_migration_time(
@@ -288,9 +289,11 @@ def execute_underload(config, state, host):
         hosts_cpu_usage, hosts_cpu_total,
         hosts_ram_usage, hosts_ram_total,
         {}, {},
-        vms_cpu,
+        vms_cpu, vms_ram,
         vm_placement_state)
     state['vm_placement_state'] = vm_placement_state
+
+    # TODO: initiate VM migrations according to the obtained placement
 
     return state
 
