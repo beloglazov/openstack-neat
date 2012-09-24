@@ -125,9 +125,13 @@ class Database(object):
     def select_host_characteristics(self):
         """ Select the characteristics of all the hosts.
 
-        :return: A dict of host names to their CPU MHz and RAM.
-         :rtype: dict(str: dict)
+        :return: Two dicts of host names to their CPU MHz and RAM.
+         :rtype: tuple(dict(str: int), dict(str: int))
         """
-        hosts = self.hosts.select().execute().fetchall()
-        return dict((str(x[1]), {'cpu_mhz': x[2],
-                                 'ram': x[3]}) for x in hosts)
+        hosts_cpu = {}
+        hosts_ram = {}
+        for x in self.hosts.select().execute().fetchall():
+            hostname = str(x[1])
+            hosts_cpu[hostname] = x[2]
+            hosts_ram[hostname] = x[3]
+        return hosts_cpu, hosts_ram
