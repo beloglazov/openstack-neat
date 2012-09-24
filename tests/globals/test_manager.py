@@ -245,3 +245,32 @@ class GlobalManager(TestCase):
             host2.memory_mb = 3000
             expect(nova.hosts).get(hostname).and_return([host1, host2]).once()
             assert manager.host_used_ram(nova, hostname) == 3000
+
+    def test_flavors_ram(self):
+        with MockTransaction:
+            nova = mock('nova')
+            nova.flavors = mock('flavors')
+            fl1 = mock('fl1')
+            fl1.id = '1'
+            fl1.ram = 1000
+            fl2 = mock('fl2')
+            fl2.id = '2'
+            fl2.ram = 2000
+            expect(nova.flavors).list().and_return([fl1, fl2]).once()
+            assert manager.flavors_ram(nova) == {'1': 1000, '2': 2000}
+
+    def test_vms_ram_limit(self):
+        with MockTransaction:
+            nova = mock('nova')
+            nova.servers = mock('servers')
+            flavors_to_ram = {'1': 512, '2': 1024}
+            expect(manager).flavors_ram(nova).and_return(flavors_to_ram).once()
+
+            vm1 = mock('vm1')
+            vm1.flavor = {'id': '1'}
+            vm2 = mock('vm2')
+            vm2.flavor = {'id': '2'}
+            expect(nova.servers).get('vm1').and_return(vm1).once()
+            expect(nova.servers).get('vm2').and_return(vm2).once()
+            assert manager.vms_ram_limit(nova, ['vm1', 'vm2']) == \
+                {'vm1': 512, 'vm2': 1024}

@@ -296,6 +296,37 @@ def execute_underload(config, state, host):
 
 
 @contract
+def flavors_ram(nova):
+    """ Get a dict of flavor IDs to the RAM limits.
+
+    :param nova: A Nova client.
+     :type nova: *
+
+    :return: A dict of flavor IDs to the RAM limits.
+     :rtype: dict(str: int)
+    """
+    return dict((str(fl.id), fl.ram) for fl in nova.flavors.list())
+
+
+@contract
+def vms_ram_limit(nova, vms):
+    """ Get the RAM limit from the flavors of the VMs.
+
+    :param nova: A Nova client.
+     :type nova: *
+
+    :param vms: A list of VM UUIDs.
+     :type vms: list(str)
+
+    :return: A dict of VM UUIDs to the RAM limits.
+     :rtype: dict(str: int)
+    """
+    flavors_to_ram = flavors_ram(nova)
+    return dict((uuid, flavors_to_ram[nova.servers.get(uuid).flavor['id']])
+                for uuid in vms)
+
+
+@contract
 def host_used_ram(nova, host):
     """ Get the used RAM of the host using the Nova API.
 
