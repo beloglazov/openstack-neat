@@ -219,17 +219,15 @@ def parse_compute_hosts(compute_hosts):
 def execute_underload(config, state, host):
     """ Process an underloaded host: migrate all VMs from the host.
 
-1. Call the nova API to obtain the UUIDs of the VMs allocated to the
-   host.
+1. Prepare the data about the current states of the hosts and VMs.
 
-3. Call the function specified in the `algorithm_vm_placement_factory`
-   configuration option and pass the UUIDs of the VMs to migrate and
-   the current VM placement as arguments.
+2. Call the function specified in the `algorithm_vm_placement_factory`
+   configuration option and pass the data on the states of the hosts and VMs.
 
-4. Call the Nova API to migrate the VMs according to the placement
+3. Call the Nova API to migrate the VMs according to the placement
    determined by the `algorithm_vm_placement_factory` algorithm.
 
-5. Switch off the host at the end of the VM migration.
+4. Switch off the host at the end of the VM migration.
 
     :param config: A config dictionary.
      :type config: dict(str: *)
@@ -298,6 +296,7 @@ def execute_underload(config, state, host):
     state['vm_placement_state'] = vm_placement_state
 
     # TODO: initiate VM migrations according to the obtained placement
+    # Switch of the underloaded host when the migrations are completed
 
     return state
 
@@ -400,17 +399,17 @@ def vm_hostname(vm):
 
 @contract
 def execute_overload(config, state, vm_uuids):
-    """ Execute an iteration of the global manager
+    """ Process an overloaded host: migrate the selected VMs from it.
 
-1. Call the Nova API to obtain the current placement of VMs on the
-   hosts.
+1. Prepare the data about the current states of the hosts and VMs.
 
-3. Call the function specified in the `algorithm_vm_placement_factory`
-   configuration option and pass the UUIDs of the VMs to migrate and
-   the current VM placement as arguments.
+2. Call the function specified in the `algorithm_vm_placement_factory`
+   configuration option and pass the data on the states of the hosts and VMs.
 
-4. Call the Nova API to migrate the VMs according to the placement
+3. Call the Nova API to migrate the VMs according to the placement
    determined by the `algorithm_vm_placement_factory` algorithm.
+
+4. Switch on the inactive hosts required to accommodate the VMs.
 
     :param config: A config dictionary.
      :type config: dict(str: *)
@@ -424,9 +423,7 @@ def execute_overload(config, state, vm_uuids):
     :return: The updated state dictionary.
      :rtype: dict(str: *)
     """
-    underloaded_host = host
     hosts_cpu_total, hosts_ram_total = db.select_host_characteristics()
-
     hosts_to_vms = vms_by_hosts(state['nova'], config['compute_hosts'])
     vms_last_cpu = state['db'].select_last_cpu_mhz_for_vms()
 
@@ -445,9 +442,9 @@ def execute_overload(config, state, vm_uuids):
             del hosts_cpu_total[host]
             del hosts_ram_total[host]
 
-    #fix
-    vms_to_migrate = vms_by_host(state['nova'], underloaded_host)
-
+    vms_to_migrate = vm_uuids
+    vms_cpu = {x: vms_last_cpu[x] for x in vms_to_migrate}
+    vms_ram = vms_ram_limit(state['nova'], vms_to_migrate)
 
     time_step = int(config.get('data_collector_interval'))
     migration_time = calculate_migration_time(
@@ -470,8 +467,12 @@ def execute_overload(config, state, vm_uuids):
     placement, vm_placement_state = vm_placement(
         hosts_cpu_usage, hosts_cpu_total,
         hosts_ram_usage, hosts_ram_total,
-        inactive_hosts_cpu, inactive_hosts_ram,
+        host_cpu_usage, host_ram_usage,
+        vms_cpu, vms_ram,
         vm_placement_state)
     state['vm_placement_state'] = vm_placement_state
+
+    # Switch on the inactive hosts required to accommodate the VMs
+    # TODO: initiate VM migrations according to the obtained placement
 
     return state
