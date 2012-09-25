@@ -100,6 +100,9 @@ import neat.common as common
 from neat.config import *
 from neat.db_utils import *
 
+import logging
+log = logging.getLogger(__name__)
+
 
 @contract
 def start():

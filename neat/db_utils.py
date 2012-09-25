@@ -19,6 +19,9 @@ from sqlalchemy import *
 
 from neat.db import Database
 
+import logging
+log = logging.getLogger(__name__)
+
 
 @contract
 def init_db(sql_connection):

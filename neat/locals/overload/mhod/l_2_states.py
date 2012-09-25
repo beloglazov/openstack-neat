@@ -18,6 +18,9 @@
 from contracts import contract
 from neat.contracts_extra import *
 
+import logging
+log = logging.getLogger(__name__)
+
 
 @contract
 def l0(p_initial, p_matrix, m):

@@ -21,6 +21,9 @@ from neat.contracts_extra import *
 from random import choice
 import operator
 
+import logging
+log = logging.getLogger(__name__)
+
 
 @contract
 def random_factory(time_step, migration_time, params):

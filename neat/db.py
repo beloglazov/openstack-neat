@@ -16,6 +16,9 @@ from contracts import contract
 from sqlalchemy import *
 from sqlalchemy.engine.base import Connection
 
+import logging
+log = logging.getLogger(__name__)
+
 
 class Database(object):
     """ A class representing the database, where fields are tables.

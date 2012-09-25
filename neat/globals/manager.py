@@ -78,6 +78,9 @@ from novaclient.v1_1 import client
 from neat.config import *
 from neat.db_utils import *
 
+import logging
+log = logging.getLogger(__name__)
+
 
 ERRORS = {
     400: 'Bad input parameter: incorrect or missing parameters',

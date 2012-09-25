@@ -22,6 +22,9 @@ from numpy import median
 from scipy.optimize import leastsq
 import numpy as np
 
+import logging
+log = logging.getLogger(__name__)
+
 
 @contract
 def loess_factory(time_step, migration_time, params):

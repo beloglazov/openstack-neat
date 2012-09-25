@@ -21,6 +21,9 @@ from neat.contracts_extra import *
 from itertools import islice
 from collections import deque
 
+import logging
+log = logging.getLogger(__name__)
+
 
 @contract
 def mean(data, window_size):

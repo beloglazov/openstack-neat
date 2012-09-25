@@ -21,6 +21,9 @@ from neat.contracts_extra import *
 import nlp
 from neat.common import frange
 
+import logging
+log = logging.getLogger(__name__)
+
 
 @contract
 def solve2(objective, constraint, step, limit):

@@ -20,6 +20,9 @@ from neat.contracts_extra import *
 
 import operator
 
+import logging
+log = logging.getLogger(__name__)
+
 
 @contract
 def build_objective(ls, state_vector, p):

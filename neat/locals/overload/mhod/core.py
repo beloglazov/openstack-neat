@@ -22,6 +22,9 @@ import neat.locals.overload.mhod.multisize_estimation as estimation
 import neat.locals.overload.mhod.bruteforce as bruteforce
 from neat.locals.overload.mhod.l_2_states import ls
 
+import logging
+log = logging.getLogger(__name__)
+
 
 @contract
 def init_state(window_sizes, number_of_states):

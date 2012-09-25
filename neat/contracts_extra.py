@@ -20,6 +20,9 @@ import sqlalchemy
 import neat.db
 # import novaclient
 
+import logging
+log = logging.getLogger(__name__)
+
 
 new_contract('deque', collections.deque)
 new_contract('function', lambda x: hasattr(x, '__call__'))

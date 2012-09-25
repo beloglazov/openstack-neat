@@ -20,6 +20,9 @@ from contracts import contract
 import os
 import ConfigParser
 
+import logging
+log = logging.getLogger(__name__)
+
 
 # This is the default config, which should not be modified
 #DEFAILT_CONFIG_PATH = "/etc/neat/neat.conf"
