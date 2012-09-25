@@ -16,6 +16,8 @@ from mocktest import *
 from pyqcy import *
 
 import os
+import shutil
+import logging
 import libvirt
 
 import neat.common as common
@@ -73,3 +75,44 @@ class Common(TestCase):
                          [0.0, 0.5, 1.0])
         self.assertEqual([round(x, 1) for x in common.frange(0, 1.0, 0.2)],
                          [0.0, 0.2, 0.4, 0.6, 0.8, 1.0])
+
+    def test_init_logging(self):
+        log_dir = os.path.join(
+            os.path.dirname(__file__), 'resources', 'log')
+        log_file = 'test.log'
+        log_path = os.path.join(log_dir, log_file)
+
+        with MockTransaction:
+            expect(logging).disable(logging.CRITICAL).once()
+            expect(logging).basicConfig.never()
+            assert common.init_logging(log_dir, log_file, 0)
+
+        with MockTransaction:
+            shutil.rmtree(log_dir, True)
+            expect(logging).disable.never()
+            expect(logging).basicConfig(
+                format='%(asctime)s %(levelname)-8s %(name)s %(message)s',
+                filename=log_path,
+                level=logging.WARNING)
+            assert common.init_logging(log_dir, log_file, 1)
+            assert os.access(log_dir, os.W_OK)
+
+        with MockTransaction:
+            expect(logging).disable.never()
+            expect(logging).basicConfig(
+                format='%(asctime)s %(levelname)-8s %(name)s %(message)s',
+                filename=log_path,
+                level=logging.INFO)
+            assert common.init_logging(log_dir, log_file, 2)
+            assert os.access(log_dir, os.W_OK)
+
+        with MockTransaction:
+            expect(logging).disable.never()
+            expect(logging).basicConfig(
+                format='%(asctime)s %(levelname)-8s %(name)s %(message)s',
+                filename=log_path,
+                level=logging.DEBUG)
+            assert common.init_logging(log_dir, log_file, 3)
+            assert os.access(log_dir, os.W_OK)
+
+        shutil.rmtree(log_dir, True)
