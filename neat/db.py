@@ -40,6 +40,7 @@ class Database(object):
         self.hosts = hosts
         self.vms = vms
         self.vm_resource_usage = vm_resource_usage
+        log.debug('Instantiated a Database object')
 
     @contract
     def select_cpu_mhz_for_vm(self, uuid, n):
@@ -96,8 +97,9 @@ class Database(object):
         sel = select([self.vms.c.id]).where(self.vms.c.uuid == uuid)
         row = self.connection.execute(sel).fetchone()
         if row is None:
-            return self.vms.insert().execute(uuid=uuid). \
-                inserted_primary_key[0]
+            id = self.vms.insert().execute(uuid=uuid).inserted_primary_key[0]
+            log.info('Created a new DB record for a VM %s, id=%d', uuid, id)
+            return id
         else:
             return row['id']
 
@@ -136,10 +138,13 @@ class Database(object):
             where(self.hosts.c.hostname == hostname)
         row = self.connection.execute(sel).fetchone()
         if row is None:
-            return self.hosts.insert().execute(
+            id = self.hosts.insert().execute(
                 hostname=hostname,
                 cpu_mhz=cpu_mhz,
                 ram=ram).inserted_primary_key[0]
+            log.info('Created a new DB record for a host %s, id=%d',
+                     hostname, id)
+            return id
         else:
             self.connection.execute(self.hosts.update().
                                     where(self.hosts.c.id == row['id']).

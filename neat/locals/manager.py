@@ -123,6 +123,7 @@ def start():
     """
     config = read_and_validate_config([DEFAILT_CONFIG_PATH, CONFIG_PATH],
                                       REQUIRED_FIELDS)
+    log.info('Starting the local manager')
     return common.start(
         init_state,
         execute,
@@ -142,8 +143,10 @@ def init_state(config):
     """
     vir_connection = libvirt.openReadOnly(None)
     if vir_connection is None:
-        print 'Failed to open connection to the hypervisor'
-        sys.exit(1)
+        message = 'Failed to open a connection to the hypervisor'
+        log.critical(message)
+        raise OSError(message)
+
     physical_cpu_mhz_total = common.physical_cpu_mhz_total(vir_connection)
     return {'previous_time': 0,
             'vir_connect': vir_connection,
@@ -249,6 +252,7 @@ def execute(config, state):
     state['underload_detection_state'] = underload_detection_state
 
     if underload:
+        log.info('Underload detected')
         # Send a request to the global manager with the host name
         pass
     else:
@@ -256,6 +260,7 @@ def execute(config, state):
             host_cpu_utilization, overload_detection_state)
         state['overload_detection_state'] = overload_detection_state
         if overload:
+            log.info('Overload detected')
             vms = vm_selection(
                 host_cpu_utilization, vm_ram, vm_selection_state)
             # send a request to the global manager

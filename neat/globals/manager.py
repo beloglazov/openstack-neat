@@ -102,7 +102,9 @@ def raise_error(status_code):
      :type status_code: int
     """
     if status_code in ERRORS:
+        log.error('REST service: %s', ERRORS[status_code])
         raise bottle.HTTPResponse(ERRORS[status_code], status_code)
+    log.error('REST service: Unknown error')
     raise bottle.HTTPResponse('Unknown error', 500)
 
 
@@ -131,6 +133,7 @@ def validate_params(config, params):
        sha1(params['password']).hexdigest() != config['admin_password']:
         raise_error(403)
         return False
+    log.debug('Request parameters validated')
     return True
 
 
@@ -143,8 +146,11 @@ def start():
     bottle.app().state = {
         'config': config,
         'state': init_state(config)}
-    bottle.run(host=config['global_manager_host'],
-               port=config['global_manager_port'])
+
+    host = config['global_manager_host']
+    port = config['global_manager_port']
+    log.info('Starting the global manager listening to %s:%s', host, port)
+    bottle.run(host=host, port=port)
 
 
 @contract
@@ -166,11 +172,13 @@ def service():
     state = bottle.app().state
     validate_params(state['config'], params)
     if params['reason'] == 0:
+        log.info('Processing an underload of a host %s', params['host'])
         execute_underload(
             state['config'],
             state['state'],
             params['host'])
     else:
+        log.info('Processing an overload, VMs: %s', str(params['vm_uuids']))
         execute_overload(
             state['config'],
             state['state'],
@@ -179,10 +187,10 @@ def service():
 
 @bottle.route('/', method='ANY')
 def error():
-    raise bottle.HTTPResponse(
-        'Method not allowed: the request has been made' +
-        'with a method other than the only supported PUT',
-        405)
+    message = 'Method not allowed: the request has been made' + \
+              'with a method other than the only supported PUT'
+    log.error('REST service: %s', message)
+    raise bottle.HTTPResponse(message, 405)
 
 
 @contract
@@ -297,6 +305,9 @@ def execute_underload(config, state, host):
         vms_cpu, vms_ram,
         vm_placement_state)
     state['vm_placement_state'] = vm_placement_state
+
+    if log.isEnabledFor(logging.INFO):
+        log.info('Underload: obtained a new placement %s', str(placement))
 
     # TODO: initiate VM migrations according to the obtained placement
     # Switch of the underloaded host when the migrations are completed
@@ -474,6 +485,9 @@ def execute_overload(config, state, vm_uuids):
         vms_cpu, vms_ram,
         vm_placement_state)
     state['vm_placement_state'] = vm_placement_state
+
+    if log.isEnabledFor(logging.INFO):
+        log.info('Overload: obtained a new placement %s', str(placement))
 
     # Switch on the inactive hosts required to accommodate the VMs
     # TODO: initiate VM migrations according to the obtained placement

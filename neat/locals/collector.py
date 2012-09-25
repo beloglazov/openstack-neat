@@ -113,6 +113,7 @@ def start():
     """
     config = read_and_validate_config([DEFAILT_CONFIG_PATH, CONFIG_PATH],
                                       REQUIRED_FIELDS)
+    log.info('Starting the data collector')
     return common.start(
         init_state,
         execute,
@@ -132,8 +133,9 @@ def init_state(config):
     """
     vir_connection = libvirt.openReadOnly(None)
     if vir_connection is None:
-        print 'Failed to open connection to the hypervisor'
-        sys.exit(1)
+        message = 'Failed to open a connection to the hypervisor'
+        log.critical(message)
+        raise OSError(message)
 
     hostname = vir_connection.getHostname()
     host_cpu_mhz, host_ram = get_host_characteristics(vir_connection)
@@ -210,6 +212,8 @@ def execute(config, state):
     state['previous_cpu_time'] = cpu_time
     append_data_locally(path, cpu_mhz, data_length)
     append_data_remotely(config.get('db'), cpu_mhz)
+    if log.isEnabledFor(logging.DEBUG):
+        log.debug('Collected new data: %s', str(cpu_mhz))
     return state
 
 

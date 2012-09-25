@@ -118,6 +118,8 @@ def read_and_validate_config(paths, required_fields):
     """
     config = read_config(paths)
     if not validate_config(config, required_fields):
-        raise KeyError('The config dictionary does not contain ' +
-                       'all the required fields')
+        message = 'The config dictionary does not contain ' + \
+                  'all the required fields'
+        log.critical(message)
+        raise KeyError(message)
     return config
