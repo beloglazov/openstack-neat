@@ -29,7 +29,7 @@ log = logging.getLogger(__name__)
 
 
 @contract
-def start(init_state, execute, config, time_interval, iterations):
+def start(init_state, execute, config, time_interval, iterations=-1):
     """ Start the processing loop.
 
     :param init_state: A function accepting a config and
