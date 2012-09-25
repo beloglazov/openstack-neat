@@ -37,6 +37,8 @@ CONFIG_PATH = os.path.join(os.path.dirname(__file__),
 
 # These fields must present in the configuration file
 REQUIRED_FIELDS = [
+    'logging_directory',
+    'logging_level',
     'sql_connection',
     'os_admin_tenant_name',
     'os_admin_user',
