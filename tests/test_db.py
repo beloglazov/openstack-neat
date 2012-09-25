@@ -26,7 +26,8 @@ class Db(TestCase):
         db.vms.insert().execute(uuid='test')
         assert db.vms.select().execute().first()['uuid'] == 'test'
         db.vm_resource_usage.insert().execute(vm_id=1, cpu_mhz=1000)
-        assert db.vm_resource_usage.select().execute().first()['cpu_mhz'] == 1000
+        assert db.vm_resource_usage.select(). \
+            execute().first()['cpu_mhz'] == 1000
 
     @qc(10)
     def select_cpu_mhz_for_vm(
@@ -129,5 +130,6 @@ class Db(TestCase):
 
         db.update_host('host1', 3000, 4000)
         db.update_host('host2', 3500, 8000)
-        assert db.select_host_characteristics() == ({'host1': 3000, 'host2': 3500},
-                                                    {'host1': 4000, 'host2': 8000})
+        assert db.select_host_characteristics() == \
+            ({'host1': 3000, 'host2': 3500},
+             {'host1': 4000, 'host2': 8000})

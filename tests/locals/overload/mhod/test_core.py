@@ -58,16 +58,26 @@ class Core(TestCase):
 
     def test_build_state_vector(self):
         state_config = [0.4, 0.7]
-        self.assertEqual(c.build_state_vector(state_config, [0.0, 0.1]), [1, 0, 0])
-        self.assertEqual(c.build_state_vector(state_config, [0.0, 0.2]), [1, 0, 0])
-        self.assertEqual(c.build_state_vector(state_config, [0.0, 0.3]), [1, 0, 0])
-        self.assertEqual(c.build_state_vector(state_config, [0.0, 0.4]), [0, 1, 0])
-        self.assertEqual(c.build_state_vector(state_config, [0.0, 0.5]), [0, 1, 0])
-        self.assertEqual(c.build_state_vector(state_config, [0.0, 0.6]), [0, 1, 0])
-        self.assertEqual(c.build_state_vector(state_config, [0.0, 0.7]), [0, 0, 1])
-        self.assertEqual(c.build_state_vector(state_config, [0.0, 0.8]), [0, 0, 1])
-        self.assertEqual(c.build_state_vector(state_config, [0.0, 0.9]), [0, 0, 1])
-        self.assertEqual(c.build_state_vector(state_config, [0.0, 1.0]), [0, 0, 1])
+        self.assertEqual(c.build_state_vector(state_config, [0.0, 0.1]),
+                         [1, 0, 0])
+        self.assertEqual(c.build_state_vector(state_config, [0.0, 0.2]),
+                         [1, 0, 0])
+        self.assertEqual(c.build_state_vector(state_config, [0.0, 0.3]),
+                         [1, 0, 0])
+        self.assertEqual(c.build_state_vector(state_config, [0.0, 0.4]),
+                         [0, 1, 0])
+        self.assertEqual(c.build_state_vector(state_config, [0.0, 0.5]),
+                         [0, 1, 0])
+        self.assertEqual(c.build_state_vector(state_config, [0.0, 0.6]),
+                         [0, 1, 0])
+        self.assertEqual(c.build_state_vector(state_config, [0.0, 0.7]),
+                         [0, 0, 1])
+        self.assertEqual(c.build_state_vector(state_config, [0.0, 0.8]),
+                         [0, 0, 1])
+        self.assertEqual(c.build_state_vector(state_config, [0.0, 0.9]),
+                         [0, 0, 1])
+        self.assertEqual(c.build_state_vector(state_config, [0.0, 1.0]),
+                         [0, 0, 1])
 
     def test_current_state(self):
         self.assertEqual(c.current_state([1, 0, 0]), 0)
@@ -76,9 +86,11 @@ class Core(TestCase):
 
     def test_utilization_to_states(self):
         state_config = [0.4, 0.7]
-        data = [0.25, 0.30, 0.62, 0.59, 0.67, 0.73, 0.85, 0.97, 0.73, 0.68, 0.69,
-                0.52, 0.51, 0.25, 0.38, 0.46, 0.52, 0.55, 0.58, 0.65, 0.70]
-        states = [0, 0, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 2]
+        data = [0.25, 0.30, 0.62, 0.59, 0.67, 0.73, 0.85, 0.97, 0.73,
+                0.68, 0.69, 0.52, 0.51, 0.25, 0.38, 0.46, 0.52, 0.55,
+                0.58, 0.65, 0.70]
+        states = [0, 0, 1, 1, 1, 2, 2, 2, 2, 1, 1,
+                  1, 1, 0, 0, 1, 1, 1, 1, 1, 2]
         self.assertEqual(c.utilization_to_states(state_config, data), states)
 
         state_config = [1.0]
@@ -88,7 +100,8 @@ class Core(TestCase):
 
     def test_get_time_in_state_n(self):
         state_config = [0.4, 0.7]
-        states = [0, 0, 0, 1, 1, 1, 2, 2, 2, 2, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 2]
+        states = [0, 0, 0, 1, 1, 1, 2, 2, 2, 2, 1,
+                  1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 2]
         self.assertEqual(c.get_time_in_state_n(state_config, states), 5)
 
     def test_issue_command_deterministic(self):

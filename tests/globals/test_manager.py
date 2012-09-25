@@ -56,7 +56,8 @@ class GlobalManager(TestCase):
 
         with MockTransaction:
             expect(manager).raise_error(400).exactly(5).times()
-            manager.validate_params({}, {'username': 'test', 'password': 'test'})
+            manager.validate_params({}, {'username': 'test',
+                                         'password': 'test'})
             manager.validate_params({}, {'username': 'test',
                                          'password': 'test',
                                          'reason': 1})
@@ -74,18 +75,20 @@ class GlobalManager(TestCase):
 
         with MockTransaction:
             expect(manager).raise_error(403).exactly(2).times()
-            manager.validate_params({'admin_user': sha1('test').hexdigest(),
-                                     'admin_password': sha1('test2').hexdigest()},
-                                    {'username': 'test1',
-                                     'password': 'test2',
-                                     'reason': 0,
-                                     'host': 'test'})
-            manager.validate_params({'admin_user': sha1('test1').hexdigest(),
-                                     'admin_password': sha1('test').hexdigest()},
-                                    {'username': 'test1',
-                                     'password': 'test2',
-                                     'reason': 0,
-                                     'host': 'test'})
+            manager.validate_params(
+                {'admin_user': sha1('test').hexdigest(),
+                 'admin_password': sha1('test2').hexdigest()},
+                {'username': 'test1',
+                 'password': 'test2',
+                 'reason': 0,
+                 'host': 'test'})
+            manager.validate_params(
+                {'admin_user': sha1('test1').hexdigest(),
+                 'admin_password': sha1('test').hexdigest()},
+                {'username': 'test1',
+                 'password': 'test2',
+                 'reason': 0,
+                 'host': 'test'})
 
             assert manager.validate_params(
                 {'admin_user': sha1('test1').hexdigest(),
@@ -93,7 +96,7 @@ class GlobalManager(TestCase):
                 {'username': 'test1',
                  'password': 'test2',
                  'reason': 1,
-                 'vm_uuids': ['qwe', 'asd']}) == True
+                 'vm_uuids': ['qwe', 'asd']})
 
             assert manager.validate_params(
                 {'admin_user': sha1('test1').hexdigest(),
@@ -101,7 +104,7 @@ class GlobalManager(TestCase):
                 {'username': 'test1',
                  'password': 'test2',
                  'reason': 0,
-                 'host': 'test'}) == True
+                 'host': 'test'})
 
     def test_start(self):
         with MockTransaction:
@@ -112,9 +115,9 @@ class GlobalManager(TestCase):
             paths = [manager.DEFAILT_CONFIG_PATH, manager.CONFIG_PATH]
             fields = manager.REQUIRED_FIELDS
             expect(manager).read_and_validate_config(paths, fields). \
-              and_return(config).once()
+                and_return(config).once()
             expect(manager).init_state(config). \
-              and_return(state).once()
+                and_return(state).once()
             expect(bottle).app().and_return(app).once()
             expect(bottle).run(host='localhost', port=8080).once()
             manager.start()
@@ -131,12 +134,12 @@ class GlobalManager(TestCase):
                       'os_auth_url': 'url',
                       'compute_hosts': 'host1, host2'}
             expect(manager).init_db('db').and_return(db).once()
-            expect(client).Client('user',
-                                  'password',
-                                  'tenant',
-                                  'url',
-                                  service_type='compute').and_return(nova).once()
-            expect(manager).parse_compute_hosts('host1, host2').and_return(hosts).once()
+            expect(client).Client(
+                'user', 'password', 'tenant', 'url',
+                service_type='compute'). \
+                and_return(nova).once()
+            expect(manager).parse_compute_hosts('host1, host2'). \
+                and_return(hosts).once()
             state = manager.init_state(config)
             assert state['previous_time'] == 0
             assert state['db'] == db
@@ -145,8 +148,10 @@ class GlobalManager(TestCase):
 
     def test_parse_compute_hosts(self):
         assert manager.parse_compute_hosts('') == []
-        assert manager.parse_compute_hosts('test1, test2') == ['test1', 'test2']
-        assert manager.parse_compute_hosts('t1,,  t2 , t3') == ['t1', 't2', 't3']
+        assert manager.parse_compute_hosts('test1, test2') == \
+            ['test1', 'test2']
+        assert manager.parse_compute_hosts('t1,,  t2 , t3') == \
+            ['t1', 't2', 't3']
 
     def test_service(self):
         app = mock('app')
@@ -161,7 +166,8 @@ class GlobalManager(TestCase):
                       'host': 'host'}
             expect(manager).get_params(Any).and_return(params).once()
             expect(bottle).app().and_return(app).once()
-            expect(manager).validate_params(config, params).and_return(True).once()
+            expect(manager).validate_params(config, params). \
+                and_return(True).once()
             expect(manager).execute_underload(config, state, 'host').once()
             manager.service()
 
@@ -170,8 +176,10 @@ class GlobalManager(TestCase):
                       'vm_uuids': 'vm_uuids'}
             expect(manager).get_params(Any).and_return(params).once()
             expect(bottle).app().and_return(app).once()
-            expect(manager).validate_params(config, params).and_return(True).once()
-            expect(manager).execute_overload(config, state, 'vm_uuids').once()
+            expect(manager).validate_params(config, params). \
+                and_return(True).once()
+            expect(manager).execute_overload(config, state, 'vm_uuids'). \
+                once()
             manager.service()
 
     @qc(20)
@@ -243,7 +251,8 @@ class GlobalManager(TestCase):
             host1.memory_mb = 4000
             host2 = mock('host2')
             host2.memory_mb = 3000
-            expect(nova.hosts).get(hostname).and_return([host1, host2]).once()
+            expect(nova.hosts).get(hostname). \
+                and_return([host1, host2]).once()
             assert manager.host_used_ram(nova, hostname) == 3000
 
     def test_flavors_ram(self):
@@ -264,7 +273,8 @@ class GlobalManager(TestCase):
             nova = mock('nova')
             nova.servers = mock('servers')
             flavors_to_ram = {'1': 512, '2': 1024}
-            expect(manager).flavors_ram(nova).and_return(flavors_to_ram).once()
+            expect(manager).flavors_ram(nova). \
+                and_return(flavors_to_ram).once()
 
             vm1 = mock('vm1')
             vm1.flavor = {'id': '1'}

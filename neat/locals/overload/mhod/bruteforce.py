@@ -48,9 +48,9 @@ def solve2(objective, constraint, step, limit):
             try:
                 res = objective(x, y)
                 if res > res_best and \
-                   constraint[1](constraint[0](x, y), constraint[2]):
-                    res_best = res
-                    solution = [x, y]
+                    constraint[1](constraint[0](x, y), constraint[2]):
+                        res_best = res
+                        solution = [x, y]
             except ZeroDivisionError:
                 pass
     return solution

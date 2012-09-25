@@ -48,7 +48,8 @@ class Collector(TestCase):
     def init_state():
         with MockTransaction:
             vir_connection = mock('virConnect')
-            expect(libvirt).openReadOnly(None).and_return(vir_connection).once()
+            expect(libvirt).openReadOnly(None). \
+                and_return(vir_connection).once()
             physical_cpus = 13
             expect(common).physical_cpu_count(vir_connection). \
                 and_return(physical_cpus).once()
@@ -130,14 +131,14 @@ class Collector(TestCase):
             min_length=0, max_length=5
         )
     ):
-        previous_vms = list(x)
+        prev_vms = list(x)
         removed = []
         if x:
             to_remove = random.randrange(len(x))
             for _ in xrange(to_remove):
                 removed.append(x.pop(random.randrange(len(x))))
         x.extend(y)
-        assert set(collector.get_removed_vms(previous_vms, x)) == set(removed)
+        assert set(collector.get_removed_vms(prev_vms, x)) == set(removed)
 
     @qc
     def substract_lists(
@@ -167,7 +168,8 @@ class Collector(TestCase):
                     local_data_directory_tmp)
 
         assert len(os.listdir(local_data_directory_tmp)) == 3
-        collector.cleanup_local_data(local_data_directory_tmp, [vm1, vm2, vm3])
+        collector.cleanup_local_data(local_data_directory_tmp,
+                                     [vm1, vm2, vm3])
         assert len(os.listdir(local_data_directory_tmp)) == 0
 
         os.rmdir(local_data_directory_tmp)
@@ -176,7 +178,8 @@ class Collector(TestCase):
     def fetch_remote_data(
         x=dict_(
             keys=str_(of='abc123-', min_length=36, max_length=36),
-            values=list_(of=int_(min=0, max=3000), min_length=0, max_length=10),
+            values=list_(of=int_(min=0, max=3000),
+                         min_length=0, max_length=10),
             min_length=0, max_length=3
         ),
         data_length=int_(min=1, max=10)
@@ -197,12 +200,14 @@ class Collector(TestCase):
     def write_data_locally(
         x=dict_(
             keys=str_(of='abc123-', min_length=36, max_length=36),
-            values=list_(of=int_(min=0, max=3000), min_length=0, max_length=10),
+            values=list_(of=int_(min=0, max=3000),
+                         min_length=0, max_length=10),
             min_length=0, max_length=3
         ),
         data_length=int_(min=0, max=10)
     ):
-        path = os.path.join(os.path.dirname(__file__), '..', 'resources', 'vms', 'tmp')
+        path = os.path.join(os.path.dirname(__file__),
+                            '..', 'resources', 'vms', 'tmp')
         shutil.rmtree(path, True)
         os.mkdir(path)
         collector.write_data_locally(path, x, data_length)
@@ -212,7 +217,8 @@ class Collector(TestCase):
         for uuid in x.keys():
             file = os.path.join(path, uuid)
             with open(file, 'r') as f:
-                result[uuid] = [int(a) for a in f.read().strip().splitlines()]
+                result[uuid] = [int(a)
+                                for a in f.read().strip().splitlines()]
 
         shutil.rmtree(path)
 
@@ -234,7 +240,8 @@ class Collector(TestCase):
         ),
         data_length=int_(min=0, max=10)
     ):
-        path = os.path.join(os.path.dirname(__file__), '..', 'resources', 'vms', 'tmp')
+        path = os.path.join(os.path.dirname(__file__),
+                            '..', 'resources', 'vms', 'tmp')
         shutil.rmtree(path, True)
         os.mkdir(path)
         original_data = {}
@@ -259,7 +266,8 @@ class Collector(TestCase):
         for uuid in x.keys():
             file = os.path.join(path, uuid)
             with open(file, 'r') as f:
-                result[uuid] = [int(a) for a in f.read().strip().splitlines()]
+                result[uuid] = [int(a)
+                                for a in f.read().strip().splitlines()]
 
         shutil.rmtree(path)
 
@@ -319,7 +327,8 @@ class Collector(TestCase):
         with MockTransaction:
             def mock_get_cpu_time(vir_connection, uuid):
                 if uuid in original_vm_data:
-                    return original_vm_data[uuid][0] + original_vm_data[uuid][1]
+                    return original_vm_data[uuid][0] + \
+                           original_vm_data[uuid][1]
                 else:
                     return added_vms[uuid][0]
 
@@ -358,9 +367,10 @@ class Collector(TestCase):
 
             vms.extend(added_vms.keys())
 
-            result = collector.get_cpu_mhz(connection, cpus, previous_cpu_time,
-                                           previous_time, current_time, vms,
-                                           added_vm_data)
+            result = collector.get_cpu_mhz(
+                connection, cpus, previous_cpu_time,
+                previous_time, current_time, vms,
+                added_vm_data)
 
             assert result[0] == current_cpu_time
             assert result[1] == cpu_mhz
@@ -404,4 +414,5 @@ class Collector(TestCase):
             connection = libvirt.virConnect()
             expect(connection).getInfo().and_return(
                 ['x86_64', ram, cores, mhz, 1, 1, 4, 2]).once()
-            assert collector.get_host_characteristics(connection) == (cores * mhz, ram)
+            assert collector.get_host_characteristics(connection) == \
+                (cores * mhz, ram)

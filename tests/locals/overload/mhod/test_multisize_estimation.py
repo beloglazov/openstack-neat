@@ -41,7 +41,7 @@ class Multisize(TestCase):
         self.assertEqual(m.variance([0, 0], 100), 0.0)
         self.assertAlmostEqual(m.variance([1, 1], 100), 0.0194020202)
         self.assertAlmostEqual(m.variance([0, 1], 100), 0.0099010101)
-        self.assertAlmostEqual(m.variance([1, 2, 3, 4, 5], 100), 0.5112373737)
+        self.assertAlmostEqual(m.variance([1, 2, 3, 4, 5], 100), 0.511237373)
         self.assertAlmostEqual(m.variance([0, 0, 0, 1], 100), 0.0099030303)
 
     def test_acceptable_variance(self):
@@ -50,106 +50,136 @@ class Multisize(TestCase):
 
     def test_estimate_probability(self):
         self.assertEqual(
-            m.estimate_probability([0, 0, 1, 1, 0, 0, 0, 0, 0, 0], 100, 0), 0.08)
+            m.estimate_probability([0, 0, 1, 1, 0, 0, 0, 0, 0, 0], 100, 0),
+            0.08)
         self.assertEqual(
-            m.estimate_probability([0, 0, 1, 1, 0, 0, 0, 0, 0, 0], 100, 1), 0.02)
+            m.estimate_probability([0, 0, 1, 1, 0, 0, 0, 0, 0, 0], 100, 1),
+            0.02)
         self.assertEqual(
-            m.estimate_probability([1, 1, 0, 0, 1, 1, 1, 1, 1, 1], 200, 0), 0.01)
+            m.estimate_probability([1, 1, 0, 0, 1, 1, 1, 1, 1, 1], 200, 0),
+            0.01)
         self.assertEqual(
-            m.estimate_probability([1, 1, 0, 0, 1, 1, 1, 1, 1, 1], 200, 1), 0.04)
+            m.estimate_probability([1, 1, 0, 0, 1, 1, 1, 1, 1, 1], 200, 1),
+            0.04)
 
     def test_update_request_windows(self):
         max_window_size = 4
         windows = [deque([0, 0], max_window_size),
                    deque([1, 1], max_window_size)]
 
-        self.assertEqual(m.update_request_windows(c(windows), 0, 0), [deque([0, 0, 0]),
-                                                                      deque([1, 1])])
-        self.assertEqual(m.update_request_windows(c(windows), 0, 1), [deque([0, 0, 1]),
-                                                                      deque([1, 1])])
-        self.assertEqual(m.update_request_windows(c(windows), 1, 0), [deque([0, 0]),
-                                                                      deque([1, 1, 0])])
-        self.assertEqual(m.update_request_windows(c(windows), 1, 1), [deque([0, 0]),
-                                                                      deque([1, 1, 1])])
+        self.assertEqual(m.update_request_windows(c(windows), 0, 0),
+                         [deque([0, 0, 0]),
+                          deque([1, 1])])
+        self.assertEqual(m.update_request_windows(c(windows), 0, 1),
+                         [deque([0, 0, 1]),
+                          deque([1, 1])])
+        self.assertEqual(m.update_request_windows(c(windows), 1, 0),
+                         [deque([0, 0]),
+                          deque([1, 1, 0])])
+        self.assertEqual(m.update_request_windows(c(windows), 1, 1),
+                         [deque([0, 0]),
+                          deque([1, 1, 1])])
 
         max_window_size = 2
         windows = [deque([0, 0], max_window_size),
                    deque([1, 1], max_window_size)]
 
-        self.assertEqual(m.update_request_windows(c(windows), 0, 0), [deque([0, 0]),
-                                                                      deque([1, 1])])
-        self.assertEqual(m.update_request_windows(c(windows), 0, 1), [deque([0, 1]),
-                                                                      deque([1, 1])])
-        self.assertEqual(m.update_request_windows(c(windows), 1, 0), [deque([0, 0]),
-                                                                      deque([1, 0])])
-        self.assertEqual(m.update_request_windows(c(windows), 1, 1), [deque([0, 0]),
-                                                                      deque([1, 1])])
+        self.assertEqual(m.update_request_windows(c(windows), 0, 0),
+                         [deque([0, 0]),
+                          deque([1, 1])])
+        self.assertEqual(m.update_request_windows(c(windows), 0, 1),
+                         [deque([0, 1]),
+                          deque([1, 1])])
+        self.assertEqual(m.update_request_windows(c(windows), 1, 0),
+                         [deque([0, 0]),
+                          deque([1, 0])])
+        self.assertEqual(m.update_request_windows(c(windows), 1, 1),
+                         [deque([0, 0]),
+                          deque([1, 1])])
 
         max_window_size = 4
         windows = [deque([0, 0], max_window_size),
                    deque([1, 1], max_window_size),
                    deque([2, 2], max_window_size)]
 
-        self.assertEqual(m.update_request_windows(c(windows), 0, 0), [deque([0, 0, 0]),
-                                                                      deque([1, 1]),
-                                                                      deque([2, 2])])
-        self.assertEqual(m.update_request_windows(c(windows), 0, 1), [deque([0, 0, 1]),
-                                                                      deque([1, 1]),
-                                                                      deque([2, 2])])
-        self.assertEqual(m.update_request_windows(c(windows), 0, 2), [deque([0, 0, 2]),
-                                                                      deque([1, 1]),
-                                                                      deque([2, 2])])
-        self.assertEqual(m.update_request_windows(c(windows), 1, 0), [deque([0, 0]),
-                                                                      deque([1, 1, 0]),
-                                                                      deque([2, 2])])
-        self.assertEqual(m.update_request_windows(c(windows), 1, 1), [deque([0, 0]),
-                                                                      deque([1, 1, 1]),
-                                                                      deque([2, 2])])
-        self.assertEqual(m.update_request_windows(c(windows), 1, 2), [deque([0, 0]),
-                                                                      deque([1, 1, 2]),
-                                                                      deque([2, 2])])
-        self.assertEqual(m.update_request_windows(c(windows), 2, 0), [deque([0, 0]),
-                                                                      deque([1, 1]),
-                                                                      deque([2, 2, 0])])
-        self.assertEqual(m.update_request_windows(c(windows), 2, 1), [deque([0, 0]),
-                                                                      deque([1, 1]),
-                                                                      deque([2, 2, 1])])
-        self.assertEqual(m.update_request_windows(c(windows), 2, 2), [deque([0, 0]),
-                                                                      deque([1, 1]),
-                                                                      deque([2, 2, 2])])
+        self.assertEqual(m.update_request_windows(c(windows), 0, 0),
+                         [deque([0, 0, 0]),
+                          deque([1, 1]),
+                          deque([2, 2])])
+        self.assertEqual(m.update_request_windows(c(windows), 0, 1),
+                         [deque([0, 0, 1]),
+                          deque([1, 1]),
+                          deque([2, 2])])
+        self.assertEqual(m.update_request_windows(c(windows), 0, 2),
+                         [deque([0, 0, 2]),
+                          deque([1, 1]),
+                          deque([2, 2])])
+        self.assertEqual(m.update_request_windows(c(windows), 1, 0),
+                         [deque([0, 0]),
+                          deque([1, 1, 0]),
+                          deque([2, 2])])
+        self.assertEqual(m.update_request_windows(c(windows), 1, 1),
+                         [deque([0, 0]),
+                          deque([1, 1, 1]),
+                          deque([2, 2])])
+        self.assertEqual(m.update_request_windows(c(windows), 1, 2),
+                         [deque([0, 0]),
+                          deque([1, 1, 2]),
+                          deque([2, 2])])
+        self.assertEqual(m.update_request_windows(c(windows), 2, 0),
+                         [deque([0, 0]),
+                          deque([1, 1]),
+                          deque([2, 2, 0])])
+        self.assertEqual(m.update_request_windows(c(windows), 2, 1),
+                         [deque([0, 0]),
+                          deque([1, 1]),
+                          deque([2, 2, 1])])
+        self.assertEqual(m.update_request_windows(c(windows), 2, 2),
+                         [deque([0, 0]),
+                          deque([1, 1]),
+                          deque([2, 2, 2])])
 
         max_window_size = 2
         windows = [deque([0, 0], max_window_size),
                    deque([1, 1], max_window_size),
                    deque([2, 2], max_window_size)]
 
-        self.assertEqual(m.update_request_windows(c(windows), 0, 0), [deque([0, 0]),
-                                                                      deque([1, 1]),
-                                                                      deque([2, 2])])
-        self.assertEqual(m.update_request_windows(c(windows), 0, 1), [deque([0, 1]),
-                                                                      deque([1, 1]),
-                                                                      deque([2, 2])])
-        self.assertEqual(m.update_request_windows(c(windows), 0, 2), [deque([0, 2]),
-                                                                      deque([1, 1]),
-                                                                      deque([2, 2])])
-        self.assertEqual(m.update_request_windows(c(windows), 1, 0), [deque([0, 0]),
-                                                                      deque([1, 0]),
-                                                                      deque([2, 2])])
-        self.assertEqual(m.update_request_windows(c(windows), 1, 1), [deque([0, 0]),
-                                                                      deque([1, 1]),
-                                                                      deque([2, 2])])
-        self.assertEqual(m.update_request_windows(c(windows), 1, 2), [deque([0, 0]),
-                                                                      deque([1, 2]),
-                                                                      deque([2, 2])])
-        self.assertEqual(m.update_request_windows(c(windows), 2, 0), [deque([0, 0]),
-                                                                      deque([1, 1]),
-                                                                      deque([2, 0])])
-        self.assertEqual(m.update_request_windows(c(windows), 2, 1), [deque([0, 0]),
-                                                                      deque([1, 1]),
-                                                                      deque([2, 1])])
-        self.assertEqual(m.update_request_windows(c(windows), 2, 2), [deque([0, 0]),
-                                                                      deque([1, 1]),
-                                                                      deque([2, 2])])
+        self.assertEqual(m.update_request_windows(c(windows), 0, 0),
+                         [deque([0, 0]),
+                          deque([1, 1]),
+                          deque([2, 2])])
+        self.assertEqual(m.update_request_windows(c(windows), 0, 1),
+                         [deque([0, 1]),
+                          deque([1, 1]),
+                          deque([2, 2])])
+        self.assertEqual(m.update_request_windows(c(windows), 0, 2),
+                         [deque([0, 2]),
+                          deque([1, 1]),
+                          deque([2, 2])])
+        self.assertEqual(m.update_request_windows(c(windows), 1, 0),
+                         [deque([0, 0]),
+                          deque([1, 0]),
+                          deque([2, 2])])
+        self.assertEqual(m.update_request_windows(c(windows), 1, 1),
+                         [deque([0, 0]),
+                          deque([1, 1]),
+                          deque([2, 2])])
+        self.assertEqual(m.update_request_windows(c(windows), 1, 2),
+                         [deque([0, 0]),
+                          deque([1, 2]),
+                          deque([2, 2])])
+        self.assertEqual(m.update_request_windows(c(windows), 2, 0),
+                         [deque([0, 0]),
+                          deque([1, 1]),
+                          deque([2, 0])])
+        self.assertEqual(m.update_request_windows(c(windows), 2, 1),
+                         [deque([0, 0]),
+                          deque([1, 1]),
+                          deque([2, 1])])
+        self.assertEqual(m.update_request_windows(c(windows), 2, 2),
+                         [deque([0, 0]),
+                          deque([1, 1]),
+                          deque([2, 2])])
 
     def test_update_estimate_windows(self):
         req_win = [deque([1, 0, 0, 0]),
@@ -163,24 +193,26 @@ class Multisize(TestCase):
                     {2: deque([0, 0], 2),
                      4: deque([0, 0], 4)}]]
 
-        self.assertEqual(m.update_estimate_windows(c(est_win), c(req_win), 0),
-                         [[{2: deque([0, 1.0]),
-                            4: deque([0, 0, 0.75])},
-                           {2: deque([0, 0.0]),
-                            4: deque([0, 0, 0.25])}],
-                          [{2: deque([0, 0]),
-                            4: deque([0, 0])},
-                           {2: deque([0, 0]),
-                            4: deque([0, 0])}]])
-        self.assertEqual(m.update_estimate_windows(c(est_win), c(req_win), 1),
-                         [[{2: deque([0, 0]),
-                            4: deque([0, 0])},
-                           {2: deque([0, 0]),
-                            4: deque([0, 0])}],
-                          [{2: deque([0, 0.5]),
-                            4: deque([0, 0, 0.5])},
-                           {2: deque([0, 0.5]),
-                            4: deque([0, 0, 0.5])}]])
+        self.assertEqual(
+            m.update_estimate_windows(c(est_win), c(req_win), 0),
+            [[{2: deque([0, 1.0]),
+               4: deque([0, 0, 0.75])},
+              {2: deque([0, 0.0]),
+               4: deque([0, 0, 0.25])}],
+             [{2: deque([0, 0]),
+               4: deque([0, 0])},
+              {2: deque([0, 0]),
+               4: deque([0, 0])}]])
+        self.assertEqual(
+            m.update_estimate_windows(c(est_win), c(req_win), 1),
+            [[{2: deque([0, 0]),
+               4: deque([0, 0])},
+              {2: deque([0, 0]),
+               4: deque([0, 0])}],
+             [{2: deque([0, 0.5]),
+               4: deque([0, 0, 0.5])},
+              {2: deque([0, 0.5]),
+               4: deque([0, 0, 0.5])}]])
 
         req_win = [deque([1, 0, 2, 0]),
                    deque([1, 0, 1, 0]),
@@ -204,63 +236,66 @@ class Multisize(TestCase):
                     {2: deque([0, 0], 2),
                      4: deque([0, 0], 4)}]]
 
-        self.assertEqual(m.update_estimate_windows(c(est_win), c(req_win), 0),
-                         [[{2: deque([0, 0.5]),
-                            4: deque([0, 0, 0.5])},
-                           {2: deque([0, 0.0]),
-                            4: deque([0, 0, 0.25])},
-                           {2: deque([0, 0.5]),
-                            4: deque([0, 0, 0.25])}],
-                          [{2: deque([0, 0]),
-                            4: deque([0, 0])},
-                           {2: deque([0, 0]),
-                            4: deque([0, 0])},
-                           {2: deque([0, 0]),
-                            4: deque([0, 0])}],
-                          [{2: deque([0, 0]),
-                            4: deque([0, 0])},
-                           {2: deque([0, 0]),
-                            4: deque([0, 0])},
-                           {2: deque([0, 0]),
-                            4: deque([0, 0])}]])
-        self.assertEqual(m.update_estimate_windows(c(est_win), c(req_win), 1),
-                         [[{2: deque([0, 0]),
-                            4: deque([0, 0])},
-                           {2: deque([0, 0]),
-                            4: deque([0, 0])},
-                           {2: deque([0, 0]),
-                            4: deque([0, 0])}],
-                          [{2: deque([0, 0.5]),
-                            4: deque([0, 0, 0.5])},
-                           {2: deque([0, 0.5]),
-                            4: deque([0, 0, 0.5])},
-                           {2: deque([0, 0.0]),
-                            4: deque([0, 0, 0.0])}],
-                          [{2: deque([0, 0]),
-                            4: deque([0, 0])},
-                           {2: deque([0, 0]),
-                            4: deque([0, 0])},
-                           {2: deque([0, 0]),
-                            4: deque([0, 0])}]])
-        self.assertEqual(m.update_estimate_windows(c(est_win), c(req_win), 2),
-                         [[{2: deque([0, 0]),
-                            4: deque([0, 0])},
-                           {2: deque([0, 0]),
-                            4: deque([0, 0])},
-                           {2: deque([0, 0]),
-                            4: deque([0, 0])}],
-                          [{2: deque([0, 0]),
-                            4: deque([0, 0])},
-                           {2: deque([0, 0]),
-                            4: deque([0, 0])},
-                           {2: deque([0, 0]),
-                            4: deque([0, 0])}],
-                          [{2: deque([0, 0.5]),
-                            4: deque([0, 0, 0.25])},
-                           {2: deque([0, 0.5]),
-                            4: deque([0, 0, 0.25])},
-                           {2: deque([0, 0.0]),
-                            4: deque([0, 0, 0.5])}]])
+        self.assertEqual(
+            m.update_estimate_windows(c(est_win), c(req_win), 0),
+            [[{2: deque([0, 0.5]),
+               4: deque([0, 0, 0.5])},
+              {2: deque([0, 0.0]),
+               4: deque([0, 0, 0.25])},
+              {2: deque([0, 0.5]),
+               4: deque([0, 0, 0.25])}],
+             [{2: deque([0, 0]),
+               4: deque([0, 0])},
+              {2: deque([0, 0]),
+               4: deque([0, 0])},
+              {2: deque([0, 0]),
+               4: deque([0, 0])}],
+             [{2: deque([0, 0]),
+               4: deque([0, 0])},
+              {2: deque([0, 0]),
+               4: deque([0, 0])},
+              {2: deque([0, 0]),
+               4: deque([0, 0])}]])
+        self.assertEqual(
+            m.update_estimate_windows(c(est_win), c(req_win), 1),
+            [[{2: deque([0, 0]),
+               4: deque([0, 0])},
+              {2: deque([0, 0]),
+               4: deque([0, 0])},
+              {2: deque([0, 0]),
+               4: deque([0, 0])}],
+             [{2: deque([0, 0.5]),
+               4: deque([0, 0, 0.5])},
+              {2: deque([0, 0.5]),
+               4: deque([0, 0, 0.5])},
+              {2: deque([0, 0.0]),
+               4: deque([0, 0, 0.0])}],
+             [{2: deque([0, 0]),
+               4: deque([0, 0])},
+              {2: deque([0, 0]),
+               4: deque([0, 0])},
+              {2: deque([0, 0]),
+               4: deque([0, 0])}]])
+        self.assertEqual(
+            m.update_estimate_windows(c(est_win), c(req_win), 2),
+            [[{2: deque([0, 0]),
+               4: deque([0, 0])},
+              {2: deque([0, 0]),
+               4: deque([0, 0])},
+              {2: deque([0, 0]),
+               4: deque([0, 0])}],
+             [{2: deque([0, 0]),
+               4: deque([0, 0])},
+              {2: deque([0, 0]),
+               4: deque([0, 0])},
+              {2: deque([0, 0]),
+               4: deque([0, 0])}],
+             [{2: deque([0, 0.5]),
+               4: deque([0, 0, 0.25])},
+              {2: deque([0, 0.5]),
+               4: deque([0, 0, 0.25])},
+              {2: deque([0, 0.0]),
+               4: deque([0, 0, 0.5])}]])
 
     def test_update_variances(self):
         est_win = [[{2: deque([0, 0.5], 2),
@@ -443,8 +478,8 @@ class Multisize(TestCase):
                            {2: 0.09375,
                             4: 0.0625}]])
         self.assertEqual(m.update_acceptable_variances(
-            m.update_acceptable_variances(c(acc_variances), c(est_win), 0),
-            c(est_win), 0),
+            m.update_acceptable_variances(
+                c(acc_variances), c(est_win), 0), c(est_win), 0),
                          [[{2: 0.125,
                             4: 0.0},
                            {2: 0.125,
@@ -571,7 +606,8 @@ class Multisize(TestCase):
                            4: 0.5}]]
         window_sizes = [2, 4]
 
-        self.assertEqual(m.select_window(variances, acc_variances, window_sizes),
+        self.assertEqual(
+            m.select_window(variances, acc_variances, window_sizes),
                          [[2, 2],
                           [4, 2]])
 
@@ -593,7 +629,8 @@ class Multisize(TestCase):
                            4: 0.5}]]
         window_sizes = [2, 4]
 
-        self.assertEqual(m.select_window(variances, acc_variances, window_sizes),
+        self.assertEqual(
+            m.select_window(variances, acc_variances, window_sizes),
                          [[2, 4],
                           [4, 2]])
 
@@ -635,7 +672,8 @@ class Multisize(TestCase):
                            4: 0.9}]]
         window_sizes = [2, 4]
 
-        self.assertEqual(m.select_window(variances, acc_variances, window_sizes),
+        self.assertEqual(
+            m.select_window(variances, acc_variances, window_sizes),
                          [[4, 4, 2],
                           [4, 4, 4],
                           [4, 2, 2]])
@@ -666,12 +704,14 @@ class Multisize(TestCase):
                              [2, 2, 2],
                              [2, 4, 2]]
 
-        self.assertEqual(m.select_best_estimates(c(est_win), selected_windows1),
+        self.assertEqual(
+            m.select_best_estimates(c(est_win), selected_windows1),
                          [[0, 1, 0],
                           [0.25, 0.5, 0.15],
                           [0, 1, 0]])
 
-        self.assertEqual(m.select_best_estimates(c(est_win), selected_windows2),
+        self.assertEqual(
+            m.select_best_estimates(c(est_win), selected_windows2),
                          [[0, 1, 0],
                           [0.25, 0.5, 0.25],
                           [0, 0.2, 0]])
@@ -685,11 +725,13 @@ class Multisize(TestCase):
                     {2: deque(),
                      4: deque()}]]
 
-        self.assertEqual(m.select_best_estimates(c(est_win), [[2, 4], [4, 2]]),
+        self.assertEqual(
+            m.select_best_estimates(c(est_win), [[2, 4], [4, 2]]),
                          [[0.0, 0.0],
                           [0.0, 0.0]])
 
-        self.assertEqual(m.select_best_estimates(c(est_win), [[2, 2], [4, 4]]),
+        self.assertEqual(
+            m.select_best_estimates(c(est_win), [[2, 2], [4, 4]]),
                          [[0.0, 0.0],
                           [0.0, 0.0]])
 
@@ -795,9 +837,12 @@ class Multisize(TestCase):
         self.assertEqual(structure[2][2][4].maxlen, 4)
 
     def test_init_selected_window_sizes(self):
-        self.assertEqual(m.init_selected_window_sizes([2, 4], 1), [[2]])
-        self.assertEqual(m.init_selected_window_sizes([2, 4], 2), [[2, 2],
-                                                                   [2, 2]])
-        self.assertEqual(m.init_selected_window_sizes([2, 4], 3), [[2, 2, 2],
-                                                                   [2, 2, 2],
-                                                                   [2, 2, 2]])
+        self.assertEqual(
+            m.init_selected_window_sizes([2, 4], 1), [[2]])
+        self.assertEqual(
+            m.init_selected_window_sizes([2, 4], 2), [[2, 2],
+                                                      [2, 2]])
+        self.assertEqual(
+            m.init_selected_window_sizes([2, 4], 3), [[2, 2, 2],
+                                                      [2, 2, 2],
+                                                      [2, 2, 2]])

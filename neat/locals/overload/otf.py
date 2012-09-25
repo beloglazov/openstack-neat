@@ -35,9 +35,10 @@ def otf_factory(time_step, migration_time, params):
     :return: A function implementing the OTF algorithm.
      :rtype: function
     """
-    return lambda utilization, state=None: (otf(params['threshold'],
-                                                utilization),
-                                            {})
+    return lambda utilization, state=None: \
+        (otf(params['threshold'],
+             utilization),
+         {})
 
 
 @contract
@@ -56,10 +57,11 @@ def otf_limit_factory(time_step, migration_time, params):
     :return: A function implementing the OTF algorithm with limiting.
      :rtype: function
     """
-    return lambda utilization, state=None: (otf_limit(params['threshold'],
-                                                      params['limit'],
-                                                      utilization),
-                                            {})
+    return lambda utilization, state=None: \
+        (otf_limit(params['threshold'],
+                   params['limit'],
+                   utilization),
+         {})
 
 
 @contract
@@ -79,10 +81,11 @@ def otf_migration_time_factory(time_step, migration_time, params):
      :rtype: function
     """
     migration_time_normalized = float(migration_time) / time_step
-    return lambda utilization, state=None: (otf_migration_time(params['threshold'],
-                                                               migration_time_normalized,
-                                                               utilization),
-                                            {})
+    return lambda utilization, state=None: \
+        (otf_migration_time(params['threshold'],
+                            migration_time_normalized,
+                            utilization),
+         {})
 
 
 @contract
@@ -102,11 +105,12 @@ def otf_limit_migration_time_factory(time_step, migration_time, params):
      :rtype: function
     """
     migration_time_normalized = float(migration_time) / time_step
-    return lambda utilization, state=None: (otf_limit_migration_time(params['threshold'],
-                                                                     params['limit'],
-                                                                     migration_time_normalized,
-                                                                     utilization),
-                                            {})
+    return lambda utilization, state=None: \
+        (otf_limit_migration_time(params['threshold'],
+                                  params['limit'],
+                                  migration_time_normalized,
+                                  utilization),
+         {})
 
 
 @contract
@@ -122,12 +126,13 @@ def otf(threshold, utilization):
     :return: The decision of the algorithm.
      :rtype: bool
     """
-    return float(overloading_steps(utilization)) / len(utilization) > threshold
+    return float(overloading_steps(utilization)) / len(utilization) > \
+        threshold
 
 
 @contract
 def otf_limit(threshold, limit, utilization):
-    """ The OTF threshold algorithm with limiting the minimum utilization values.
+    """ The OTF threshold algorithm with limiting the utilization history.
 
     :param threshold: The threshold on the OTF value.
      :type threshold: float,>=0

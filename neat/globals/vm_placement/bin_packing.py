@@ -39,12 +39,13 @@ def best_fit_decreasing_factory(time_step, migration_time, params):
                   hosts_ram_usage, hosts_ram_total, \
                   inactive_hosts_cpu, inactive_hosts_ram, \
                   vms_cpu, vms_ram, state=None: \
-        (best_fit_decreasing(get_available_resources(params['cpu_threshold'],
-                                                     hosts_cpu_usage, hosts_cpu_total),
-                             get_available_resources(params['ram_threshold'],
-                                                     hosts_ram_usage, hosts_ram_total),
-                             inactive_hosts_cpu, inactive_hosts_ram,
-                             vms_cpu, vms_ram), {})
+        (best_fit_decreasing(get_available_resources(
+            params['cpu_threshold'],
+            hosts_cpu_usage, hosts_cpu_total),
+            get_available_resources(params['ram_threshold'],
+                                    hosts_ram_usage, hosts_ram_total),
+                                    inactive_hosts_cpu, inactive_hosts_ram,
+                                    vms_cpu, vms_ram), {})
 
 
 @contract
@@ -79,10 +80,10 @@ def best_fit_decreasing(hosts_cpu, hosts_ram,
     :param hosts_ram: A map of host names and their available RAM in MB.
      :type hosts_ram: dict(str: int)
 
-    :param inactive_hosts_cpu: A map of inactive hosts and available CPU in MHz.
+    :param inactive_hosts_cpu: A map of inactive hosts and available CPU MHz.
      :type inactive_hosts_cpu: dict(str: int)
 
-    :param inactive_hosts_ram: A map of inactive hosts and available RAM in MB.
+    :param inactive_hosts_ram: A map of inactive hosts and available RAM MB.
      :type inactive_hosts_ram: dict(str: int)
 
     :param vms_cpu: A map of VM UUID and their CPU utilization in MHz.
@@ -94,22 +95,24 @@ def best_fit_decreasing(hosts_cpu, hosts_ram,
     :return: A map of VM UUIDs to host names, or {} if cannot be solved.
      :rtype: dict(str: str)
     """
-    vms = sorted(((v, vms_ram[k], k) for k, v in vms_cpu.items()), reverse=True)
-    hosts = sorted(((v, hosts_ram[k], k) for k, v in hosts_cpu.items()))
-    inactive_hosts = sorted(((v, inactive_hosts_ram[k], k) for k, v
-                             in inactive_hosts_cpu.items()))
+    vms = sorted(((v, vms_ram[k], k)
+                  for k, v in vms_cpu.items()), reverse=True)
+    hosts = sorted(((v, hosts_ram[k], k)
+                    for k, v in hosts_cpu.items()))
+    inactive_hosts = sorted(((v, inactive_hosts_ram[k], k)
+                             for k, v in inactive_hosts_cpu.items()))
     mapping = {}
     for vm_cpu, vm_ram, vm_uuid in vms:
         mapped = False
         while not mapped:
             for _, _, host in hosts:
                 if hosts_cpu[host] >= vm_cpu and \
-                  hosts_ram[host] >= vm_ram:
-                    mapping[vm_uuid] = host
-                    hosts_cpu[host] -= vm_cpu
-                    hosts_ram[host] -= vm_ram
-                    mapped = True
-                    break
+                    hosts_ram[host] >= vm_ram:
+                        mapping[vm_uuid] = host
+                        hosts_cpu[host] -= vm_cpu
+                        hosts_ram[host] -= vm_ram
+                        mapped = True
+                        break
             else:
                 if inactive_hosts:
                     activated_host = inactive_hosts.pop(0)

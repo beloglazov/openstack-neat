@@ -108,7 +108,8 @@ def start():
     :return: The final state.
      :rtype: dict(str: *)
     """
-    config = read_and_validate_config([DEFAILT_CONFIG_PATH, CONFIG_PATH], REQUIRED_FIELDS)
+    config = read_and_validate_config([DEFAILT_CONFIG_PATH, CONFIG_PATH],
+                                      REQUIRED_FIELDS)
     return common.start(
         init_state,
         execute,
@@ -123,7 +124,7 @@ def init_state(config):
     :param config: A config dictionary.
      :type config: dict(str: *)
 
-    :return: A dictionary containing the initial state of the data collector.
+    :return: A dict containing the initial state of the data collector.
      :rtype: dict
     """
     vir_connection = libvirt.openReadOnly(None)
@@ -248,7 +249,7 @@ def get_added_vms(previous_vms, current_vms):
     :param current_vms: A list of VM at the current time frame.
      :type current_vms: list(str)
 
-    :return: A list of VM UUIDs that have been added since the last time frame.
+    :return: A list of VM UUIDs added since the last time frame.
      :rtype: list(str)
     """
     return substract_lists(current_vms, previous_vms)
@@ -264,7 +265,7 @@ def get_removed_vms(previous_vms, current_vms):
     :param current_vms: A list of VM at the current time frame.
      :type current_vms: list(str)
 
-    :return: A list of VM UUIDs that have been removed since the last time frame.
+    :return: A list of VM UUIDs removed since the last time frame.
      :rtype: list(str)
     """
     return substract_lists(previous_vms, current_vms)
@@ -338,7 +339,8 @@ def write_data_locally(path, data, data_length):
     for uuid, values in data.items():
         with open(os.path.join(path, uuid), 'w') as f:
             if data_length > 0:
-                f.write('\n'.join([str(x) for x in values[-data_length:]]) + '\n')
+                f.write('\n'.join([str(x)
+                                   for x in values[-data_length:]]) + '\n')
 
 
 @contract
@@ -387,7 +389,7 @@ def get_cpu_mhz(vir_connection, physical_cpus, previous_cpu_time,
     :param physical_cpus: The number of physical CPUs.
      :type physical_cpus: int
 
-    :param previous_cpu_time: A dictionary of previous CPU times for the VMs.
+    :param previous_cpu_time: A dict of previous CPU times for the VMs.
      :type previous_cpu_time: dict(str : int)
 
     :param previous_time: The previous timestamp.
@@ -399,7 +401,7 @@ def get_cpu_mhz(vir_connection, physical_cpus, previous_cpu_time,
     :param current_vms: A list of VM UUIDs.
      :type current_vms: list(str)
 
-    :param added_vm_data: A dictionary of VM UUIDs and the corresponding data.
+    :param added_vm_data: A dict of VM UUIDs and the corresponding data.
      :type added_vm_data: dict(str : list(int))
 
     :return: The updated CPU times and average CPU utilization in MHz.

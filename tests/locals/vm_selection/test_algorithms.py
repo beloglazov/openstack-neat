@@ -38,7 +38,8 @@ class Selection(TestCase):
     def minimum_utilization_factory(
         x=dict_(
             keys=str_(of='abc123-', min_length=36, max_length=36),
-            values=list_(of=int_(min=0, max=3000), min_length=1, max_length=10),
+            values=list_(of=int_(min=0, max=3000),
+                         min_length=1, max_length=10),
             min_length=1, max_length=5
         )
     ):
@@ -54,7 +55,8 @@ class Selection(TestCase):
     def random_factory(
         x=dict_(
             keys=str_(of='abc123-', min_length=36, max_length=36),
-            values=list_(of=int_(min=0, max=3000), min_length=0, max_length=10),
+            values=list_(of=int_(min=0, max=3000),
+                         min_length=0, max_length=10),
             min_length=1, max_length=3
         )
     ):
@@ -81,7 +83,8 @@ class Selection(TestCase):
     def minimum_utilization(
         x=dict_(
             keys=str_(of='abc123-', min_length=36, max_length=36),
-            values=list_(of=int_(min=0, max=3000), min_length=1, max_length=10),
+            values=list_(of=int_(min=0, max=3000),
+                         min_length=1, max_length=10),
             min_length=1, max_length=5
         )
     ):
@@ -96,7 +99,8 @@ class Selection(TestCase):
     def random(
         x=dict_(
             keys=str_(of='abc123-', min_length=36, max_length=36),
-            values=list_(of=int_(min=0, max=3000), min_length=0, max_length=10),
+            values=list_(of=int_(min=0, max=3000),
+                         min_length=0, max_length=10),
             min_length=1, max_length=3
         )
     ):

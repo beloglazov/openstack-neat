@@ -118,7 +118,8 @@ def start():
     :return: The final state.
      :rtype: dict(str: *)
     """
-    config = read_and_validate_config([DEFAILT_CONFIG_PATH, CONFIG_PATH], REQUIRED_FIELDS)
+    config = read_and_validate_config([DEFAILT_CONFIG_PATH, CONFIG_PATH],
+                                      REQUIRED_FIELDS)
     return common.start(
         init_state,
         execute,
@@ -140,10 +141,11 @@ def init_state(config):
     if vir_connection is None:
         print 'Failed to open connection to the hypervisor'
         sys.exit(1)
+    physical_cpu_mhz_total = common.physical_cpu_mhz_total(vir_connection)
     return {'previous_time': 0,
             'vir_connect': vir_connection,
             'db': init_db(config.get('sql_connection')),
-            'physical_cpu_mhz_total': common.physical_cpu_mhz_total(vir_connection)}
+            'physical_cpu_mhz_total': physical_cpu_mhz_total}
 
 
 @contract
@@ -195,33 +197,41 @@ def execute(config, state):
         return
 
     physical_cpu_mhz_total = int(config.get('physical_cpu_mhz_total'))
-    host_cpu_utilization = vm_mhz_to_percentage(vm_cpu_mhz, physical_cpu_mhz_total)
+    host_cpu_utilization = vm_mhz_to_percentage(
+        vm_cpu_mhz, physical_cpu_mhz_total)
     time_step = int(config.get('data_collector_interval'))
-    migration_time = calculate_migration_time(vm_ram, float(config.get('network_migration_bandwidth')))
+    migration_time = calculate_migration_time(
+        vm_ram, float(config.get('network_migration_bandwidth')))
 
     if 'underload_detection' not in state:
-        underload_detection_params = json.loads(config.get('algorithm_underload_detection_params'))
+        underload_detection_params = json.loads(
+            config.get('algorithm_underload_detection_params'))
         underload_detection_state = None
-        underload_detection = config.get('algorithm_underload_detection_factory')(
-            time_step,
-            migration_time,
-            underload_detection_params)
+        underload_detection = config.get(
+            'algorithm_underload_detection_factory')(
+                time_step,
+                migration_time,
+                underload_detection_params)
         state['underload_detection'] = underload_detection
 
-        overload_detection_params = json.loads(config.get('algorithm_overload_detection_params'))
+        overload_detection_params = json.loads(
+            config.get('algorithm_overload_detection_params'))
         overload_detection_state = None
-        overload_detection = config.get('algorithm_overload_detection_factory')(
-            time_step,
-            migration_time,
-            overload_detection_params)
+        overload_detection = config.get(
+            'algorithm_overload_detection_factory')(
+                time_step,
+                migration_time,
+                overload_detection_params)
         state['overload_detection'] = overload_detection
 
-        vm_selection_params = json.loads(config.get('algorithm_vm_selection_params'))
+        vm_selection_params = json.loads(
+            config.get('algorithm_vm_selection_params'))
         vm_selection_state = None
-        vm_selection = config.get('algorithm_vm_selection_factory')(
-            time_step,
-            migration_time,
-            vm_selection_params)
+        vm_selection = config.get(
+            'algorithm_vm_selection_factory')(
+                time_step,
+                migration_time,
+                vm_selection_params)
         state['vm_selection'] = vm_selection
     else:
         underload_detection = state['underload_detection']
@@ -231,18 +241,22 @@ def execute(config, state):
         vm_selection = state['vm_selection']
         vm_selection_state = state['vm_selection_state']
 
-    underload, underload_detection_state = underload_detection(host_cpu_utilization, underload_detection_state)
+    underload, underload_detection_state = underload_detection(
+        host_cpu_utilization, underload_detection_state)
     state['underload_detection_state'] = underload_detection_state
 
     if underload:
         # Send a request to the global manager with the host name
         pass
     else:
-        overload, overload_detection_state = overload_detection(host_cpu_utilization, overload_detection_state)
+        overload, overload_detection_state = overload_detection(
+            host_cpu_utilization, overload_detection_state)
         state['overload_detection_state'] = overload_detection_state
         if overload:
-            vms = vm_selection(host_cpu_utilization, vm_ram, vm_selection_state)
-            # send a request to the global manager with the selected VMs to migrate
+            vms = vm_selection(
+                host_cpu_utilization, vm_ram, vm_selection_state)
+            # send a request to the global manager
+            # with the selected VMs to migrate
 
     return state
 
@@ -307,7 +321,7 @@ def get_ram(vir_connection, vms):
 
 @contract
 def get_max_ram(vir_connection, uuid):
-    """ Get the maximum RAM allocated to a VM specified by the UUID using libvirt.
+    """ Get the max RAM allocated to a VM UUID using libvirt.
 
     :param vir_connection: A libvirt connection object.
      :type vir_connection: virConnect

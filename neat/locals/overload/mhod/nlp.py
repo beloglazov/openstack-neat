@@ -43,8 +43,9 @@ def build_objective(ls, state_vector, p):
 
 
 @contract
-def build_constraint(otf, migration_time, ls, state_vector, p, time_in_states, time_in_state_n):
-    """ Creates a constraint for the optimization problem from the L functions.
+def build_constraint(otf, migration_time, ls, state_vector,
+                     p, time_in_states, time_in_state_n):
+    """ Creates an optimization constraint from the L functions.
 
     :param otf: The OTF parameter.
      :type otf: float
@@ -71,6 +72,10 @@ def build_constraint(otf, migration_time, ls, state_vector, p, time_in_states, t
      :rtype: tuple(function, function, number)
     """
     def constraint(*m):
-        return float(migration_time + time_in_state_n + ls[-1](state_vector, p, m)) / \
-               (migration_time + time_in_states + sum(l(state_vector, p, m) for l in ls))
+        return float(migration_time +
+                     time_in_state_n +
+                     ls[-1](state_vector, p, m)) / \
+               (migration_time +
+                time_in_states +
+                sum(l(state_vector, p, m) for l in ls))
     return (constraint, operator.le, otf)

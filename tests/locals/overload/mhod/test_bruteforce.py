@@ -36,15 +36,20 @@ class Bruteforce(TestCase):
         def fn4(x, y):
             return x / y
 
-        self.assertEqual([round(x, 1) for x in b.solve2(fn1, (fn1, le, 10), 0.1, 1.0)],
+        self.assertEqual([round(x, 1)
+                          for x in b.solve2(fn1, (fn1, le, 10), 0.1, 1.0)],
                          [1.0, 1.0])
-        self.assertEqual([round(x, 1) for x in b.solve2(fn1, (fn1, le, 0.5), 0.1, 1.0)],
+        self.assertEqual([round(x, 1)
+                          for x in b.solve2(fn1, (fn1, le, 0.5), 0.1, 1.0)],
                          [0.0, 0.5])
-        self.assertEqual([round(x, 1) for x in b.solve2(fn2, (fn1, le, 0.5), 0.1, 1.0)],
+        self.assertEqual([round(x, 1)
+                          for x in b.solve2(fn2, (fn1, le, 0.5), 0.1, 1.0)],
                          [0.5, 0.0])
-        self.assertEqual([round(x, 1) for x in b.solve2(fn3, (fn3, le, 10), 0.1, 1.0)],
+        self.assertEqual([round(x, 1)
+                          for x in b.solve2(fn3, (fn3, le, 10), 0.1, 1.0)],
                          [1.0, 0.0])
-        self.assertEqual([round(x, 1) for x in b.solve2(fn4, (fn4, le, 10), 0.1, 1.0)],
+        self.assertEqual([round(x, 1)
+                          for x in b.solve2(fn4, (fn4, le, 10), 0.1, 1.0)],
                          [1.0, 0.1])
 
     def test_optimize(self):
@@ -61,11 +66,15 @@ class Bruteforce(TestCase):
             objective = mock('objective')
             constraint = mock('constraint')
             solution = [1, 2, 3]
-            expect(nlp).build_objective(ls, state_vector, p).and_return(objective).once()
-            expect(nlp).build_constraint(otf, migration_time, ls, state_vector,
-                                         p, time_in_states, time_in_state_n). \
-                        and_return(constraint).once()
-            expect(b).solve2(objective, constraint, step, limit).and_return(solution).once()
-            self.assertEqual(b.optimize(step, limit, otf, migration_time, ls,
-                                        p, state_vector, time_in_states, time_in_state_n),
+            expect(nlp).build_objective(ls, state_vector, p). \
+                and_return(objective).once()
+            expect(nlp).build_constraint(
+                otf, migration_time, ls, state_vector,
+                p, time_in_states, time_in_state_n). \
+                and_return(constraint).once()
+            expect(b).solve2(objective, constraint, step, limit). \
+                and_return(solution).once()
+            self.assertEqual(
+                b.optimize(step, limit, otf, migration_time, ls,
+                           p, state_vector, time_in_states, time_in_state_n),
                 solution)

@@ -111,7 +111,8 @@ def update_request_windows(request_windows, previous_state, current_state):
 
 
 @contract
-def update_estimate_windows(estimate_windows, request_windows, previous_state):
+def update_estimate_windows(estimate_windows, request_windows,
+                            previous_state):
     """ Update and return the updated estimate windows.
 
     :param estimate_windows: The previous estimate windows.
@@ -127,7 +128,8 @@ def update_estimate_windows(estimate_windows, request_windows, previous_state):
      :rtype: list(list(dict))
     """
     request_window = request_windows[previous_state]
-    for state, estimate_window in enumerate(estimate_windows[previous_state]):
+    state_estimate_windows = estimate_windows[previous_state]
+    for state, estimate_window in enumerate(state_estimate_windows):
         for window_size, estimates in estimate_window.items():
             slice_from = len(request_window) - window_size
             if slice_from < 0:
@@ -162,7 +164,8 @@ def update_variances(variances, estimate_windows, previous_state):
             if len(estimates) < window_size:
                 variance_map[window_size] = 1.0
             else:
-                variance_map[window_size] = variance(list(estimates), window_size)
+                variance_map[window_size] = variance(
+                    list(estimates), window_size)
     return variances
 
 
@@ -183,10 +186,12 @@ def update_acceptable_variances(acceptable_variances, estimate_windows, previous
      :rtype: list(list(dict))
     """
     estimate_window = estimate_windows[previous_state]
-    for state, acceptable_variance_map in enumerate(acceptable_variances[previous_state]):
+    state_acc_variances = acceptable_variances[previous_state]
+    for state, acceptable_variance_map in enumerate(state_acc_variances):
         for window_size in acceptable_variance_map:
             estimates = estimate_window[state][window_size]
-            acceptable_variance_map[window_size] = acceptable_variance(estimates[-1], window_size)
+            acceptable_variance_map[window_size] = acceptable_variance(
+                estimates[-1], window_size)
     return acceptable_variances
 
 
@@ -213,8 +218,9 @@ def select_window(variances, acceptable_variances, window_sizes):
         for j in range(n):
             selected_size = window_sizes[0]
             for window_size in window_sizes:
-                if variances[i][j][window_size] > acceptable_variances[i][j][window_size]:
-                    break
+                if variances[i][j][window_size] > \
+                    acceptable_variances[i][j][window_size]:
+                        break
                 selected_size = window_size
             selected_windows[i].append(selected_size)
     return selected_windows

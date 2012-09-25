@@ -28,7 +28,8 @@ from neat.db_utils import *
 def start(init_state, execute, config, time_interval, iterations):
     """ Start the processing loop.
 
-    :param init_state: A function accepting a config and returning a state dictionary.
+    :param init_state: A function accepting a config and
+                       returning a state dictionary.
      :type init_state: function
 
     :param execute: A function performing the processing at each iteration.
@@ -109,7 +110,8 @@ def physical_cpu_mhz_total(vir_connection):
     :return: The total CPU frequency in MHz.
      :rtype: int
     """
-    return physical_cpu_count(vir_connection) * physical_cpu_mhz(vir_connection)
+    return physical_cpu_count(vir_connection) * \
+        physical_cpu_mhz(vir_connection)
 
 
 @contract

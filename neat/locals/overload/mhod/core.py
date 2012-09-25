@@ -38,17 +38,21 @@ def init_state(window_sizes, number_of_states):
     """
     state = {}
     state['previous_state'] = 0
-    state['request_windows'] = estimation.init_request_windows(number_of_states)
-    state['estimate_windows'] = estimation.init_deque_structure(window_sizes, number_of_states)
-    state['variances'] = estimation.init_variances(window_sizes, number_of_states)
-    state['acceptable_variances'] = estimation.init_variances(window_sizes, number_of_states)
+    state['request_windows'] = estimation.init_request_windows(
+        number_of_states)
+    state['estimate_windows'] = estimation.init_deque_structure(
+        window_sizes, number_of_states)
+    state['variances'] = estimation.init_variances(
+        window_sizes, number_of_states)
+    state['acceptable_variances'] = estimation.init_variances(
+        window_sizes, number_of_states)
     return state
 
 
 @contract
 def execute(state_config, otf, window_sizes, bruteforce_step,
             time_step, migration_time, utilization, state):
-    """ The MHOD algorithm returning a decision of whether the host is overloaded.
+    """ The MHOD algorithm returning whether the host is overloaded.
 
     :param state_config: The state configuration.
      :type state_config: list(float)
@@ -81,25 +85,31 @@ def execute(state_config, otf, window_sizes, bruteforce_step,
     max_window_size = max(window_sizes)
     state_vector = build_state_vector(state_config, utilization)
     state = current_state(state_vector)
-    selected_windows = estimation.select_window(state['variances'],
-                                                state['acceptable_variances'],
-                                                window_sizes)
-    p = estimation.select_best_estimates(state['estimate_windows'],
-                                         selected_windows)
+    selected_windows = estimation.select_window(
+        state['variances'],
+        state['acceptable_variances'],
+        window_sizes)
+    p = estimation.select_best_estimates(
+        state['estimate_windows'],
+        selected_windows)
 
-    state['request_windows'] = estimation.update_request_windows(state['request_windows'],
-                                                                 max_window_size,
-                                                                 state['previous_state'],
-                                                                 state)
-    state['estimate_windows'] = estimation.update_estimate_windows(state['estimate_windows'],
-                                                                   state['request_windows'],
-                                                                   state['previous_state'])
-    state['variances'] = estimation.update_variances(state['variances'],
-                                                     state['estimate_windows'],
-                                                     state['previous_state'])
-    state['acceptable_variances'] = estimation.update_acceptable_variances(state['acceptable_variances'],
-                                                                           state['estimate_windows'],
-                                                                           state['previous_state'])
+    state['request_windows'] = estimation.update_request_windows(
+        state['request_windows'],
+        max_window_size,
+        state['previous_state'],
+        state)
+    state['estimate_windows'] = estimation.update_estimate_windows(
+        state['estimate_windows'],
+        state['request_windows'],
+        state['previous_state'])
+    state['variances'] = estimation.update_variances(
+        state['variances'],
+        state['estimate_windows'],
+        state['previous_state'])
+    state['acceptable_variances'] = estimation.update_acceptable_variances(
+        state['acceptable_variances'],
+        state['estimate_windows'],
+        state['previous_state'])
     state['previous_state'] = state
 
     if len(utilization) >= 30:
@@ -108,15 +118,17 @@ def execute(state_config, otf, window_sizes, bruteforce_step,
         time_in_state_n = get_time_in_state_n(state_config, state_history)
         tmp = set(p[state])
         if len(tmp) != 1 or tmp[0] != 0:
-            policy = bruteforce.optimize(step, 1.0, otf, (migration_time / time_step), ls,
-                                         p, state_vector, time_in_states, time_in_state_n)
+            policy = bruteforce.optimize(
+                step, 1.0, otf, (migration_time / time_step), ls,
+                p, state_vector, time_in_states, time_in_state_n)
             return issue_command_deterministic(policy)
     return false
 
 
 @contract
 def build_state_vector(state_config, utilization):
-    """ Build the current state PMF corresponding to the utilization history and state config.
+    """ Build the current state PMF corresponding to the utilization
+        history and state config.
 
     :param state_config: The state configuration.
      :type state_config: list(float)

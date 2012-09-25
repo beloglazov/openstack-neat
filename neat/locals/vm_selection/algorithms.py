@@ -54,10 +54,11 @@ def minimum_utilization_factory(time_step, migration_time, params):
     :param params: A dictionary containing the algorithm's parameters.
      :type params: dict(str: *)
 
-    :return: A function implementing the minimum utilization VM selection algorithm.
+    :return: A function implementing the minimum utilization VM selection.
      :rtype: function
     """
-    return lambda vms_cpu, vms_ram, state=None: (minimum_utilization(vms_cpu), {})
+    return lambda vms_cpu, vms_ram, state=None: \
+        (minimum_utilization(vms_cpu), {})
 
 
 @contract
@@ -73,10 +74,11 @@ def minimum_migration_time_factory(time_step, migration_time, params):
     :param params: A dictionary containing the algorithm's parameters.
      :type params: dict(str: *)
 
-    :return: A function implementing the minimum migration time VM selection algorithm.
+    :return: A function implementing the minimum migration time VM selection.
      :rtype: function
     """
-    return lambda vms_cpu, vms_ram, state=None: (minimum_migration_time(vms_ram), {})
+    return lambda vms_cpu, vms_ram, state=None: \
+        (minimum_migration_time(vms_ram), {})
 
 
 @contract
@@ -89,7 +91,8 @@ def minimum_migration_time(vms_ram):
     :return: A VM to migrate from the host.
      :rtype: str
     """
-    min_index, min_value = min(enumerate(vms_ram.values()), key=operator.itemgetter(1))
+    min_index, min_value = min(enumerate(vms_ram.values()),
+                               key=operator.itemgetter(1))
     return vms_ram.keys()[min_index]
 
 
@@ -104,7 +107,8 @@ def minimum_utilization(vms_cpu):
      :rtype: str
     """
     last_utilization = [x[-1] for x in vms_cpu.values()]
-    min_index, min_value = min(enumerate(last_utilization), key=operator.itemgetter(1))
+    min_index, min_value = min(enumerate(last_utilization),
+                               key=operator.itemgetter(1))
     return vms_cpu.keys()[min_index]
 
 

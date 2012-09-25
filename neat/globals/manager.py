@@ -120,12 +120,12 @@ def validate_params(config, params):
         raise_error(401)
         return False
     if 'reason' not in params or \
-        params['reason'] == 1 and 'vm_uuids' not in params or \
-        params['reason'] == 0 and 'host' not in params:
+       params['reason'] == 1 and 'vm_uuids' not in params or \
+       params['reason'] == 0 and 'host' not in params:
         raise_error(400)
         return False
     if sha1(params['username']).hexdigest() != config['admin_user'] or \
-        sha1(params['password']).hexdigest() != config['admin_password']:
+       sha1(params['password']).hexdigest() != config['admin_password']:
         raise_error(403)
         return False
     return True
@@ -134,12 +134,14 @@ def validate_params(config, params):
 def start():
     """ Start the global manager web service.
     """
-    config = read_and_validate_config([DEFAILT_CONFIG_PATH, CONFIG_PATH], REQUIRED_FIELDS)
+    config = read_and_validate_config([DEFAILT_CONFIG_PATH, CONFIG_PATH],
+                                      REQUIRED_FIELDS)
     bottle.debug(True)
     bottle.app().state = {
         'config': config,
         'state': init_state(config)}
-    bottle.run(host=config['global_manager_host'], port=config['global_manager_port'])
+    bottle.run(host=config['global_manager_host'],
+               port=config['global_manager_port'])
 
 
 @contract
@@ -174,9 +176,10 @@ def service():
 
 @bottle.route('/', method='ANY')
 def error():
-    raise bottle.HTTPResponse('Method not allowed: the request has been made' +
-                              'with a method other than the only supported PUT',
-                              405)
+    raise bottle.HTTPResponse(
+        'Method not allowed: the request has been made' +
+        'with a method other than the only supported PUT',
+        405)
 
 
 @contract
@@ -186,7 +189,7 @@ def init_state(config):
     :param config: A config dictionary.
      :type config: dict(str: *)
 
-    :return: A dictionary containing the initial state of the global managerr.
+    :return: A dict containing the initial state of the global managerr.
      :rtype: dict
     """
     return {'previous_time': 0,
@@ -274,7 +277,8 @@ def execute_underload(config, state, host):
         float(config.get('network_migration_bandwidth')))
 
     if 'vm_placement' not in state:
-        vm_placement_params = json.loads(config.get('algorithm_vm_placement_params'))
+        vm_placement_params = json.loads(
+            config.get('algorithm_vm_placement_params'))
         vm_placement_state = None
         vm_placement = config.get('algorithm_vm_placement_factory')(
             time_step,
@@ -451,7 +455,8 @@ def execute_overload(config, state, vm_uuids):
         float(config.get('network_migration_bandwidth')))
 
     if 'vm_placement' not in state:
-        vm_placement_params = json.loads(config.get('algorithm_vm_placement_params'))
+        vm_placement_params = json.loads(
+            config.get('algorithm_vm_placement_params'))
         vm_placement_state = None
         vm_placement = config.get('algorithm_vm_placement_factory')(
             time_step,

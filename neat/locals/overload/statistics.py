@@ -40,11 +40,12 @@ def loess_factory(time_step, migration_time, params):
      :rtype: function
     """
     migration_time_normalized = float(migration_time) / time_step
-    return lambda utilization, state=None: (loess(params['param'],
-                                                  params['limit'],
-                                                  migration_time_normalized,
-                                                  utilization),
-                                            {})
+    return lambda utilization, state=None: \
+        (loess(params['param'],
+               params['limit'],
+               migration_time_normalized,
+               utilization),
+         {})
 
 
 @contract
@@ -64,11 +65,12 @@ def loess_robust_factory(time_step, migration_time, params):
      :rtype: function
     """
     migration_time_normalized = float(migration_time) / time_step
-    return lambda utilization, state=None: (loess_robust(params['param'],
-                                                         params['limit'],
-                                                         migration_time_normalized,
-                                                         utilization),
-                                            {})
+    return lambda utilization, state=None: \
+        (loess_robust(params['param'],
+                      params['limit'],
+                      migration_time_normalized,
+                      utilization),
+         {})
 
 
 @contract
@@ -87,10 +89,11 @@ def mad_threshold_factory(time_step, migration_time, params):
     :return: A function implementing the static threshold algorithm.
      :rtype: function
     """
-    return lambda utilization, state=None: (mad_threshold(params['threshold'],
-                                                          params['limit'],
-                                                          utilization),
-                                            {})
+    return lambda utilization, state=None: \
+        (mad_threshold(params['threshold'],
+                       params['limit'],
+                       utilization),
+         {})
 
 
 @contract
@@ -109,10 +112,11 @@ def iqr_threshold_factory(time_step, migration_time, params):
     :return: A function implementing the static threshold algorithm.
      :rtype: function
     """
-    return lambda utilization, state=None: (iqr_threshold(params['threshold'],
-                                                          params['limit'],
-                                                          utilization),
-                                            {})
+    return lambda utilization, state=None: \
+        (iqr_threshold(params['threshold'],
+                       params['limit'],
+                       utilization),
+         {})
 
 
 @contract
@@ -360,7 +364,7 @@ def tricube_weights(n):
 
 @contract
 def tricube_bisquare_weights(data):
-    """ Generates a list of weights according to the tricube bisquare function.
+    """ Generates a weights according to the tricube bisquare function.
 
     :param data: The input data.
      :type data: list(float)

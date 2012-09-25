@@ -59,15 +59,16 @@ class BinPacking(TestCase):
             'vm3': 2048}
 
         self.assertEqual(alg(hosts_cpu_usage, hosts_cpu_total,
-                            hosts_ram_usage, hosts_ram_total,
-                            inactive_hosts_cpu, inactive_hosts_ram,
-                            vms_cpu, vms_ram), ({
-                                'vm1': 'host6',
-                                'vm2': 'host1',
-                                'vm3': 'host3'}, {}))
+                             hosts_ram_usage, hosts_ram_total,
+                             inactive_hosts_cpu, inactive_hosts_ram,
+                             vms_cpu, vms_ram), ({
+                                 'vm1': 'host6',
+                                 'vm2': 'host1',
+                                 'vm3': 'host3'}, {}))
 
     def test_get_available_resources(self):
-        self.assertEqual(packing.get_available_resources(0.8,
+        self.assertEqual(packing.get_available_resources(
+            0.8,
             {'host1': 700, 'host2': 200}, {'host1': 1000, 'host2': 2000}),
             {'host1': 100, 'host2': 1400})
 
@@ -94,9 +95,9 @@ class BinPacking(TestCase):
         assert packing.best_fit_decreasing(
             hosts_cpu, hosts_ram, inactive_hosts_cpu, inactive_hosts_ram,
             vms_cpu, vms_ram) == {
-            'vm1': 'host3',
-            'vm2': 'host2',
-            'vm3': 'host1'}
+                'vm1': 'host3',
+                'vm2': 'host2',
+                'vm3': 'host1'}
 
         hosts_cpu = {
             'host1': 3000,
@@ -120,9 +121,9 @@ class BinPacking(TestCase):
         assert packing.best_fit_decreasing(
             hosts_cpu, hosts_ram, inactive_hosts_cpu, inactive_hosts_ram,
             vms_cpu, vms_ram) == {
-            'vm1': 'host1',
-            'vm2': 'host2',
-            'vm3': 'host3'}
+                'vm1': 'host1',
+                'vm2': 'host2',
+                'vm3': 'host3'}
 
         hosts_cpu = {
             'host1': 3000,
@@ -146,9 +147,9 @@ class BinPacking(TestCase):
         assert packing.best_fit_decreasing(
             hosts_cpu, hosts_ram, inactive_hosts_cpu, inactive_hosts_ram,
             vms_cpu, vms_ram) == {
-            'vm1': 'host1',
-            'vm2': 'host1',
-            'vm3': 'host3'}
+                'vm1': 'host1',
+                'vm2': 'host1',
+                'vm3': 'host3'}
 
         hosts_cpu = {
             'host1': 3000,
@@ -201,9 +202,9 @@ class BinPacking(TestCase):
         assert packing.best_fit_decreasing(
             hosts_cpu, hosts_ram, inactive_hosts_cpu, inactive_hosts_ram,
             vms_cpu, vms_ram) == {
-            'vm1': 'host6',
-            'vm2': 'host1',
-            'vm3': 'host3'}
+                'vm1': 'host6',
+                'vm2': 'host1',
+                'vm3': 'host3'}
 
         hosts_cpu = {
             'host1': 3000,

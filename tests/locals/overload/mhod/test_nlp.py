@@ -52,13 +52,16 @@ class Nlp(TestCase):
             m = (m1, m2)
             container = mock('function container')
             expect(container).l0(state_vector, p, m).and_return(2).once()
-            expect(container).l1(state_vector, p, m).and_return(3).exactly(2).times()
+            expect(container).l1(state_vector, p, m). \
+                and_return(3).exactly(2).times()
             ls = [container.l0, container.l1]
 
-            constraint = nlp.build_constraint(otf, migration_time, ls, state_vector, p, 0, 0)
+            constraint = nlp.build_constraint(otf, migration_time,
+                                              ls, state_vector, p, 0, 0)
 
             self.assertTrue(hasattr(constraint[0], '__call__'))
             self.assertIs(constraint[1], operator.le)
             self.assertEqual(constraint[2], otf)
             self.assertEqual(constraint[0](m1, m2),
-                             float(migration_time + 3) / (migration_time + 5))
+                             float(migration_time + 3) /
+                             (migration_time + 5))

@@ -26,7 +26,8 @@ class Trivial(TestCase):
         migration_time=int_(min=0, max=10),
         utilization=list_(of=float)
     ):
-        alg = trivial.no_migrations_factory(time_step, migration_time, {'threshold': 0.5})
+        alg = trivial.no_migrations_factory(time_step, migration_time,
+                                            {'threshold': 0.5})
         assert alg(utilization) == (False, {})
 
     def test_threshold(self):

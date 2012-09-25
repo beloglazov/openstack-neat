@@ -62,8 +62,10 @@ class Common(TestCase):
     def physical_cpu_mhz_total(x=int_(min=0, max=8), y=int_(min=0, max=8)):
         with MockTransaction:
             connection = libvirt.virConnect()
-            expect(common).physical_cpu_count(connection).and_return(x).once()
-            expect(common).physical_cpu_mhz(connection).and_return(y).once()
+            expect(common).physical_cpu_count(connection). \
+                and_return(x).once()
+            expect(common).physical_cpu_mhz(connection). \
+                and_return(y).once()
             assert common.physical_cpu_mhz_total(connection) == x * y
 
     def test_frange(self):

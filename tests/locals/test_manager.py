@@ -71,7 +71,8 @@ class LocalManager(TestCase):
             min_length=0, max_length=5
         )
     ):
-        path = os.path.join(os.path.dirname(__file__), '..', 'resources', 'vms', 'tmp')
+        path = os.path.join(os.path.dirname(__file__),
+                            '..', 'resources', 'vms', 'tmp')
         shutil.rmtree(path, True)
         os.mkdir(path)
         collector.write_data_locally(path, data, 10)
@@ -125,7 +126,8 @@ class LocalManager(TestCase):
         with MockTransaction:
             connection = libvirt.virConnect()
             domain = mock('domain')
-            expect(connection).lookupByUUIDString(uuid).and_return(domain).once()
+            expect(connection).lookupByUUIDString(uuid). \
+                and_return(domain).once()
             expect(domain).getMaxMemory().and_return(x).once()
             assert manager.get_max_ram(connection, uuid) == int(x / 1024)
 
@@ -135,15 +137,17 @@ class LocalManager(TestCase):
     ):
         with MockTransaction:
             connection = libvirt.virConnect()
-            expect(connection).lookupByUUIDString(uuid).and_return(None).once()
+            expect(connection).lookupByUUIDString(uuid). \
+                and_return(None).once()
             assert manager.get_max_ram(connection, uuid) is None
 
     def test_vm_mhz_to_percentage(self):
-        self.assertEqual(manager.vm_mhz_to_percentage({'a': [100, 200, 300],
-                                                       'b': [100, 300, 200],
-                                                       'c': [100, 100, 700]},
-                                                      3000),
-                         [0.1, 0.2, 0.4])
+        self.assertEqual(manager.vm_mhz_to_percentage(
+            {'a': [100, 200, 300],
+             'b': [100, 300, 200],
+             'c': [100, 100, 700]},
+            3000),
+            [0.1, 0.2, 0.4])
 
     @qc(10)
     def calculate_migration_time(
@@ -156,4 +160,5 @@ class LocalManager(TestCase):
     ):
         ram = data.values()
         migration_time = float(sum(ram)) / len(ram) / bandwidth
-        assert manager.calculate_migration_time(data, bandwidth) == migration_time
+        assert manager.calculate_migration_time(data, bandwidth) == \
+            migration_time

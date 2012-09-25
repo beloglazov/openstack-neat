@@ -92,8 +92,9 @@ class Database(object):
         """
         sel = select([self.vms.c.id]).where(self.vms.c.uuid == uuid)
         row = self.connection.execute(sel).fetchone()
-        if row == None:
-            return self.vms.insert().execute(uuid=uuid).inserted_primary_key[0]
+        if row is None:
+            return self.vms.insert().execute(uuid=uuid). \
+                inserted_primary_key[0]
         else:
             return row['id']
 
@@ -128,12 +129,14 @@ class Database(object):
         :return: The ID of the host.
          :rtype: int
         """
-        sel = select([self.hosts.c.id]).where(self.hosts.c.hostname == hostname)
+        sel = select([self.hosts.c.id]). \
+            where(self.hosts.c.hostname == hostname)
         row = self.connection.execute(sel).fetchone()
-        if row == None:
-            return self.hosts.insert().execute(hostname=hostname,
-                                               cpu_mhz=cpu_mhz,
-                                               ram=ram).inserted_primary_key[0]
+        if row is None:
+            return self.hosts.insert().execute(
+                hostname=hostname,
+                cpu_mhz=cpu_mhz,
+                ram=ram).inserted_primary_key[0]
         else:
             self.connection.execute(self.hosts.update().
                                     where(self.hosts.c.id == row['id']).
