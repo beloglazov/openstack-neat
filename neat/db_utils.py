@@ -16,6 +16,7 @@ from contracts import contract
 from neat.contracts_extra import *
 
 from sqlalchemy import *
+from sqlalchemy.sql import func
 
 from neat.db import Database
 
@@ -51,8 +52,8 @@ def init_db(sql_connection):
         Table('vm_resource_usage', metadata,
               Column('id', Integer, primary_key=True),
               Column('vm_id', Integer, ForeignKey('vms.id'), nullable=False),
-              Column('timestamp', DateTime,
-                     server_default=text('CURRENT_TIMESTAMP')),
+              Column('timestamp', DateTime, default=func.now()),
+                     #server_default=text('CURRENT_TIMESTAMP')),
               Column('cpu_mhz', Integer, nullable=False))
 
     metadata.create_all()
