@@ -144,13 +144,13 @@ class Database(object):
                 ram=ram).inserted_primary_key[0]
             log.info('Created a new DB record for a host %s, id=%d',
                      hostname, id)
-            return id
+            return int(id)
         else:
             self.connection.execute(self.hosts.update().
                                     where(self.hosts.c.id == row['id']).
                                     values(cpu_mhz=cpu_mhz,
                                            ram=ram))
-            return row['id']
+            return int(row['id'])
 
     @contract
     def select_host_characteristics(self):
