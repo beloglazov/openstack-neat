@@ -150,7 +150,7 @@ def init_state(config):
     db = init_db(config.get('sql_connection'))
     db.update_host(hostname, host_cpu_mhz, host_ram)
 
-    return {'previous_time': 0,
+    return {'previous_time': 0.,
             'previous_cpu_time': dict(),
             'vir_connection': vir_connection,
             'physical_cpus': common.physical_cpu_count(vir_connection),
@@ -203,7 +203,7 @@ def execute(config, state):
     vms_removed = get_removed_vms(vms_previous, vms_current)
     cleanup_local_data(path, vms_removed)
     data_length = int(config.get('data_collector_data_length'))
-    added_vm_data = fetch_remote_data(config.get('db'),
+    added_vm_data = fetch_remote_data(state['db'],
                                       data_length,
                                       vms_added)
     write_data_locally(path, added_vm_data, data_length)
@@ -218,7 +218,7 @@ def execute(config, state):
     state['previous_time'] = current_time
     state['previous_cpu_time'] = cpu_time
     append_data_locally(path, cpu_mhz, data_length)
-    append_data_remotely(config.get('db'), cpu_mhz)
+    append_data_remotely(state['db'], cpu_mhz)
     if log.isEnabledFor(logging.DEBUG):
         log.debug('Collected new data: %s', str(cpu_mhz))
     return state
@@ -407,10 +407,10 @@ def get_cpu_mhz(vir_connection, physical_cpus, previous_cpu_time,
      :type previous_cpu_time: dict(str : int)
 
     :param previous_time: The previous timestamp.
-     :type previous_time: int
+     :type previous_time: float
 
     :param current_time: The previous timestamp.
-     :type current_time: int
+     :type current_time: float
 
     :param current_vms: A list of VM UUIDs.
      :type current_vms: list(str)
