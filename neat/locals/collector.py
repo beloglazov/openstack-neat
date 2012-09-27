@@ -93,6 +93,7 @@ invoked, the component performs the following steps:
 from contracts import contract
 from neat.contracts_extra import *
 
+import os
 import time
 from collections import deque
 
@@ -113,6 +114,12 @@ def start():
     """
     config = read_and_validate_config([DEFAILT_CONFIG_PATH, CONFIG_PATH],
                                       REQUIRED_FIELDS)
+
+    vm_path = common.build_local_vm_path(config.get('local_data_directory'))
+    if not os.access(vm_path, os.F_OK):
+        os.makedirs(vm_path)
+        log.info('Created a local VM data directory: ' + vm_path)
+
     log.info('Starting the data collector')
     return common.start(
         init_state,
@@ -191,10 +198,10 @@ def execute(config, state):
     """
     path = common.build_local_vm_path(config.get('local_data_directory'))
     vms_previous = get_previous_vms(path)
-    vms_current = get_current_vms()
+    vms_current = get_current_vms(state['vir_connection'])
     vms_added = get_added_vms(vms_previous, vms_current)
     vms_removed = get_removed_vms(vms_previous, vms_current)
-    cleanup_local_data(vms_removed)
+    cleanup_local_data(path, vms_removed)
     data_length = int(config.get('data_collector_data_length'))
     added_vm_data = fetch_remote_data(config.get('db'),
                                       data_length,
