@@ -53,7 +53,6 @@ def init_db(sql_connection):
               Column('id', Integer, primary_key=True),
               Column('vm_id', Integer, ForeignKey('vms.id'), nullable=False),
               Column('timestamp', DateTime, default=func.now()),
-                     #server_default=text('CURRENT_TIMESTAMP')),
               Column('cpu_mhz', Integer, nullable=False))
 
     metadata.create_all()
