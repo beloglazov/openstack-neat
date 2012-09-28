@@ -62,7 +62,7 @@ class Database(object):
             order_by(self.vm_resource_usage.c.id.asc()). \
             limit(n)
         res = self.connection.execute(sel).fetchall()
-        return [x[0] for x in res]
+        return [int(x[0]) for x in res]
 
     @contract
     def select_last_cpu_mhz_for_vms(self):
