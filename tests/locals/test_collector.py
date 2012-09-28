@@ -76,6 +76,7 @@ class Collector(TestCase):
             assert isinstance(state['previous_cpu_time'], dict)
             assert state['vir_connection'] == vir_connection
             assert state['physical_cpus'] == physical_cpus
+            assert state['physical_core_mhz'] == mhz / physical_cpus
             assert state['db'] == db
 
     @qc(1)
@@ -419,20 +420,20 @@ class Collector(TestCase):
                 and_return([{'cpu_time': x}]).once()
             assert collector.get_cpu_time(connection, uuid) == x
 
-    @qc(1)
+    @qc
     def calculate_cpu_mhz(
-        cpus=int_(min=1, max=8),
         current_time=float_(min=100, max=1000),
         time_period=float_(min=1, max=100),
         current_cpu_time=int_(min=100),
-        cpu_time=int_(min=0, max=100)
+        cpu_time=int_(min=0, max=100),
+        mhz=int_(min=1, max=3000)
     ):
         previous_time = current_time - time_period
         previous_cpu_time = current_cpu_time - cpu_time
         assert collector. \
-            calculate_cpu_mhz(cpus, previous_time, current_time,
+            calculate_cpu_mhz(mhz, previous_time, current_time,
                               previous_cpu_time, current_cpu_time) == \
-            int((cpu_time / (time_period * 1000000000 * cpus)))
+            int((mhz * cpu_time / (time_period * 1000000000)))
 
     @qc(10)
     def get_host_characteristics(

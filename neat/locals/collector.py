@@ -153,6 +153,7 @@ def init_state(config):
 
     hostname = vir_connection.getHostname()
     host_cpu_mhz, host_ram = get_host_characteristics(vir_connection)
+    physical_cpus = common.physical_cpu_count(vir_connection)
 
     db = init_db(config.get('sql_connection'))
     db.update_host(hostname, host_cpu_mhz, host_ram)
@@ -160,7 +161,8 @@ def init_state(config):
     return {'previous_time': 0.,
             'previous_cpu_time': dict(),
             'vir_connection': vir_connection,
-            'physical_cpus': common.physical_cpu_count(vir_connection),
+            'physical_cpus': physical_cpus,
+            'physical_core_mhz': host_cpu_mhz / physical_cpus,
             'db': db}
 
 
@@ -226,7 +228,7 @@ def execute(config, state):
 
     current_time = time.time()
     (cpu_time, cpu_mhz) = get_cpu_mhz(state['vir_connection'],
-                                      state['physical_cpus'],
+                                      state['physical_core_mhz'],
                                       state['previous_cpu_time'],
                                       state['previous_time'],
                                       current_time,
@@ -420,15 +422,15 @@ def append_data_remotely(db, data):
 
 
 @contract
-def get_cpu_mhz(vir_connection, physical_cpus, previous_cpu_time,
+def get_cpu_mhz(vir_connection, physical_core_mhz, previous_cpu_time,
                 previous_time, current_time, current_vms, added_vm_data):
     """ Get the average CPU utilization in MHz for a set of VMs.
 
     :param vir_connection: A libvirt connection object.
      :type vir_connection: virConnect
 
-    :param physical_cpus: The number of physical CPUs.
-     :type physical_cpus: int
+    :param physical_core_mhz: The core frequency of the physical CPU in MHz.
+     :type physical_core_mhz: int
 
     :param previous_cpu_time: A dict of previous CPU times for the VMs.
      :type previous_cpu_time: dict(str : number)
@@ -455,10 +457,14 @@ def get_cpu_mhz(vir_connection, physical_cpus, previous_cpu_time,
 
     for uuid, cpu_time in previous_cpu_time.items():
         current_cpu_time = get_cpu_time(vir_connection, uuid)
-        cpu_mhz[uuid] = calculate_cpu_mhz(physical_cpus, previous_time,
+        cpu_mhz[uuid] = calculate_cpu_mhz(physical_core_mhz, previous_time,
                                           current_time, cpu_time,
                                           current_cpu_time)
         previous_cpu_time[uuid] = current_cpu_time
+        if log.isEnabledFor(logging.DEBUG):
+            log.debug('VM %s: previous CPU time %d, ' + 
+                      'current CPU time %d, CPU MHz %d', 
+                      uuid, cpu_time, current_cpu_time, cpu_mhz[uuid])
 
     for uuid in added_vms:
         if added_vm_data[uuid]:
@@ -490,12 +496,12 @@ def get_cpu_time(vir_connection, uuid):
 
 
 @contract
-def calculate_cpu_mhz(cpus, previous_time, current_time,
+def calculate_cpu_mhz(cpu_mhz, previous_time, current_time,
                       previous_cpu_time, current_cpu_time):
     """ Calculate the average CPU utilization in MHz for a period of time.
 
-    :param cpus: The number of physical CPUs.
-     :type cpus: int
+    :param cpu_mhz: The frequency of a core of the physical CPU in MHz.
+     :type cpu_mhz: int
 
     :param previous_time: The previous time.
      :type previous_time: float
@@ -512,8 +518,13 @@ def calculate_cpu_mhz(cpus, previous_time, current_time,
     :return: The average CPU utilization in MHz.
      :rtype: int
     """
-    return int((current_cpu_time - previous_cpu_time) /
-               ((current_time - previous_time) * 1000000000 * cpus))
+    cpu_mhz = cpu_mhz * float(current_cpu_time - previous_cpu_time) / \
+        ((current_time - previous_time) * 1000000000)
+    if log.isEnabledFor(logging.DEBUG):
+        log.debug('calculate_cpu_mhz: previous CPU time %d, ' + 
+                  'current CPU time %d, CPU MHz %f', 
+                  previous_cpu_time, current_cpu_time, cpu_mhz)
+    return int(cpu_mhz)
 
 
 @contract()
