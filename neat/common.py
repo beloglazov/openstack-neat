@@ -172,8 +172,16 @@ def init_logging(log_directory, log_file, log_level):
     else:
         level = logging.WARNING
 
-    logging.basicConfig(
-        format='%(asctime)s %(levelname)-8s %(name)s %(message)s',
-        filename=os.path.join(log_directory, log_file),
-        level=level)
+    logger = logging.root
+    logger.handlers = []
+    logger.filters = []
+
+    logger.setLevel(level)
+    handler = logging.FileHandler(
+        os.path.join(log_directory, log_file))
+    handler.setFormatter(
+        logging.Formatter(
+            '%(asctime)s %(levelname)-8s %(name)s %(message)s'))
+    logger.addHandler(handler)
+
     return True

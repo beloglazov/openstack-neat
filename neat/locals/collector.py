@@ -115,6 +115,11 @@ def start():
     config = read_and_validate_config([DEFAILT_CONFIG_PATH, CONFIG_PATH],
                                       REQUIRED_FIELDS)
 
+    common.init_logging(
+        config['log_directory'],
+        'collector.log',
+        int(config['log_level']))
+
     vm_path = common.build_local_vm_path(config.get('local_data_directory'))
     if not os.access(vm_path, os.F_OK):
         os.makedirs(vm_path)
