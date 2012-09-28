@@ -83,35 +83,49 @@ class Common(TestCase):
         log_path = os.path.join(log_dir, log_file)
 
         with MockTransaction:
+            logging.root = mock('root')
             expect(logging).disable(logging.CRITICAL).once()
-            expect(logging).basicConfig.never()
+            expect(logging.root).setLevel.never()
+            expect(logging.root).addHandler.never()
             assert common.init_logging(log_dir, log_file, 0)
 
         with MockTransaction:
             shutil.rmtree(log_dir, True)
+            logging.root = mock('root')
             expect(logging).disable.never()
-            expect(logging).basicConfig(
-                format='%(asctime)s %(levelname)-8s %(name)s %(message)s',
-                filename=log_path,
-                level=logging.WARNING)
+            expect(logging.root).setLevel(logging.WARNING).once()
+            handler = mock('handler')
+            expect(logging).FileHandler(log_path).and_return(handler).once()
+            expect(handler).setFormatter.and_return(True).once()
+            expect(logging).Formatter(
+                '%(asctime)s %(levelname)-8s %(name)s %(message)s').once()
+            expect(logging.root).addHandler.once()
             assert common.init_logging(log_dir, log_file, 1)
             assert os.access(log_dir, os.W_OK)
 
         with MockTransaction:
+            logging.root = mock('root')
             expect(logging).disable.never()
-            expect(logging).basicConfig(
-                format='%(asctime)s %(levelname)-8s %(name)s %(message)s',
-                filename=log_path,
-                level=logging.INFO)
+            expect(logging.root).setLevel(logging.INFO).once()
+            handler = mock('handler')
+            expect(logging).FileHandler(log_path).and_return(handler).once()
+            expect(handler).setFormatter.and_return(True).once()
+            expect(logging).Formatter(
+                '%(asctime)s %(levelname)-8s %(name)s %(message)s').once()
+            expect(logging.root).addHandler.once()
             assert common.init_logging(log_dir, log_file, 2)
             assert os.access(log_dir, os.W_OK)
 
         with MockTransaction:
+            logging.root = mock('root')
             expect(logging).disable.never()
-            expect(logging).basicConfig(
-                format='%(asctime)s %(levelname)-8s %(name)s %(message)s',
-                filename=log_path,
-                level=logging.DEBUG)
+            expect(logging.root).setLevel(logging.DEBUG).once()
+            handler = mock('handler')
+            expect(logging).FileHandler(log_path).and_return(handler).once()
+            expect(handler).setFormatter.and_return(True).once()
+            expect(logging).Formatter(
+                '%(asctime)s %(levelname)-8s %(name)s %(message)s').once()
+            expect(logging.root).addHandler.once()
             assert common.init_logging(log_dir, log_file, 3)
             assert os.access(log_dir, os.W_OK)
 
