@@ -277,7 +277,7 @@ def execute_underload(config, state, host):
     del hosts_ram_total[underloaded_host]
 
     vms_to_migrate = vms_by_host(state['nova'], underloaded_host)
-    vms_cpu = {x: vms_last_cpu[x] for x in vms_to_migrate}
+    vms_cpu = dict((x, vms_last_cpu[x]) for x in vms_to_migrate)
     vms_ram = vms_ram_limit(state['nova'], vms_to_migrate)
 
     time_step = int(config.get('data_collector_interval'))
@@ -392,7 +392,7 @@ def vms_by_hosts(nova, hosts):
     :return: A dict of host names to lists of VM UUIDs.
      :rtype: dict(str: list(str))
     """
-    result = {host: [] for host in hosts}
+    result = dict((host, []) for host in hosts)
     for vm in nova.servers.list():
         result[vm_hostname(vm)].append(vm.id)
     return result
@@ -457,7 +457,7 @@ def execute_overload(config, state, vm_uuids):
             del hosts_ram_total[host]
 
     vms_to_migrate = vm_uuids
-    vms_cpu = {x: vms_last_cpu[x] for x in vms_to_migrate}
+    vms_cpu = dict((x, vms_last_cpu[x]) for x in vms_to_migrate)
     vms_ram = vms_ram_limit(state['nova'], vms_to_migrate)
 
     time_step = int(config.get('data_collector_interval'))
