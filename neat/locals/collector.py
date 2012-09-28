@@ -431,7 +431,7 @@ def get_cpu_mhz(vir_connection, physical_cpus, previous_cpu_time,
      :type physical_cpus: int
 
     :param previous_cpu_time: A dict of previous CPU times for the VMs.
-     :type previous_cpu_time: dict(str : int)
+     :type previous_cpu_time: dict(str : number)
 
     :param previous_time: The previous timestamp.
      :type previous_time: float
@@ -446,7 +446,7 @@ def get_cpu_mhz(vir_connection, physical_cpus, previous_cpu_time,
      :type added_vm_data: dict(str : list(int))
 
     :return: The updated CPU times and average CPU utilization in MHz.
-     :rtype: tuple(dict(str : int), dict(str : int))
+     :rtype: tuple(dict(str : number), dict(str : int))
     """
     previous_vms = previous_cpu_time.keys()
     added_vms = get_added_vms(previous_vms, current_vms)
