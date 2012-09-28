@@ -14,5 +14,5 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-sudo pip-python install --upgrade pyqcy mocktest PyContracts SQLAlchemy bottle requests Sphinx python-novaclient
-#sudo pacman -S python2-scipy
+sudo pip-python install pyqcy mocktest PyContracts SQLAlchemy bottle requests Sphinx python-novaclient
+sudo yum install -y numpy scipy
