@@ -475,11 +475,11 @@ def calculate_cpu_mhz(cpus, previous_time, current_time,
     :param cpus: The number of physical CPUs.
      :type cpus: int
 
-    :param previous_time: The previous timestamp.
-     :type previous_time: int
+    :param previous_time: The previous time.
+     :type previous_time: float
 
-    :param current_time: The current timestamp.
-     :type current_time: int
+    :param current_time: The current time.
+     :type current_time: float
 
     :param previous_cpu_time: The previous CPU time of the domain.
      :type previous_cpu_time: int

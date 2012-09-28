@@ -33,11 +33,16 @@ class Collector(TestCase):
     ):
         with MockTransaction:
             state = {'property': 'value'}
-            config = {'data_collector_interval': str(time_interval)}
+            config = {
+                'log_directory': 'dir',
+                'log_level': 2,
+                'local_data_directory': 'data_dir',
+                'data_collector_interval': str(time_interval)}
             paths = [collector.DEFAILT_CONFIG_PATH, collector.CONFIG_PATH]
             fields = collector.REQUIRED_FIELDS
             expect(collector).read_and_validate_config(paths, fields). \
                 and_return(config).once()
+            expect(common).init_logging('dir', 'collector.log', 2).once()
             expect(common).start(collector.init_state,
                                  collector.execute,
                                  config,
@@ -309,8 +314,8 @@ class Collector(TestCase):
     @qc
     def get_cpu_mhz(
         cpus=int_(min=1, max=8),
-        current_time=int_(min=100),
-        time_period=int_(min=1, max=100),
+        current_time=float_(min=100),
+        time_period=float_(min=1, max=100),
         vm_data=dict_(
             keys=str_(of='abc123-', min_length=36, max_length=36),
             values=two(of=int_(min=1, max=100)),
@@ -392,8 +397,8 @@ class Collector(TestCase):
     @qc
     def calculate_cpu_mhz(
         cpus=int_(min=1, max=8),
-        current_time=int_(min=100),
-        time_period=int_(min=1, max=100),
+        current_time=float_(min=100),
+        time_period=float_(min=1, max=100),
         current_cpu_time=int_(min=100),
         cpu_time=int_(min=0, max=100)
     ):
@@ -402,7 +407,7 @@ class Collector(TestCase):
         assert collector. \
             calculate_cpu_mhz(cpus, previous_time, current_time,
                               previous_cpu_time, current_cpu_time) == \
-            (cpu_time / (time_period * 1000000000 * cpus))
+            int((cpu_time / (time_period * 1000000000 * cpus)))
 
     @qc(10)
     def get_host_characteristics(
