@@ -124,6 +124,8 @@ def start():
     if not os.access(vm_path, os.F_OK):
         os.makedirs(vm_path)
         log.info('Created a local VM data directory: ' + vm_path)
+    else:
+        cleanup_all_local_data(vm_path)
 
     log.info('Starting the data collector')
     return common.start(
@@ -328,6 +330,16 @@ def cleanup_local_data(path, vms):
     """
     for vm in vms:
         os.remove(os.path.join(path, vm))
+
+
+@contract
+def cleanup_all_local_data(path):
+    """ Delete all the local data about VMs.
+
+    :param path: A path to removed VM data from.
+     :type path: str
+    """
+    cleanup_local_data(path, os.listdir(path))
 
 
 @contract

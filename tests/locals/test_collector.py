@@ -179,6 +179,31 @@ class Collector(TestCase):
 
         os.rmdir(local_data_directory_tmp)
 
+    @qc(1)
+    def cleanup_all_local_data():
+        local_data_directory = os.path.join(
+        os.path.dirname(__file__), '..', 'resources', 'vms')
+        local_data_directory_tmp = os.path.join(
+            local_data_directory, 'tmp')
+        shutil.rmtree(local_data_directory_tmp, True)
+        os.mkdir(local_data_directory_tmp)
+        vm1 = 'ec452be0-e5d0-11e1-aff1-0800200c9a66'
+        vm2 = 'e615c450-e5d0-11e1-aff1-0800200c9a66'
+        vm3 = 'f3e142d0-e5d0-11e1-aff1-0800200c9a66'
+
+        shutil.copy(os.path.join(local_data_directory, vm1),
+                    local_data_directory_tmp)
+        shutil.copy(os.path.join(local_data_directory, vm2),
+                    local_data_directory_tmp)
+        shutil.copy(os.path.join(local_data_directory, vm3),
+                    local_data_directory_tmp)
+
+        assert len(os.listdir(local_data_directory_tmp)) == 3
+        collector.cleanup_all_local_data(local_data_directory_tmp)
+        assert len(os.listdir(local_data_directory_tmp)) == 0
+
+        os.rmdir(local_data_directory_tmp)
+
     @qc
     def fetch_remote_data(
         x=dict_(
