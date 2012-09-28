@@ -314,7 +314,7 @@ class Collector(TestCase):
     @qc
     def get_cpu_mhz(
         cpus=int_(min=1, max=8),
-        current_time=float_(min=100),
+        current_time=float_(min=100, max=1000),
         time_period=float_(min=1, max=100),
         vm_data=dict_(
             keys=str_(of='abc123-', min_length=36, max_length=36),
@@ -394,10 +394,10 @@ class Collector(TestCase):
                 and_return([{'cpu_time': x}]).once()
             assert collector.get_cpu_time(connection, uuid) == x
 
-    @qc
+    @qc(1)
     def calculate_cpu_mhz(
         cpus=int_(min=1, max=8),
-        current_time=float_(min=100),
+        current_time=float_(min=100, max=1000),
         time_period=float_(min=1, max=100),
         current_cpu_time=int_(min=100),
         cpu_time=int_(min=0, max=100)
