@@ -202,16 +202,26 @@ def execute(config, state):
      :rtype: dict(str: *)
     """
     path = common.build_local_vm_path(config.get('local_data_directory'))
+    data_length = int(config.get('data_collector_data_length'))
     vms_previous = get_previous_vms(path)
     vms_current = get_current_vms(state['vir_connection'])
+
     vms_added = get_added_vms(vms_previous, vms_current)
+    added_vm_data = dict()
+    if vms_added:
+        if log.isEnabledFor(logging.DEBUG):
+            log.debug('Added VMs: %s', str(vms_added))
+        added_vm_data = fetch_remote_data(state['db'],
+                                          data_length,
+                                          vms_added)
+        write_data_locally(path, added_vm_data, data_length)
+
     vms_removed = get_removed_vms(vms_previous, vms_current)
-    cleanup_local_data(path, vms_removed)
-    data_length = int(config.get('data_collector_data_length'))
-    added_vm_data = fetch_remote_data(state['db'],
-                                      data_length,
-                                      vms_added)
-    write_data_locally(path, added_vm_data, data_length)
+    if vms_removed:
+        if log.isEnabledFor(logging.DEBUG):
+            log.debug('Removed VMs: %s', str(vms_removed))
+        cleanup_local_data(path, vms_removed)
+
     current_time = time.time()
     (cpu_time, cpu_mhz) = get_cpu_mhz(state['vir_connection'],
                                       state['physical_cpus'],
@@ -461,7 +471,7 @@ def get_cpu_time(vir_connection, uuid):
      :type uuid: str[36]
 
     :return: The CPU time of the VM.
-     :rtype: int
+     :rtype: number
     """
     domain = vir_connection.lookupByUUIDString(uuid)
     return domain.getCPUStats(True, 0)[0]['cpu_time']
@@ -482,10 +492,10 @@ def calculate_cpu_mhz(cpus, previous_time, current_time,
      :type current_time: float
 
     :param previous_cpu_time: The previous CPU time of the domain.
-     :type previous_cpu_time: int
+     :type previous_cpu_time: number
 
     :param current_cpu_time: The current CPU time of the domain.
-     :type current_cpu_time: int
+     :type current_cpu_time: number
 
     :return: The average CPU utilization in MHz.
      :rtype: int
