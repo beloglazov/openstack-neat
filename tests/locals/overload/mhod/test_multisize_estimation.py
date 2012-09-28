@@ -17,6 +17,7 @@ from pyqcy import *
 
 from collections import deque
 from copy import deepcopy
+import re
 
 import neat.locals.overload.mhod.multisize_estimation as m
 
@@ -777,8 +778,8 @@ class Multisize(TestCase):
         structure = m.init_deque_structure([2, 4], 1)
         self.assertEqual(structure, [[{2: deque(),
                                        4: deque()}]])
-        self.assertEqual(structure[0][0][2].maxlen, 2)
-        self.assertEqual(structure[0][0][4].maxlen, 4)
+        self.assertEqual(deque_maxlen(structure[0][0][2]), 2)
+        self.assertEqual(deque_maxlen(structure[0][0][4]), 4)
 
         structure = m.init_deque_structure([2, 4], 2)
         self.assertEqual(structure, [[{2: deque(),
@@ -789,14 +790,14 @@ class Multisize(TestCase):
                                        4: deque()},
                                       {2: deque(),
                                        4: deque()}]])
-        self.assertEqual(structure[0][0][2].maxlen, 2)
-        self.assertEqual(structure[0][0][4].maxlen, 4)
-        self.assertEqual(structure[0][1][2].maxlen, 2)
-        self.assertEqual(structure[0][1][4].maxlen, 4)
-        self.assertEqual(structure[1][0][2].maxlen, 2)
-        self.assertEqual(structure[1][0][4].maxlen, 4)
-        self.assertEqual(structure[1][1][2].maxlen, 2)
-        self.assertEqual(structure[1][1][4].maxlen, 4)
+        self.assertEqual(deque_maxlen(structure[0][0][2]), 2)
+        self.assertEqual(deque_maxlen(structure[0][0][4]), 4)
+        self.assertEqual(deque_maxlen(structure[0][1][2]), 2)
+        self.assertEqual(deque_maxlen(structure[0][1][4]), 4)
+        self.assertEqual(deque_maxlen(structure[1][0][2]), 2)
+        self.assertEqual(deque_maxlen(structure[1][0][4]), 4)
+        self.assertEqual(deque_maxlen(structure[1][1][2]), 2)
+        self.assertEqual(deque_maxlen(structure[1][1][4]), 4)
 
         structure = m.init_deque_structure([2, 4], 3)
         self.assertEqual(structure, [[{2: deque(),
@@ -817,24 +818,24 @@ class Multisize(TestCase):
                                        4: deque()},
                                       {2: deque(),
                                        4: deque()}]])
-        self.assertEqual(structure[0][0][2].maxlen, 2)
-        self.assertEqual(structure[0][0][4].maxlen, 4)
-        self.assertEqual(structure[0][1][2].maxlen, 2)
-        self.assertEqual(structure[0][1][4].maxlen, 4)
-        self.assertEqual(structure[0][2][2].maxlen, 2)
-        self.assertEqual(structure[0][2][4].maxlen, 4)
-        self.assertEqual(structure[1][0][2].maxlen, 2)
-        self.assertEqual(structure[1][0][4].maxlen, 4)
-        self.assertEqual(structure[1][1][2].maxlen, 2)
-        self.assertEqual(structure[1][1][4].maxlen, 4)
-        self.assertEqual(structure[1][2][2].maxlen, 2)
-        self.assertEqual(structure[1][2][4].maxlen, 4)
-        self.assertEqual(structure[2][0][2].maxlen, 2)
-        self.assertEqual(structure[2][0][4].maxlen, 4)
-        self.assertEqual(structure[2][1][2].maxlen, 2)
-        self.assertEqual(structure[2][1][4].maxlen, 4)
-        self.assertEqual(structure[2][2][2].maxlen, 2)
-        self.assertEqual(structure[2][2][4].maxlen, 4)
+        self.assertEqual(deque_maxlen(structure[0][0][2]), 2)
+        self.assertEqual(deque_maxlen(structure[0][0][4]), 4)
+        self.assertEqual(deque_maxlen(structure[0][1][2]), 2)
+        self.assertEqual(deque_maxlen(structure[0][1][4]), 4)
+        self.assertEqual(deque_maxlen(structure[0][2][2]), 2)
+        self.assertEqual(deque_maxlen(structure[0][2][4]), 4)
+        self.assertEqual(deque_maxlen(structure[1][0][2]), 2)
+        self.assertEqual(deque_maxlen(structure[1][0][4]), 4)
+        self.assertEqual(deque_maxlen(structure[1][1][2]), 2)
+        self.assertEqual(deque_maxlen(structure[1][1][4]), 4)
+        self.assertEqual(deque_maxlen(structure[1][2][2]), 2)
+        self.assertEqual(deque_maxlen(structure[1][2][4]), 4)
+        self.assertEqual(deque_maxlen(structure[2][0][2]), 2)
+        self.assertEqual(deque_maxlen(structure[2][0][4]), 4)
+        self.assertEqual(deque_maxlen(structure[2][1][2]), 2)
+        self.assertEqual(deque_maxlen(structure[2][1][4]), 4)
+        self.assertEqual(deque_maxlen(structure[2][2][2]), 2)
+        self.assertEqual(deque_maxlen(structure[2][2][4]), 4)
 
     def test_init_selected_window_sizes(self):
         self.assertEqual(
@@ -846,3 +847,7 @@ class Multisize(TestCase):
             m.init_selected_window_sizes([2, 4], 3), [[2, 2, 2],
                                                       [2, 2, 2],
                                                       [2, 2, 2]])
+
+
+def deque_maxlen(coll):
+    return int(re.sub("\)$", "", re.sub(".*=", "", coll.__repr__())))
