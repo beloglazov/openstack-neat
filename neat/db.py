@@ -92,7 +92,7 @@ class Database(object):
          :type uuid: str[36]
 
         :return: The ID of the VM.
-         :rtype: int
+         :rtype: number
         """
         sel = select([self.vms.c.id]).where(self.vms.c.uuid == uuid)
         row = self.connection.execute(sel).fetchone()
@@ -132,7 +132,7 @@ class Database(object):
          :type ram: int,>0
 
         :return: The ID of the host.
-         :rtype: int
+         :rtype: number
         """
         sel = select([self.hosts.c.id]). \
             where(self.hosts.c.hostname == hostname)
@@ -144,13 +144,13 @@ class Database(object):
                 ram=ram).inserted_primary_key[0]
             log.info('Created a new DB record for a host %s, id=%d',
                      hostname, id)
-            return int(id)
+            return id
         else:
             self.connection.execute(self.hosts.update().
                                     where(self.hosts.c.id == row['id']).
                                     values(cpu_mhz=cpu_mhz,
                                            ram=ram))
-            return int(row['id'])
+            return row['id']
 
     @contract
     def select_host_characteristics(self):
