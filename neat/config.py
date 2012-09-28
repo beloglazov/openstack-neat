@@ -25,18 +25,16 @@ log = logging.getLogger(__name__)
 
 
 # This is the default config, which should not be modified
-#DEFAILT_CONFIG_PATH = "/etc/neat/neat.conf"
-# The following value is used for testing purposes
 DEFAILT_CONFIG_PATH = os.path.join(os.path.dirname(__file__),
                                    '..',
                                    'neat.conf')
 
-# This is the custom config, which can override the defaults
-#CONFIG_PATH = "/etc/neat/neat.conf"
+# This is the custom config, which may override the defaults
+CONFIG_PATH = "/etc/neat/neat.conf"
 # The following value is used for testing purposes
-CONFIG_PATH = os.path.join(os.path.dirname(__file__),
-                           '..',
-                           'neat.conf')
+#CONFIG_PATH = os.path.join(os.path.dirname(__file__),
+#                           '..',
+#                           'neat.conf')
 
 # These fields must present in the configuration file
 REQUIRED_FIELDS = [
