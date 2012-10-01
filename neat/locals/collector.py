@@ -220,9 +220,9 @@ def execute(config, state):
         if log.isEnabledFor(logging.DEBUG):
             log.debug('Added VMs: %s', str(vms_added))
 
-        for vm in list(vms_added):
+        for i, vm in enumerate(vms_added):
             if vms_current[vm] != libvirt.VIR_DOMAIN_RUNNING:
-                del vms_added[vm]
+                del vms_added[i]
                 del vms_current[vm]
                 if log.isEnabledFor(logging.DEBUG):
                     log.debug('Added VM %s skipped as migrating in', vm)
