@@ -126,13 +126,16 @@ def start():
         log.info('Created a local VM data directory: ' + vm_path)
     else:
         cleanup_all_local_data(vm_path)
+        log.info('Creaned up the local VM data directory: ' + vm_path)
 
-    log.info('Starting the data collector')
+    interval = config.get('data_collector_interval')
+    log.info('Starting the data collector, ' + 
+             'iterations every %s seconds', interval)
     return common.start(
         init_state,
         execute,
         config,
-        int(config.get('data_collector_interval')))
+        int(interval))
 
 
 @contract
@@ -218,6 +221,8 @@ def execute(config, state):
         added_vm_data = fetch_remote_data(state['db'],
                                           data_length,
                                           vms_added)
+        if log.isEnabledFor(logging.DEBUG):
+            log.debug('Fetched remote data: %s', str(added_vm_data))
         write_data_locally(path, added_vm_data, data_length)
 
     vms_removed = get_removed_vms(vms_previous, vms_current)
