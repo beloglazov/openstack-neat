@@ -210,7 +210,7 @@ def execute(config, state):
     if not vm_cpu_mhz:
         return
 
-    physical_cpu_mhz_total = int(config['physical_cpu_mhz_total'])
+    physical_cpu_mhz_total = int(state['physical_cpu_mhz_total'])
     host_cpu_utilization = vm_mhz_to_percentage(
         vm_cpu_mhz, physical_cpu_mhz_total)
     time_step = int(config['data_collector_interval'])
@@ -219,7 +219,7 @@ def execute(config, state):
 
     if 'underload_detection' not in state:
         underload_detection_params = json.loads(
-            config['algorithm_underload_detection_params'])
+            config['algorithm_underload_detection_parameters'])
         underload_detection_state = None
         underload_detection = \
             config['algorithm_underload_detection_factory'](
@@ -229,7 +229,7 @@ def execute(config, state):
         state['underload_detection'] = underload_detection
 
         overload_detection_params = json.loads(
-            config['algorithm_overload_detection_params'])
+            config['algorithm_overload_detection_parameters'])
         overload_detection_state = None
         overload_detection = \
             config['algorithm_overload_detection_factory'](
@@ -239,7 +239,7 @@ def execute(config, state):
         state['overload_detection'] = overload_detection
 
         vm_selection_params = json.loads(
-            config['algorithm_vm_selection_params'])
+            config['algorithm_vm_selection_parameters'])
         vm_selection_state = None
         vm_selection = \
             config['algorithm_vm_selection_factory'](

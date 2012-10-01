@@ -55,6 +55,7 @@ REQUIRED_FIELDS = [
     'compute_user',
     'compute_password',
     'sleep_command',
+    'network_migration_bandwidth',
     'algorithm_underload_detection_factory',
     'algorithm_underload_detection_parameters',
     'algorithm_overload_detection_factory',
