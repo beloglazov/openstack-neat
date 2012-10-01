@@ -230,6 +230,8 @@ def execute(config, state):
         if log.isEnabledFor(logging.DEBUG):
             log.debug('Removed VMs: %s', str(vms_removed))
         cleanup_local_data(path, vms_removed)
+        for vm in vms_removed:
+            del state['previous_cpu_time'][vm]
 
     current_time = time.time()
     (cpu_time, cpu_mhz) = get_cpu_mhz(state['vir_connection'],
