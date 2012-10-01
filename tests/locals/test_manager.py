@@ -32,11 +32,15 @@ class LocalManager(TestCase):
     ):
         with MockTransaction:
             state = {'property': 'value'}
-            config = {'local_manager_interval': time_interval}
+            config = {
+                'log_directory': 'dir',
+                'log_level': 2,
+                'local_manager_interval': str(time_interval)}
             paths = [manager.DEFAILT_CONFIG_PATH, manager.CONFIG_PATH]
             fields = manager.REQUIRED_FIELDS
             expect(manager).read_and_validate_config(paths, fields). \
                 and_return(config).once()
+            expect(common).init_logging('dir', 'local-manager.log', 2).once()
             expect(common).start(manager.init_state,
                                  manager.execute,
                                  config,
@@ -58,7 +62,7 @@ class LocalManager(TestCase):
             config = {'sql_connection': 'db'}
             state = manager.init_state(config)
             assert state['previous_time'] == 0
-            assert state['vir_connect'] == vir_connection
+            assert state['vir_connection'] == vir_connection
             assert state['db'] == db
             assert state['physical_cpu_mhz_total'] == mhz
 
