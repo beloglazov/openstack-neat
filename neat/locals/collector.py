@@ -523,13 +523,8 @@ def calculate_cpu_mhz(cpu_mhz, previous_time, current_time,
     :return: The average CPU utilization in MHz.
      :rtype: int
     """
-    cpu_mhz = cpu_mhz * float(current_cpu_time - previous_cpu_time) / \
-        ((current_time - previous_time) * 1000000000)
-    if log.isEnabledFor(logging.DEBUG):
-        log.debug('calculate_cpu_mhz: previous CPU time %d, ' + 
-                  'current CPU time %d, CPU MHz %f', 
-                  previous_cpu_time, current_cpu_time, cpu_mhz)
-    return int(cpu_mhz)
+    return int(cpu_mhz * float(current_cpu_time - previous_cpu_time) / \
+               ((current_time - previous_time) * 1000000000))
 
 
 @contract()
