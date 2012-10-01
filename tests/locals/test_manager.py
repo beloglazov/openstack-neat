@@ -128,7 +128,7 @@ class LocalManager(TestCase):
             domain = mock('domain')
             expect(connection).lookupByUUIDString(uuid). \
                 and_return(domain).once()
-            expect(domain).getMaxMemory().and_return(x).once()
+            expect(domain).maxMemory().and_return(x).once()
             assert manager.get_max_ram(connection, uuid) == int(x / 1024)
 
     @qc(1)

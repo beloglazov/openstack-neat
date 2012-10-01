@@ -157,8 +157,8 @@ def init_state(config):
 
     physical_cpu_mhz_total = common.physical_cpu_mhz_total(vir_connection)
     return {'previous_time': 0.,
-            'vir_connect': vir_connection,
-            'db': init_db(['sql_connection']),
+            'vir_connection': vir_connection,
+            'db': init_db(config['sql_connection']),
             'physical_cpu_mhz_total': physical_cpu_mhz_total}
 
 
@@ -204,7 +204,7 @@ def execute(config, state):
     """
     path = common.build_local_vm_path(config['local_data_directory'])
     vm_cpu_mhz = get_local_data(path)
-    vm_ram = get_ram(config['vir_connection'], vm_cpu_mhz.keys())
+    vm_ram = get_ram(state['vir_connection'], vm_cpu_mhz.keys())
     vm_cpu_mhz = cleanup_vm_data(vm_cpu_mhz, vm_ram.keys())
 
     if not vm_cpu_mhz:
@@ -351,7 +351,7 @@ def get_max_ram(vir_connection, uuid):
     """
     domain = vir_connection.lookupByUUIDString(uuid)
     if domain:
-        return domain.getMaxMemory() / 1024
+        return domain.maxMemory() / 1024
     return None
 
 
