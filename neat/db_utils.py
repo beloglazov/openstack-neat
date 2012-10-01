@@ -59,5 +59,5 @@ def init_db(sql_connection):
     connection = engine.connect()
     db = Database(connection, hosts, vms, vm_resource_usage)
 
-    log.info('Initialized a DB connection to %s', sql_connection)
+    log.debug('Initialized a DB connection to %s', sql_connection)
     return db
