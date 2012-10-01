@@ -91,7 +91,7 @@ class Collector(TestCase):
     @qc
     def get_current_vms(
         ids=dict_(
-            keys=int_(min=0),
+            keys=int_(min=0, max=1000),
             values=str_(of='abc123-', min_length=36, max_length=36),
             min_length=0, max_length=10
         )
@@ -100,6 +100,7 @@ class Collector(TestCase):
             def init_vm(id):
                 vm = mock('vm')
                 expect(vm).UUIDString().and_return(ids[id]).once()
+                expect(vm).state(0).and_return([id * 13, id]).once()
                 return vm
 
             connection = libvirt.virConnect()
@@ -107,7 +108,8 @@ class Collector(TestCase):
             if ids:
                 expect(connection).lookupByID(any_int) \
                     .and_call(lambda id: init_vm(id))
-            assert collector.get_current_vms(connection) == ids.values()
+            expected = dict((v, k * 13) for k, v in ids.items())
+            assert collector.get_current_vms(connection) == expected
 
     @qc
     def get_added_vms(
