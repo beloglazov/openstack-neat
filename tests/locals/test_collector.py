@@ -224,7 +224,7 @@ class Collector(TestCase):
                     db.vm_resource_usage.insert().execute(
                         vm_id=vm_id,
                         cpu_mhz=mhz)
-                x[uuid] = data[:data_length]
+                x[uuid] = data[-data_length:]
         assert collector.fetch_remote_data(db, data_length, x.keys()) == x
 
     @qc

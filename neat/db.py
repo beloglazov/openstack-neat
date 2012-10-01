@@ -59,10 +59,10 @@ class Database(object):
             where(and_(
                 self.vms.c.id == self.vm_resource_usage.c.vm_id,
                 self.vms.c.uuid == uuid)). \
-            order_by(self.vm_resource_usage.c.id.asc()). \
+            order_by(self.vm_resource_usage.c.id.desc()). \
             limit(n)
         res = self.connection.execute(sel).fetchall()
-        return [int(x[0]) for x in res]
+        return list(reversed([int(x[0]) for x in res]))
 
     @contract
     def select_last_cpu_mhz_for_vms(self):

@@ -42,7 +42,7 @@ class Db(TestCase):
             db.vm_resource_usage.insert().execute(
                 vm_id=vm_id,
                 cpu_mhz=mhz)
-        assert db.select_cpu_mhz_for_vm(uuid, n) == cpu_mhz[:n]
+        assert db.select_cpu_mhz_for_vm(uuid, n) == cpu_mhz[-n:]
 
     @qc(10)
     def select_last_cpu_mhz_for_vm(
