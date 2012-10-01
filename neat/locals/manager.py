@@ -123,12 +123,20 @@ def start():
     """
     config = read_and_validate_config([DEFAILT_CONFIG_PATH, CONFIG_PATH],
                                       REQUIRED_FIELDS)
-    log.info('Starting the local manager')
+
+    common.init_logging(
+        config['log_directory'],
+        'local-manager.log',
+        int(config['log_level']))
+
+    interval = config.get('local_manager_interval')
+    log.info('Starting the local manager, ' +
+             'iterations every %s seconds', interval)
     return common.start(
         init_state,
         execute,
         config,
-        int(config.get('local_manager_interval')))
+        int(interval))
 
 
 @contract
