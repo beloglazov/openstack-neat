@@ -239,12 +239,13 @@ def execute(config, state):
                                       current_time,
                                       vms_current,
                                       added_vm_data)
+    if state['previous_time'] > 0:
+        append_data_locally(path, cpu_mhz, data_length)
+        append_data_remotely(state['db'], cpu_mhz)
+        if log.isEnabledFor(logging.DEBUG):
+            log.debug('Collected new data: %s', str(cpu_mhz))
     state['previous_time'] = current_time
     state['previous_cpu_time'] = cpu_time
-    append_data_locally(path, cpu_mhz, data_length)
-    append_data_remotely(state['db'], cpu_mhz)
-    if log.isEnabledFor(logging.DEBUG):
-        log.debug('Collected new data: %s', str(cpu_mhz))
     return state
 
 
