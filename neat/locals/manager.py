@@ -156,7 +156,7 @@ def init_state(config):
         raise OSError(message)
 
     physical_cpu_mhz_total = common.physical_cpu_mhz_total(vir_connection)
-    return {'previous_time': 0,
+    return {'previous_time': 0.,
             'vir_connect': vir_connection,
             'db': init_db(config.get('sql_connection')),
             'physical_cpu_mhz_total': physical_cpu_mhz_total}
@@ -271,6 +271,7 @@ def execute(config, state):
             log.info('Overload detected')
             vms = vm_selection(
                 host_cpu_utilization, vm_ram, vm_selection_state)
+            log.info('Selected VMs to migrate: %s', str(vms))
             # send a request to the global manager
             # with the selected VMs to migrate
 
