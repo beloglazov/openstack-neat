@@ -274,6 +274,8 @@ def get_current_vms(vir_connection):
     :return: The list of VM UUIDs from libvirt.
      :rtype: list(str)
     """
+    # TODO: need to check the status of VMs, whether it's migrating
+    # If a VM is migrating in, it shouldn't be taken into account
     vm_uuids = []
     for vm_id in vir_connection.listDomainsID():
         vm_uuids.append(vir_connection.lookupByID(vm_id).UUIDString())
