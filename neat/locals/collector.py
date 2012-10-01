@@ -121,7 +121,7 @@ def start():
         'collector.log',
         int(config['log_level']))
 
-    vm_path = common.build_local_vm_path(config.get('local_data_directory'))
+    vm_path = common.build_local_vm_path(config['local_data_directory'])
     if not os.access(vm_path, os.F_OK):
         os.makedirs(vm_path)
         log.info('Created a local VM data directory: ' + vm_path)
@@ -129,7 +129,7 @@ def start():
         cleanup_all_local_data(vm_path)
         log.info('Creaned up the local VM data directory: ' + vm_path)
 
-    interval = config.get('data_collector_interval')
+    interval = config['data_collector_interval']
     log.info('Starting the data collector, ' +
              'iterations every %s seconds', interval)
     return common.start(
@@ -159,7 +159,7 @@ def init_state(config):
     host_cpu_mhz, host_ram = get_host_characteristics(vir_connection)
     physical_cpus = common.physical_cpu_count(vir_connection)
 
-    db = init_db(config.get('sql_connection'))
+    db = init_db(config['sql_connection'])
     db.update_host(hostname, host_cpu_mhz, host_ram)
 
     return {'previous_time': 0.,
@@ -209,8 +209,8 @@ def execute(config, state):
     :return: The updated state dictionary.
      :rtype: dict(str: *)
     """
-    path = common.build_local_vm_path(config.get('local_data_directory'))
-    data_length = int(config.get('data_collector_data_length'))
+    path = common.build_local_vm_path(config['local_data_directory'])
+    data_length = int(config['data_collector_data_length'])
     vms_previous = get_previous_vms(path)
     vms_current = get_current_vms(state['vir_connection'])
 

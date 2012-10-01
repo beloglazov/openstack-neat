@@ -129,7 +129,7 @@ def start():
         'local-manager.log',
         int(config['log_level']))
 
-    interval = config.get('local_manager_interval')
+    interval = config['local_manager_interval']
     log.info('Starting the local manager, ' +
              'iterations every %s seconds', interval)
     return common.start(
@@ -158,7 +158,7 @@ def init_state(config):
     physical_cpu_mhz_total = common.physical_cpu_mhz_total(vir_connection)
     return {'previous_time': 0.,
             'vir_connect': vir_connection,
-            'db': init_db(config.get('sql_connection')),
+            'db': init_db(['sql_connection']),
             'physical_cpu_mhz_total': physical_cpu_mhz_total}
 
 
@@ -202,47 +202,47 @@ def execute(config, state):
     :return: The updated state dictionary.
      :rtype: dict(str: *)
     """
-    path = common.build_local_vm_path(config.get('local_data_directory'))
+    path = common.build_local_vm_path(config['local_data_directory'])
     vm_cpu_mhz = get_local_data(path)
-    vm_ram = get_ram(config.get('vir_connection'), vm_cpu_mhz.keys())
+    vm_ram = get_ram(config['vir_connection'], vm_cpu_mhz.keys())
     vm_cpu_mhz = cleanup_vm_data(vm_cpu_mhz, vm_ram.keys())
 
     if not vm_cpu_mhz:
         return
 
-    physical_cpu_mhz_total = int(config.get('physical_cpu_mhz_total'))
+    physical_cpu_mhz_total = int(config['physical_cpu_mhz_total'])
     host_cpu_utilization = vm_mhz_to_percentage(
         vm_cpu_mhz, physical_cpu_mhz_total)
-    time_step = int(config.get('data_collector_interval'))
+    time_step = int(config['data_collector_interval'])
     migration_time = calculate_migration_time(
-        vm_ram, float(config.get('network_migration_bandwidth')))
+        vm_ram, float(config['network_migration_bandwidth']))
 
     if 'underload_detection' not in state:
         underload_detection_params = json.loads(
-            config.get('algorithm_underload_detection_params'))
+            config['algorithm_underload_detection_params'])
         underload_detection_state = None
-        underload_detection = config.get(
-            'algorithm_underload_detection_factory')(
+        underload_detection = \
+            config['algorithm_underload_detection_factory'](
                 time_step,
                 migration_time,
                 underload_detection_params)
         state['underload_detection'] = underload_detection
 
         overload_detection_params = json.loads(
-            config.get('algorithm_overload_detection_params'))
+            config['algorithm_overload_detection_params'])
         overload_detection_state = None
-        overload_detection = config.get(
-            'algorithm_overload_detection_factory')(
+        overload_detection = \
+            config['algorithm_overload_detection_factory'](
                 time_step,
                 migration_time,
                 overload_detection_params)
         state['overload_detection'] = overload_detection
 
         vm_selection_params = json.loads(
-            config.get('algorithm_vm_selection_params'))
+            config['algorithm_vm_selection_params'])
         vm_selection_state = None
-        vm_selection = config.get(
-            'algorithm_vm_selection_factory')(
+        vm_selection = \
+            config['algorithm_vm_selection_factory'](
                 time_step,
                 migration_time,
                 vm_selection_params)
