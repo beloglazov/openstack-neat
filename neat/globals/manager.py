@@ -177,8 +177,9 @@ def get_params(request):
     params = dict(request.forms)
     if 'reason' in params:
         params['reason'] = int(params['reason'])
-    if 'vms_uuids' in params:
-        params['vms_uuids'] = str(params['vms_uuids']).split(',')
+    if 'vm_uuids' in params:
+        params['vm_uuids'] = params['vm_uuids'].split(',')
+    print params
     return params
 
 
@@ -273,7 +274,7 @@ def execute_underload(config, state, host):
      :rtype: dict(str: *)
     """
     underloaded_host = host
-    hosts_cpu_total, hosts_ram_total = db.select_host_characteristics()
+    hosts_cpu_total, hosts_ram_total = state['db'].select_host_characteristics()
 
     hosts_to_vms = vms_by_hosts(state['nova'], config['compute_hosts'])
     vms_last_cpu = state['db'].select_last_cpu_mhz_for_vms()
@@ -458,7 +459,7 @@ def execute_overload(config, state, vm_uuids):
     :return: The updated state dictionary.
      :rtype: dict(str: *)
     """
-    hosts_cpu_total, hosts_ram_total = db.select_host_characteristics()
+    hosts_cpu_total, hosts_ram_total = state['db'].select_host_characteristics()
     hosts_to_vms = vms_by_hosts(state['nova'], config['compute_hosts'])
     vms_last_cpu = state['db'].select_last_cpu_mhz_for_vms()
 
