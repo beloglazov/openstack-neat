@@ -165,7 +165,8 @@ class GlobalManager(TestCase):
 
     def test_service(self):
         app = mock('app')
-        state = {'property': 'value'}
+        state = {'hashed_username': 'user',
+                 'hashed_password': 'password'}
         config = {'global_manager_host': 'localhost',
                   'global_manager_port': 8080}
         app.state = {'state': state,
