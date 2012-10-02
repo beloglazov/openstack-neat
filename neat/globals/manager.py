@@ -171,9 +171,12 @@ def get_params(request):
      :type request: *
 
     :return: The request data dictionary.
-     :rtype: dict(str: str)
+     :rtype: dict(str: *)
     """
-    return dict(request.forms)
+    params = dict(request.forms)
+    if 'reason' in params:
+        params['reason'] = int(params['reason'])
+    return params
 
 
 @bottle.put('/')
