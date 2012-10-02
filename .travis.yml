@@ -4,6 +4,7 @@ python:
   - 2.7
 install:
   - sudo apt-get install -qq python-libvirt python-numpy python-scipy
+  - tree ~/virtualenv
   - ls /usr/lib/python2.6 || cp /usr/lib/python2.6/dist-packages/libvirt* ~/virtualenv/python2.6/local/lib/python2.7/site-packages/ && ls /usr/lib/python2.6/dist-packages/libvirt*
   - ls /usr/lib/python2.6 || cp -r /usr/lib/python2.6/dist-packages/numpy* ~/virtualenv/python2.6/local/lib/python2.7/site-packages/ && ls /usr/lib/python2.6/dist-packages/numpy*
   - ls /usr/lib/python2.6 || cp -r /usr/lib/python2.6/dist-packages/scipy* ~/virtualenv/python2.6/local/lib/python2.7/site-packages/ && ls /usr/lib/python2.6/dist-packages/scipy*
