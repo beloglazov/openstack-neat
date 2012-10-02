@@ -223,14 +223,14 @@ def init_state(config):
      :rtype: dict
     """
     return {'previous_time': 0,
-            'db': init_db(config.get('sql_connection')),
-            'nova': client.Client(config.get('os_admin_user'),
-                                  config.get('os_admin_password'),
-                                  config.get('os_admin_tenant_name'),
-                                  config.get('os_auth_url'),
+            'db': init_db(config['sql_connection']),
+            'nova': client.Client(config['os_admin_user'],
+                                  config['os_admin_password'],
+                                  config['os_admin_tenant_name'],
+                                  config['os_auth_url'],
                                   service_type="compute"),
-            'hashed_username': sha1(config.get('os_admin_user')).hexdigest(),
-            'hashed_password': sha1(config.get('os_admin_password')).hexdigest(),
+            'hashed_username': sha1(config['os_admin_user']).hexdigest(),
+            'hashed_password': sha1(config['os_admin_password']).hexdigest(),
             'compute_hosts': parse_compute_hosts(config['compute_hosts'])}
 
 
@@ -301,16 +301,16 @@ def execute_underload(config, state, host):
     vms_cpu = dict((x, vms_last_cpu[x]) for x in vms_to_migrate)
     vms_ram = vms_ram_limit(state['nova'], vms_to_migrate)
 
-    time_step = int(config.get('data_collector_interval'))
+    time_step = int(config['data_collector_interval'])
     migration_time = common.calculate_migration_time(
         vms_ram,
-        float(config.get('network_migration_bandwidth')))
+        float(config['network_migration_bandwidth']))
 
     if 'vm_placement' not in state:
         vm_placement_params = common.parse_parameters(
-            config.get('algorithm_vm_placement_params'))
+            config['algorithm_vm_placement_parameters'])
         vm_placement_state = None
-        vm_placement = config.get('algorithm_vm_placement_factory')(
+        vm_placement = config['algorithm_vm_placement_factory'](
             time_step,
             migration_time,
             vm_placement_params)
@@ -482,16 +482,16 @@ def execute_overload(config, state, vm_uuids):
     vms_cpu = dict((x, vms_last_cpu[x]) for x in vms_to_migrate)
     vms_ram = vms_ram_limit(state['nova'], vms_to_migrate)
 
-    time_step = int(config.get('data_collector_interval'))
+    time_step = int(config['data_collector_interval'])
     migration_time = common.calculate_migration_time(
         vms_ram,
-        float(config.get('network_migration_bandwidth')))
+        float(config['network_migration_bandwidth']))
 
     if 'vm_placement' not in state:
         vm_placement_params = json.loads(
-            config.get('algorithm_vm_placement_params'))
+            config['algorithm_vm_placement_params'])
         vm_placement_state = None
-        vm_placement = config.get('algorithm_vm_placement_factory')(
+        vm_placement = config['algorithm_vm_placement_factory'](
             time_step,
             migration_time,
             vm_placement_params)
