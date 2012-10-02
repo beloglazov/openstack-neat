@@ -3,11 +3,17 @@ python:
   - 2.6
   - 2.7
 install:
-  - sudo apt-get install -qq python-libvirt python-numpy python-scipy
+  - sudo apt-get install -qq python-libvirt python-numpy python-scipy tree
   - sleep 5 
   - find /usr/lib -name "*libvirt*"
+  - ls -al ~/virtualenv/
+  - tree -d ~/virtualenv/
   - ls -al /usr/lib/python2.7/dist-packages
   - ls -al ~/virtualenv/python2.7/local/lib/python2.7/site-packages
+  - cp /usr/lib/python2.7/dist-packages/libvirt* ~/virtualenv/python2.6/lib/python2.6/site-packages/
+  - ls -al ~/virtualenv/python2.6/lib/python2.6/site-packages
+  - cp -r /usr/lib/python2.7/dist-packages/numpy* ~/virtualenv/python2.6/lib/python2.6/site-packages/
+  - cp -r /usr/lib/python2.7/dist-packages/scipy* ~/virtualenv/python2.6/lib/python2.6/site-packages/
   - cp /usr/lib/python2.7/dist-packages/libvirt* ~/virtualenv/python2.7/local/lib/python2.7/site-packages/
   - ls -al ~/virtualenv/python2.7/local/lib/python2.7/site-packages
   - cp -r /usr/lib/python2.7/dist-packages/numpy* ~/virtualenv/python2.7/local/lib/python2.7/site-packages/
