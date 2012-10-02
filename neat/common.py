@@ -20,6 +20,7 @@ from neat.contracts_extra import *
 
 import os
 import time
+import json
 
 from neat.config import *
 from neat.db_utils import *
@@ -208,4 +209,16 @@ def call_function_by_name(name, args):
     return getattr(m, function)(*args)
 
 
+@contract
+def parse_parameters(params):
+    """ Parse algorithm parameters from the config file.
 
+    :param params: JSON encoded parameters.
+     :type params: str
+
+    :return: A dict of parameters.
+     :rtype: dict(str: *)
+    """
+    return dict((str(k), v) 
+                for k, v in json.loads(params).items())
+    

@@ -138,3 +138,8 @@ class Common(TestCase):
             expect(common).func_to_call(arg1, arg2).and_return('res').once()
             assert common.call_function_by_name('neat.common.func_to_call',
                                                 [arg1, arg2]) == 'res'
+
+    def test_parse_parameters(self):
+        params = '{"param1": 0.56, "param2": "abc"}'
+        self.assertEqual(common.parse_parameters(params), {'param1': 0.56,
+                                                           'param2': 'abc'})
