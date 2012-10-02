@@ -178,8 +178,7 @@ def get_params(request):
     if 'reason' in params:
         params['reason'] = int(params['reason'])
     if 'vms_uuids' in params:
-        params['vms_uuids'] = [str(x) 
-                               for x in json.loads(params['vms_uuids'])]
+        params['vms_uuids'] = str(params['vms_uuids']).split(',')
     return params
 
 
