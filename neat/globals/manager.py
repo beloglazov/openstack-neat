@@ -72,6 +72,7 @@ from neat.contracts_extra import *
 
 import bottle
 import re
+import json
 from hashlib import sha1
 from novaclient.v1_1 import client
 
@@ -176,6 +177,9 @@ def get_params(request):
     params = dict(request.forms)
     if 'reason' in params:
         params['reason'] = int(params['reason'])
+    if 'vms_uuids' in params:
+        params['vms_uuids'] = [str(x) 
+                               for x in json.loads(params['vms_uuids'])]
     return params
 
 
