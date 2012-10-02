@@ -152,6 +152,8 @@ class GlobalManager(TestCase):
             assert state['previous_time'] == 0
             assert state['db'] == db
             assert state['nova'] == nova
+            assert state['username'] == sha1('user').hexdigest(),
+            assert state['password'] == sha1('password').hexdigest(),
             assert state['compute_hosts'] == hosts
 
     def test_parse_compute_hosts(self):

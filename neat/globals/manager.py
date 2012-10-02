@@ -220,6 +220,8 @@ def init_state(config):
                                   config.get('os_admin_tenant_name'),
                                   config.get('os_auth_url'),
                                   service_type="compute"),
+            'hashed_username': sha1(config.get('os_admin_user')).hexdigest(),
+            'hashed_password': sha1(config.get('os_admin_password')).hexdigest(),
             'compute_hosts': parse_compute_hosts(config['compute_hosts'])}
 
 
