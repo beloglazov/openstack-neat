@@ -310,10 +310,11 @@ def execute_underload(config, state, host):
         vm_placement_params = common.parse_parameters(
             config['algorithm_vm_placement_parameters'])
         vm_placement_state = None
-        vm_placement = config['algorithm_vm_placement_factory'](
-            time_step,
-            migration_time,
-            vm_placement_params)
+        vm_placement = common.call_function_by_name(
+            config['algorithm_vm_placement_factory'],
+            [time_step,
+             migration_time,
+             vm_placement_params])
         state['vm_placement'] = vm_placement
         state['vm_placement_state'] = {}
     else:
@@ -491,10 +492,11 @@ def execute_overload(config, state, vm_uuids):
         vm_placement_params = json.loads(
             config['algorithm_vm_placement_params'])
         vm_placement_state = None
-        vm_placement = config['algorithm_vm_placement_factory'](
-            time_step,
-            migration_time,
-            vm_placement_params)
+        vm_placement = common.call_function_by_name(
+            config['algorithm_vm_placement_factory'],
+            [time_step,
+             migration_time,
+             vm_placement_params])
         state['vm_placement'] = vm_placement
     else:
         vm_placement = state['vm_placement']

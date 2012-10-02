@@ -24,7 +24,7 @@ logging.disable(logging.CRITICAL)
 class BinPacking(TestCase):
 
     def test_best_fit_decreasing_factory(self):
-        alg = packing.best_fit_decreasing_factory(300, 20,
+        alg = packing.best_fit_decreasing_factory(300, 20.,
                                                   {'cpu_threshold': 0.8,
                                                    'ram_threshold': 0.9})
 
