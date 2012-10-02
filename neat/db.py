@@ -163,6 +163,6 @@ class Database(object):
         hosts_ram = {}
         for x in self.hosts.select().execute().fetchall():
             hostname = str(x[1])
-            hosts_cpu[hostname] = x[2]
-            hosts_ram[hostname] = x[3]
+            hosts_cpu[hostname] = int(x[2])
+            hosts_ram[hostname] = int(x[3])
         return hosts_cpu, hosts_ram
