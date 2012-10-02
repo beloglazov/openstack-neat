@@ -75,6 +75,7 @@ import re
 from hashlib import sha1
 from novaclient.v1_1 import client
 
+import neat.common as common
 from neat.config import *
 from neat.db_utils import *
 
@@ -286,7 +287,7 @@ def execute_underload(config, state, host):
         float(config.get('network_migration_bandwidth')))
 
     if 'vm_placement' not in state:
-        vm_placement_params = json.loads(
+        vm_placement_params = common.parse_parameters(
             config.get('algorithm_vm_placement_params'))
         vm_placement_state = None
         vm_placement = config.get('algorithm_vm_placement_factory')(

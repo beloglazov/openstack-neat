@@ -1,3 +1,4 @@
+
 # Copyright 2012 Anton Beloglazov
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -102,7 +103,6 @@ local manager performs the following steps:
 from contracts import contract
 from neat.contracts_extra import *
 
-import json
 import numpy
 import itertools
 
@@ -218,7 +218,7 @@ def execute(config, state):
         vm_ram, float(config['network_migration_bandwidth']))
 
     if 'underload_detection' not in state:
-        underload_detection_params = json.loads(
+        underload_detection_params = common.parse_parameters(
             config['algorithm_underload_detection_parameters'])
         underload_detection_state = None
         underload_detection = common.call_function_by_name(
@@ -228,7 +228,7 @@ def execute(config, state):
              underload_detection_params])
         state['underload_detection'] = underload_detection
 
-        overload_detection_params = json.loads(
+        overload_detection_params = common.parse_parameters(
             config['algorithm_overload_detection_parameters'])
         overload_detection_state = None
         overload_detection = common.call_function_by_name(
@@ -238,7 +238,7 @@ def execute(config, state):
              overload_detection_params])
         state['overload_detection'] = overload_detection
 
-        vm_selection_params = json.loads(
+        vm_selection_params = common.parse_parameters(
             config['algorithm_vm_selection_parameters'])
         vm_selection_state = None
         vm_selection = common.call_function_by_name(
