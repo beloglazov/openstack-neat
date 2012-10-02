@@ -267,8 +267,8 @@ def execute_underload(config, state, host):
     :param state: A state dictionary.
      :type state: dict(str: *)
 
-    :param state: A host name.
-     :type state: str
+    :param host: A host name.
+     :type host: str
 
     :return: The updated state dictionary.
      :rtype: dict(str: *)
@@ -284,8 +284,8 @@ def execute_underload(config, state, host):
     for host, vms in hosts_to_vms.items():
         host_cpu_mhz = sum(vms_last_cpu[x] for x in vms)
         if host_cpu_mhz > 0:
-            host_cpu_usage[host] = host_cpu_mhz
-            host_ram_usage[host] = host_used_ram(state['nova'], host)
+            hosts_cpu_usage[host] = host_cpu_mhz
+            hosts_ram_usage[host] = host_used_ram(state['nova'], host)
         else:
             # Exclude inactive hosts
             del hosts_cpu_total[host]
@@ -302,8 +302,8 @@ def execute_underload(config, state, host):
     vms_ram = vms_ram_limit(state['nova'], vms_to_migrate)
 
     time_step = int(config.get('data_collector_interval'))
-    migration_time = calculate_migration_time(
-        vm_ram,
+    migration_time = common.calculate_migration_time(
+        vms_ram,
         float(config.get('network_migration_bandwidth')))
 
     if 'vm_placement' not in state:
@@ -397,7 +397,7 @@ def vms_by_host(nova, host):
     :return: A list of VM UUIDs from the specified host.
      :rtype: list(str)
     """
-    return [vm.id for vm in nova.servers.list()
+    return [str(vm.id) for vm in nova.servers.list()
             if vm_hostname(vm) == host]
 
 
@@ -470,8 +470,8 @@ def execute_overload(config, state, vm_uuids):
     for host, vms in hosts_to_vms.items():
         host_cpu_mhz = sum(vms_last_cpu[x] for x in vms)
         if host_cpu_mhz > 0:
-            host_cpu_usage[host] = host_cpu_mhz
-            host_ram_usage[host] = host_used_ram(state['nova'], host)
+            hosts_cpu_usage[host] = host_cpu_mhz
+            hosts_ram_usage[host] = host_used_ram(state['nova'], host)
         else:
             inactive_hosts_cpu[host] = hosts_cpu_total[host]
             inactive_hosts_ram[host] = hosts_ram_total[host]
@@ -483,8 +483,8 @@ def execute_overload(config, state, vm_uuids):
     vms_ram = vms_ram_limit(state['nova'], vms_to_migrate)
 
     time_step = int(config.get('data_collector_interval'))
-    migration_time = calculate_migration_time(
-        vm_ram,
+    migration_time = common.calculate_migration_time(
+        vms_ram,
         float(config.get('network_migration_bandwidth')))
 
     if 'vm_placement' not in state:
@@ -503,7 +503,7 @@ def execute_overload(config, state, vm_uuids):
     placement, vm_placement_state = vm_placement(
         hosts_cpu_usage, hosts_cpu_total,
         hosts_ram_usage, hosts_ram_total,
-        host_cpu_usage, host_ram_usage,
+        inactive_hosts_cpu, inactive_hosts_ram,
         vms_cpu, vms_ram,
         vm_placement_state)
     state['vm_placement_state'] = vm_placement_state

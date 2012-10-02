@@ -103,7 +103,6 @@ local manager performs the following steps:
 from contracts import contract
 from neat.contracts_extra import *
 
-import numpy
 import itertools
 
 import neat.common as common
@@ -214,7 +213,7 @@ def execute(config, state):
     host_cpu_utilization = vm_mhz_to_percentage(
         vm_cpu_mhz, physical_cpu_mhz_total)
     time_step = int(config['data_collector_interval'])
-    migration_time = calculate_migration_time(
+    migration_time = common.calculate_migration_time(
         vm_ram, float(config['network_migration_bandwidth']))
 
     if 'underload_detection' not in state:
@@ -373,19 +372,3 @@ def vm_mhz_to_percentage(vms, physical_cpu_mhz):
     """
     data = itertools.izip_longest(*vms.values(), fillvalue=0)
     return [float(sum(x)) / physical_cpu_mhz for x in data]
-
-
-@contract
-def calculate_migration_time(vms, bandwidth):
-    """ Calculate the mean migration time from VM RAM usage data.
-
-    :param vms: A map of VM UUIDs to the corresponding maximum RAM in MB.
-     :type vms: dict(str: int)
-
-    :param bandwidth: The network bandwidth in MB/s.
-     :type bandwidth: float,>0
-
-    :return: The mean VM migration time in seconds.
-     :rtype: float
-    """
-    return float(numpy.mean(vms.values()) / bandwidth)

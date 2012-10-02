@@ -21,6 +21,7 @@ from neat.contracts_extra import *
 import os
 import time
 import json
+import numpy
 
 from neat.config import *
 from neat.db_utils import *
@@ -221,4 +222,19 @@ def parse_parameters(params):
     """
     return dict((str(k), v) 
                 for k, v in json.loads(params).items())
+
     
+@contract
+def calculate_migration_time(vms, bandwidth):
+    """ Calculate the mean migration time from VM RAM usage data.
+
+    :param vms: A map of VM UUIDs to the corresponding maximum RAM in MB.
+     :type vms: dict(str: int)
+
+    :param bandwidth: The network bandwidth in MB/s.
+     :type bandwidth: float,>0
+
+    :return: The mean VM migration time in seconds.
+     :rtype: float
+    """
+    return float(numpy.mean(vms.values()) / bandwidth)
