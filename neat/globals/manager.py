@@ -143,6 +143,12 @@ def start():
     """
     config = read_and_validate_config([DEFAILT_CONFIG_PATH, CONFIG_PATH],
                                       REQUIRED_FIELDS)
+
+    common.init_logging(
+        config['log_directory'],
+        'global-manager.log',
+        int(config['log_level']))
+
     bottle.debug(True)
     bottle.app().state = {
         'config': config,
@@ -162,9 +168,9 @@ def get_params(request):
      :type request: *
 
     :return: The request data dictionary.
-     :rtype: map(str: str)
+     :rtype: dict(str: str)
     """
-    return request.forms
+    return dict(request.forms)
 
 
 @bottle.put('/')

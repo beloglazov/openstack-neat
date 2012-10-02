@@ -20,6 +20,7 @@ from hashlib import sha1
 from novaclient.v1_1 import client
 
 import neat.globals.manager as manager
+import neat.common as common
 
 import logging
 logging.disable(logging.CRITICAL)
@@ -113,16 +114,20 @@ class GlobalManager(TestCase):
         with MockTransaction:
             app = mock('app')
             state = {'property': 'value'}
-            config = {'global_manager_host': 'localhost',
-                      'global_manager_port': 8080}
+            config = {
+                'log_directory': 'dir',
+                'log_level': 2,
+                'global_manager_host': 'localhost',
+                'global_manager_port': 8080}
             paths = [manager.DEFAILT_CONFIG_PATH, manager.CONFIG_PATH]
             fields = manager.REQUIRED_FIELDS
-            expect(manager).read_and_validate_config(paths, fields). \
-                and_return(config).once()
-            expect(manager).init_state(config). \
-                and_return(state).once()
-            expect(bottle).app().and_return(app).once()
-            expect(bottle).run(host='localhost', port=8080).once()
+            when(manager).read_and_validate_config(paths, fields). \
+                and_return(config)#.once()
+            expect(common).init_logging('dir', 'global-manager.log', 2).once()
+            when(manager).init_state(config). \
+                and_return(state)#.once()
+            when(bottle).app().and_return(app)#.once()
+            when(bottle).run(host='localhost', port=8080)#.once()
             manager.start()
 
     def test_init_state(self):
