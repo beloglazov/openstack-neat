@@ -23,6 +23,9 @@ import neat.common as common
 import neat.locals.collector as collector
 import neat.db_utils as db_utils
 
+import logging
+logging.disable(logging.CRITICAL)
+
 
 class Collector(TestCase):
 

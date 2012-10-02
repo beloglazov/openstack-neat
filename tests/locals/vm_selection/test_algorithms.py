@@ -17,6 +17,9 @@ from pyqcy import *
 
 import neat.locals.vm_selection.algorithms as selection
 
+import logging
+logging.disable(logging.CRITICAL)
+
 
 class Selection(TestCase):
 

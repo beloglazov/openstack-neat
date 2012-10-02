@@ -17,6 +17,9 @@ from pyqcy import *
 
 import neat.config as config
 
+import logging
+logging.disable(logging.CRITICAL)
+
 
 class Config(TestCase):
 

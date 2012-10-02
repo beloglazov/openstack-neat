@@ -17,6 +17,9 @@ from pyqcy import *
 
 import neat.globals.vm_placement.bin_packing as packing
 
+import logging
+logging.disable(logging.CRITICAL)
+
 
 class BinPacking(TestCase):
 

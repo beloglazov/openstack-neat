@@ -17,6 +17,9 @@ from pyqcy import *
 
 import neat.locals.overload.mhod.core as c
 
+import logging
+logging.disable(logging.CRITICAL)
+
 
 class Core(TestCase):
 

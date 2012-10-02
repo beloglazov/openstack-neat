@@ -17,6 +17,9 @@ from pyqcy import *
 
 import neat.locals.overload.statistics as stats
 
+import logging
+logging.disable(logging.CRITICAL)
+
 
 class Statistics(TestCase):
 

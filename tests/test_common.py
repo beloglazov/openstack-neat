@@ -17,10 +17,12 @@ from pyqcy import *
 
 import os
 import shutil
-import logging
 import libvirt
 
 import neat.common as common
+
+import logging
+logging.disable(logging.CRITICAL)
 
 
 class Common(TestCase):

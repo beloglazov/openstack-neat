@@ -17,6 +17,9 @@ from pyqcy import *
 
 import neat.locals.overload.mhod.l_2_states as l
 
+import logging
+logging.disable(logging.CRITICAL)
+
 
 class L2States(TestCase):
 

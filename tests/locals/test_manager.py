@@ -22,6 +22,9 @@ import neat.locals.manager as manager
 import neat.common as common
 import neat.locals.collector as collector
 
+import logging
+logging.disable(logging.CRITICAL)
+
 
 class LocalManager(TestCase):
 

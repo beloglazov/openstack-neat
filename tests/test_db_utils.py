@@ -20,6 +20,9 @@ from sqlalchemy import *
 import neat.db
 import neat.db_utils as db_utils
 
+import logging
+logging.disable(logging.CRITICAL)
+
 
 class DbUtils(TestCase):
 

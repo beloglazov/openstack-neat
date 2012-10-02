@@ -17,6 +17,9 @@ from pyqcy import *
 
 import neat.db_utils as db_utils
 
+import logging
+logging.disable(logging.CRITICAL)
+
 
 class Db(TestCase):
 

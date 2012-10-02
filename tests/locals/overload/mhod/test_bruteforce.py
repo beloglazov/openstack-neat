@@ -20,6 +20,9 @@ from operator import le
 import neat.locals.overload.mhod.bruteforce as b
 import neat.locals.overload.mhod.nlp as nlp
 
+import logging
+logging.disable(logging.CRITICAL)
+
 
 class Bruteforce(TestCase):
 

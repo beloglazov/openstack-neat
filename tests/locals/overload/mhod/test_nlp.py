@@ -19,6 +19,9 @@ import operator
 
 import neat.locals.overload.mhod.nlp as nlp
 
+import logging
+logging.disable(logging.CRITICAL)
+
 
 class Nlp(TestCase):
 

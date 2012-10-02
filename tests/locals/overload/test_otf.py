@@ -17,6 +17,9 @@ from pyqcy import *
 
 import neat.locals.overload.otf as otf
 
+import logging
+logging.disable(logging.CRITICAL)
+
 
 class Otf(TestCase):
 

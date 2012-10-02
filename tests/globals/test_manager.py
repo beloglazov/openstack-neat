@@ -21,6 +21,9 @@ from novaclient.v1_1 import client
 
 import neat.globals.manager as manager
 
+import logging
+logging.disable(logging.CRITICAL)
+
 
 class GlobalManager(TestCase):
 

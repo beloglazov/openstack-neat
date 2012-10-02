@@ -21,6 +21,9 @@ import re
 
 import neat.locals.overload.mhod.multisize_estimation as m
 
+import logging
+logging.disable(logging.CRITICAL)
+
 
 def c(data):
     return deepcopy(data)

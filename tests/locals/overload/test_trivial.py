@@ -17,6 +17,9 @@ from pyqcy import *
 
 import neat.locals.overload.trivial as trivial
 
+import logging
+logging.disable(logging.CRITICAL)
+
 
 class Trivial(TestCase):
 
