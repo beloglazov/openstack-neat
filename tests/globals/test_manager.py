@@ -54,61 +54,61 @@ class GlobalManager(TestCase):
     def test_validate_params(self):
         with MockTransaction:
             expect(manager).raise_error(401).and_return(1).exactly(3).times()
-            manager.validate_params({}, {})
-            manager.validate_params({}, {'username': 'test'})
-            manager.validate_params({}, {'password': 'test'})
-
-        with MockTransaction:
-            expect(manager).raise_error(400).exactly(5).times()
-            manager.validate_params({}, {'username': 'test',
-                                         'password': 'test'})
-            manager.validate_params({}, {'username': 'test',
-                                         'password': 'test',
-                                         'reason': 1})
-            manager.validate_params({}, {'username': 'test',
-                                         'password': 'test',
-                                         'reason': 0})
-            manager.validate_params({}, {'username': 'test',
-                                         'password': 'test',
-                                         'reason': 1,
-                                         'host': 'test'})
-            manager.validate_params({}, {'username': 'test',
-                                         'password': 'test',
-                                         'reason': 0,
-                                         'vm_uuids': []})
-
+            manager.validate_params('test', 'test', {})
+            manager.validate_params('test', 'test', {'username': 'test'})
+            manager.validate_params('test', 'test', {'password': 'test'})
+            
         with MockTransaction:
             expect(manager).raise_error(403).exactly(2).times()
             manager.validate_params(
-                {'admin_user': sha1('test').hexdigest(),
-                 'admin_password': sha1('test2').hexdigest()},
-                {'username': 'test1',
-                 'password': 'test2',
+                sha1('test').hexdigest(),
+                sha1('test2').hexdigest(),
+                {'username': sha1('test1').hexdigest(),
+                 'password': sha1('test2').hexdigest(),
                  'reason': 0,
                  'host': 'test'})
             manager.validate_params(
-                {'admin_user': sha1('test1').hexdigest(),
-                 'admin_password': sha1('test').hexdigest()},
-                {'username': 'test1',
-                 'password': 'test2',
+                sha1('test1').hexdigest(),
+                sha1('test').hexdigest(),
+                {'username': sha1('test1').hexdigest(),
+                 'password': sha1('test2').hexdigest(),
                  'reason': 0,
                  'host': 'test'})
 
             assert manager.validate_params(
-                {'admin_user': sha1('test1').hexdigest(),
-                 'admin_password': sha1('test2').hexdigest()},
-                {'username': 'test1',
-                 'password': 'test2',
+                sha1('test1').hexdigest(),
+                sha1('test2').hexdigest(),
+                {'username': sha1('test1').hexdigest(),
+                 'password': sha1('test2').hexdigest(),
                  'reason': 1,
                  'vm_uuids': ['qwe', 'asd']})
 
             assert manager.validate_params(
-                {'admin_user': sha1('test1').hexdigest(),
-                 'admin_password': sha1('test2').hexdigest()},
-                {'username': 'test1',
-                 'password': 'test2',
+                sha1('test1').hexdigest(),
+                sha1('test2').hexdigest(),
+                {'username': sha1('test1').hexdigest(),
+                 'password': sha1('test2').hexdigest(),
                  'reason': 0,
                  'host': 'test'})
+
+        with MockTransaction:
+            expect(manager).raise_error(400).exactly(5).times()
+            manager.validate_params('test', 'test', {'username': 'test',
+                                                     'password': 'test'})
+            manager.validate_params('test', 'test', {'username': 'test',
+                                                     'password': 'test',
+                                                     'reason': 1})
+            manager.validate_params('test', 'test', {'username': 'test',
+                                                     'password': 'test',
+                                                     'reason': 0})
+            manager.validate_params('test', 'test', {'username': 'test',
+                                                     'password': 'test',
+                                                     'reason': 1,
+                                                     'host': 'test'})
+            manager.validate_params('test', 'test', {'username': 'test',
+                                                     'password': 'test',
+                                                     'reason': 0,
+                                                     'vm_uuids': []})
 
     def test_start(self):
         with MockTransaction:

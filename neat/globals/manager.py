@@ -110,11 +110,14 @@ def raise_error(status_code):
 
 
 @contract
-def validate_params(config, params):
+def validate_params(user, password, params):
     """ Validate the input request parameters.
 
-    :param config: A config dictionary.
-     :type config: dict(str: str)
+    :param user: A sha1-hashed user name to compare to.
+     :type user: str
+
+    :param password: A sha1-hashed password to compare to.
+     :type password: str
 
     :param params: A dictionary of input parameters.
      :type params: dict(str: *)
@@ -125,14 +128,14 @@ def validate_params(config, params):
     if 'username' not in params or 'password' not in params:
         raise_error(401)
         return False
+    if params['username'] != user or \
+       params['password'] != password:
+        raise_error(403)
+        return False
     if 'reason' not in params or \
        params['reason'] == 1 and 'vm_uuids' not in params or \
        params['reason'] == 0 and 'host' not in params:
         raise_error(400)
-        return False
-    if sha1(params['username']).hexdigest() != config['admin_user'] or \
-       sha1(params['password']).hexdigest() != config['admin_password']:
-        raise_error(403)
         return False
     log.debug('Request parameters validated')
     return True
