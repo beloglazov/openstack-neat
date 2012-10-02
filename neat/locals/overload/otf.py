@@ -30,7 +30,7 @@ def otf_factory(time_step, migration_time, params):
      :type time_step: int,>=0
 
     :param migration_time: The VM migration time in time seconds.
-     :type migration_time: int,>=0
+     :type migration_time: float,>=0
 
     :param params: A dictionary containing the algorithm's parameters.
      :type params: dict(str: *)
@@ -52,7 +52,7 @@ def otf_limit_factory(time_step, migration_time, params):
      :type time_step: int,>=0
 
     :param migration_time: The VM migration time in time seconds.
-     :type migration_time: int,>=0
+     :type migration_time: float,>=0
 
     :param params: A dictionary containing the algorithm's parameters.
      :type params: dict(str: *)
@@ -75,7 +75,7 @@ def otf_migration_time_factory(time_step, migration_time, params):
      :type time_step: int,>=0
 
     :param migration_time: The VM migration time in time seconds.
-     :type migration_time: int,>=0
+     :type migration_time: float,>=0
 
     :param params: A dictionary containing the algorithm's parameters.
      :type params: dict(str: *)
@@ -99,7 +99,7 @@ def otf_limit_migration_time_factory(time_step, migration_time, params):
      :type time_step: int,>=0
 
     :param migration_time: The VM migration time in time seconds.
-     :type migration_time: int,>=0
+     :type migration_time: float,>=0
 
     :param params: A dictionary containing the algorithm's parameters.
      :type params: dict(str: *)
@@ -163,7 +163,7 @@ def otf_migration_time(threshold, migration_time, utilization):
      :type threshold: float,>=0
 
     :param migration_time: The VM migration time in time steps.
-     :type migration_time: number,>=0
+     :type migration_time: float,>=0
 
     :param utilization: The history of the host's CPU utilization.
      :type utilization: list(float)
@@ -186,7 +186,7 @@ def otf_limit_migration_time(threshold, limit, migration_time, utilization):
      :type limit: int,>=0
 
     :param migration_time: The VM migration time in time steps.
-     :type migration_time: number,>=0
+     :type migration_time: float,>=0
 
     :param utilization: The history of the host's CPU utilization.
      :type utilization: list(float)

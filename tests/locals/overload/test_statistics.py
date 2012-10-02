@@ -22,7 +22,7 @@ class Statistics(TestCase):
 
     def test_loess_factory(self):
         alg = stats.loess_factory(
-            300, 20, {'param': 1.2, 'limit': 3})
+            300, 20., {'param': 1.2, 'limit': 3})
         self.assertEqual(alg([]), (False, {}))
 
         data = [1.05, 1.09, 1.07, 1.12, 1.02, 1.18,
@@ -36,7 +36,7 @@ class Statistics(TestCase):
 
     def test_loess_robust_factory(self):
         alg = stats.loess_robust_factory(
-            300, 20, {'param': 1.2, 'limit': 3})
+            300, 20., {'param': 1.2, 'limit': 3})
         self.assertEqual(alg([]), (False, {}))
 
         data = [1.05, 1.09, 1.07, 1.12, 1.02, 1.18,
@@ -52,7 +52,7 @@ class Statistics(TestCase):
         with MockTransaction:
             expect(stats).mad.and_return(0.125).exactly(6).times()
             alg = stats.mad_threshold_factory(
-                300, 20, {'threshold': 1.6, 'limit': 3})
+                300, 20., {'threshold': 1.6, 'limit': 3})
             self.assertEqual(alg([]), (False, {}))
             self.assertEqual(alg([0., 0., 0.0]), (False, {}))
             self.assertEqual(alg([0., 0., 0.5]), (False, {}))
@@ -65,7 +65,7 @@ class Statistics(TestCase):
         with MockTransaction:
             expect(stats).iqr.and_return(0.125).exactly(6).times()
             alg = stats.iqr_threshold_factory(
-                300, 20, {'threshold': 1.6, 'limit': 3})
+                300, 20., {'threshold': 1.6, 'limit': 3})
             self.assertEqual(alg([]), (False, {}))
             self.assertEqual(alg([0., 0., 0.0]), (False, {}))
             self.assertEqual(alg([0., 0., 0.5]), (False, {}))

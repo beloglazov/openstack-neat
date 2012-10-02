@@ -221,31 +221,31 @@ def execute(config, state):
         underload_detection_params = json.loads(
             config['algorithm_underload_detection_parameters'])
         underload_detection_state = None
-        underload_detection = \
-            config['algorithm_underload_detection_factory'](
-                time_step,
-                migration_time,
-                underload_detection_params)
+        underload_detection = common.call_function_by_name(
+            config['algorithm_underload_detection_factory'],
+            [time_step,
+             migration_time,
+             underload_detection_params])
         state['underload_detection'] = underload_detection
 
         overload_detection_params = json.loads(
             config['algorithm_overload_detection_parameters'])
         overload_detection_state = None
-        overload_detection = \
-            config['algorithm_overload_detection_factory'](
-                time_step,
-                migration_time,
-                overload_detection_params)
+        overload_detection = common.call_function_by_name(
+            config['algorithm_overload_detection_factory'],
+            [time_step,
+             migration_time,
+             overload_detection_params])
         state['overload_detection'] = overload_detection
 
         vm_selection_params = json.loads(
             config['algorithm_vm_selection_parameters'])
         vm_selection_state = None
-        vm_selection = \
-            config['algorithm_vm_selection_factory'](
-                time_step,
-                migration_time,
-                vm_selection_params)
+        vm_selection = common.call_function_by_name(
+            config['algorithm_vm_selection_factory'],
+            [time_step,
+             migration_time,
+             vm_selection_params])
         state['vm_selection'] = vm_selection
     else:
         underload_detection = state['underload_detection']

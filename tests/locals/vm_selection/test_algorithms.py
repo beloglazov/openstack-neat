@@ -28,7 +28,7 @@ class Selection(TestCase):
             min_length=1, max_length=5
         )
     ):
-        alg = selection.minimum_migration_time_factory(300, 20, dict())
+        alg = selection.minimum_migration_time_factory(300, 20., dict())
         values = x.values()
         vm_index = values.index(min(values))
         vm = x.keys()[vm_index]
@@ -43,7 +43,7 @@ class Selection(TestCase):
             min_length=1, max_length=5
         )
     ):
-        alg = selection.minimum_utilization_factory(300, 20, dict())
+        alg = selection.minimum_utilization_factory(300, 20., dict())
         last_utilization = []
         for utilization in x.values():
             last_utilization.append(utilization[-1])
@@ -61,7 +61,7 @@ class Selection(TestCase):
         )
     ):
         with MockTransaction:
-            alg = selection.random_factory(300, 20, dict())
+            alg = selection.random_factory(300, 20., dict())
             vm = x.keys()[random.randrange(len(x))]
             expect(selection).choice(x.keys()).and_return(vm).once()
             assert alg(x, dict()) == (vm, {})

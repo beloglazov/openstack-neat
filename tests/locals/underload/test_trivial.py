@@ -21,7 +21,7 @@ import neat.locals.underload.trivial as trivial
 class Trivial(TestCase):
 
     def test_threshold_factory(self):
-        alg = trivial.threshold_factory(300, 20, {'threshold': 0.5})
+        alg = trivial.threshold_factory(300, 20., {'threshold': 0.5})
         self.assertEqual(alg([]), (False, {}))
         self.assertEqual(alg([0.0, 0.0]), (True, {}))
         self.assertEqual(alg([0.0, 0.4]), (True, {}))

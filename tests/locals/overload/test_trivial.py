@@ -23,7 +23,7 @@ class Trivial(TestCase):
     @qc(10)
     def overloading_steps(
         time_step=int_(min=0, max=10),
-        migration_time=int_(min=0, max=10),
+        migration_time=float_(min=0, max=10),
         utilization=list_(of=float)
     ):
         alg = trivial.no_migrations_factory(time_step, migration_time,
@@ -38,7 +38,7 @@ class Trivial(TestCase):
         self.assertFalse(trivial.threshold(0.5, []))
 
     def test_threshold_factory(self):
-        alg = trivial.threshold_factory(300, 20, {'threshold': 0.5})
+        alg = trivial.threshold_factory(300, 20., {'threshold': 0.5})
         self.assertEquals(alg([0.9, 0.8, 1.1, 1.2, 1.3]), (True, {}))
         self.assertEquals(alg([0.9, 0.8, 1.1, 1.2, 0.6]), (True, {}))
         self.assertEquals(alg([0.9, 0.8, 1.1, 1.2, 0.5]), (False, {}))

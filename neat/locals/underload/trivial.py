@@ -30,7 +30,7 @@ def threshold_factory(time_step, migration_time, params):
      :type time_step: int,>=0
 
     :param migration_time: The VM migration time in time seconds.
-     :type migration_time: int,>=0
+     :type migration_time: float,>=0
 
     :param params: A dictionary containing the algorithm's parameters.
      :type params: dict(str: *)
