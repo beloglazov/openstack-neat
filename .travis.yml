@@ -1,15 +1,15 @@
 language: python
 python:
-  - 2.7
   - 2.6
+  - 2.7
 install:
   - sudo apt-get install -qq python-libvirt python-numpy python-scipy
-  - ls /usr/lib/python2.6 || cp /usr/lib/python2.6/dist-packages/libvirt* ~/virtualenv/python2.6/local/lib/python2.7/site-packages/
-  - ls /usr/lib/python2.6 || cp -r /usr/lib/python2.6/dist-packages/numpy* ~/virtualenv/python2.6/local/lib/python2.7/site-packages/
-  - ls /usr/lib/python2.6 || cp -r /usr/lib/python2.6/dist-packages/scipy* ~/virtualenv/python2.6/local/lib/python2.7/site-packages/
-  - ls /usr/lib/python2.7 || cp /usr/lib/python2.7/dist-packages/libvirt* ~/virtualenv/python2.7/local/lib/python2.7/site-packages/
-  - ls /usr/lib/python2.7 || cp -r /usr/lib/python2.7/dist-packages/numpy* ~/virtualenv/python2.7/local/lib/python2.7/site-packages/
-  - ls /usr/lib/python2.7 || cp -r /usr/lib/python2.7/dist-packages/scipy* ~/virtualenv/python2.7/local/lib/python2.7/site-packages/
+  - ls /usr/lib/python2.6/dist-packages/libvirt* || cp /usr/lib/python2.6/dist-packages/libvirt* ~/virtualenv/python2.6/local/lib/python2.7/site-packages/ && ls /usr/lib/python2.6/dist-packages/libvirt*
+  - ls /usr/lib/python2.6/dist-packages/numpy* || cp -r /usr/lib/python2.6/dist-packages/numpy* ~/virtualenv/python2.6/local/lib/python2.7/site-packages/ && ls /usr/lib/python2.6/dist-packages/numpy*
+  - ls /usr/lib/python2.6/dist-packages/scipy* || cp -r /usr/lib/python2.6/dist-packages/scipy* ~/virtualenv/python2.6/local/lib/python2.7/site-packages/ && ls /usr/lib/python2.6/dist-packages/scipy*
+  - ls /usr/lib/python2.7/dist-packages/libvirt* || cp /usr/lib/python2.7/dist-packages/libvirt* ~/virtualenv/python2.7/local/lib/python2.7/site-packages/ && ls /usr/lib/python2.7/dist-packages/libvirt*
+  - ls /usr/lib/python2.7/dist-packages/numpy* || cp -r /usr/lib/python2.7/dist-packages/numpy* ~/virtualenv/python2.7/local/lib/python2.7/site-packages/ && ls /usr/lib/python2.7/dist-packages/numpy*
+  - ls /usr/lib/python2.7/dist-packages/scipy* || cp -r /usr/lib/python2.7/dist-packages/scipy* ~/virtualenv/python2.7/local/lib/python2.7/site-packages/ && ls /usr/lib/python2.7/dist-packages/scipy*
   - pip install --use-mirrors pyqcy mocktest PyContracts nose SQLAlchemy bottle python-novaclient
   - python setup.py install
 script: nosetests
