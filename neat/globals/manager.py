@@ -180,8 +180,8 @@ def get_params(request):
 def service():
     params = get_params(bottle.request)
     state = bottle.app().state
-    validate_params(state['hashed_username'], 
-                    state['hashed_password'], 
+    validate_params(state['state']['hashed_username'], 
+                    state['state']['hashed_password'], 
                     params)
     if params['reason'] == 0:
         log.info('Processing an underload of a host %s', params['host'])
