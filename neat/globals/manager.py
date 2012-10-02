@@ -203,8 +203,8 @@ def service():
                 state['config'],
                 state['state'],
                 params['vm_uuids'])
-    except Exception as e:
-        log.exception(e)
+    except:
+        log.exception('Exception during request processing:')
         raise
 
 
