@@ -295,6 +295,7 @@ def execute_underload(config, state, host):
             migration_time,
             vm_placement_params)
         state['vm_placement'] = vm_placement
+        state['vm_placement_state'] = {}
     else:
         vm_placement = state['vm_placement']
         vm_placement_state = state['vm_placement_state']

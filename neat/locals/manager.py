@@ -227,6 +227,7 @@ def execute(config, state):
              migration_time,
              underload_detection_params])
         state['underload_detection'] = underload_detection
+        state['underload_detection_state'] = {}
 
         overload_detection_params = common.parse_parameters(
             config['algorithm_overload_detection_parameters'])
@@ -237,6 +238,7 @@ def execute(config, state):
              migration_time,
              overload_detection_params])
         state['overload_detection'] = overload_detection
+        state['overload_detection_state'] = {}
 
         vm_selection_params = common.parse_parameters(
             config['algorithm_vm_selection_parameters'])
@@ -247,6 +249,7 @@ def execute(config, state):
              migration_time,
              vm_selection_params])
         state['vm_selection'] = vm_selection
+        state['vm_selection_state'] = {}
     else:
         underload_detection = state['underload_detection']
         underload_detection_state = state['underload_detection_state']
