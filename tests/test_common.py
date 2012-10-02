@@ -130,3 +130,11 @@ class Common(TestCase):
             assert os.access(log_dir, os.W_OK)
 
         shutil.rmtree(log_dir, True)
+
+    def test_call_function_by_name(self):
+        with MockTransaction:
+            arg1 = 'a'
+            arg2 = 'b'
+            expect(common).func_to_call(arg1, arg2).and_return('res').once()
+            assert common.call_function_by_name('neat.common.func_to_call',
+                                                [arg1, arg2]) == 'res'

@@ -185,3 +185,27 @@ def init_logging(log_directory, log_file, log_level):
     logger.addHandler(handler)
 
     return True
+
+
+@contract
+def call_function_by_name(name, args):
+    """ Call a function specified by a fully qualified name.
+
+    :param name: A fully qualified name of a function.
+     :type name: str
+
+    :param args: A list of positional arguments of the function.
+     :type args: list
+
+    :return: The return value of the function call.
+     :rtype: *
+    """
+    fragments = name.split('.')
+    module = '.'.join(fragments[:-1])
+    fromlist = fragments[-2]
+    function = fragments[-1]
+    m = __import__(module, fromlist=fromlist)
+    return getattr(m, function)(*args)
+
+
+
