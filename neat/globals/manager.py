@@ -190,18 +190,22 @@ def service():
     validate_params(state['state']['hashed_username'], 
                     state['state']['hashed_password'], 
                     params)
-    if params['reason'] == 0:
-        log.info('Processing an underload of a host %s', params['host'])
-        execute_underload(
-            state['config'],
-            state['state'],
-            params['host'])
-    else:
-        log.info('Processing an overload, VMs: %s', str(params['vm_uuids']))
-        execute_overload(
-            state['config'],
-            state['state'],
-            params['vm_uuids'])
+    try: 
+        if params['reason'] == 0:
+            log.info('Processing an underload of a host %s', params['host'])
+            execute_underload(
+                state['config'],
+                state['state'],
+                params['host'])
+        else:
+            log.info('Processing an overload, VMs: %s', str(params['vm_uuids']))
+            execute_overload(
+                state['config'],
+                state['state'],
+                params['vm_uuids'])
+    except Exception as e:
+        log.exception(e)
+        raise
 
 
 @bottle.route('/', method='ANY')
