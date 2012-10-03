@@ -12,32 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import subprocess
-
 from neat.config import *
 import neat.common as common
 
-commands = [
-    'git clone git@github.com:beloglazov/openstack-neat.git',
-    'cd openstack-neat',
-    'git pull origin master'
-]
-
-commands_merged = ''
-for command in commands:
-    commands_merged += 'echo $ ' + command + ';'
-    commands_merged += command + ';'
-
 config = read_and_validate_config([DEFAILT_CONFIG_PATH, CONFIG_PATH],
                                   REQUIRED_FIELDS)
-
 compute_hosts = common.parse_compute_hosts(config['compute_hosts'])
 
-for host in compute_hosts:
-    print 'Host: ' + host
-    print subprocess.Popen(
-        'ssh ' + host + ' "' + commands_merged + '"', 
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        shell=True).communicate()[0]
-    
+common.execute_on_hosts(
+    compute_hosts, 
+    ['git clone git@github.com:beloglazov/openstack-neat.git',
+     'cd openstack-neat',
+     'git pull origin master'])
