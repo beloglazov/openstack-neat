@@ -23,6 +23,7 @@ import time
 import json
 import re
 import numpy
+import subprocess
 
 from neat.config import *
 from neat.db_utils import *
@@ -252,3 +253,27 @@ def calculate_migration_time(vms, bandwidth):
      :rtype: float
     """
     return float(numpy.mean(vms.values()) / bandwidth)
+
+
+@contract
+def execute_on_hosts(hosts, commands):
+    """ Execute Shell command on hosts over SSH.
+
+    :param hosts: A list of host names.
+     :type hosts: list(str)
+
+    :param commands: A list of Shell commands.
+     :type commands: list(str)
+    """
+    commands_merged = ''
+    for command in commands:
+        commands_merged += 'echo $ ' + command + ';'
+        commands_merged += command + ';'
+
+    for host in hosts:
+        print 'Host: ' + host
+        print subprocess.Popen(
+            'ssh ' + host + ' "' + commands_merged + '"', 
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            shell=True).communicate()[0]
