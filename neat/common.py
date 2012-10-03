@@ -21,6 +21,7 @@ from neat.contracts_extra import *
 import os
 import time
 import json
+import re
 import numpy
 
 from neat.config import *
@@ -222,6 +223,19 @@ def parse_parameters(params):
     """
     return dict((str(k), v) 
                 for k, v in json.loads(params).items())
+
+
+@contract
+def parse_compute_hosts(compute_hosts):
+    """ Transform a coma-separated list of host names into a list.
+
+    :param compute_hosts: A coma-separated list of host names.
+     :type compute_hosts: str
+
+    :return: A list of host names.
+     :rtype: list(str)
+    """
+    return filter(None, re.split('\W+', compute_hosts))
 
     
 @contract

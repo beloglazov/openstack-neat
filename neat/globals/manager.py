@@ -71,7 +71,6 @@ from contracts import contract
 from neat.contracts_extra import *
 
 import bottle
-import re
 import json
 from hashlib import sha1
 from novaclient.v1_1 import client
@@ -235,20 +234,8 @@ def init_state(config):
                                   service_type="compute"),
             'hashed_username': sha1(config['os_admin_user']).hexdigest(),
             'hashed_password': sha1(config['os_admin_password']).hexdigest(),
-            'compute_hosts': parse_compute_hosts(config['compute_hosts'])}
-
-
-@contract
-def parse_compute_hosts(compute_hosts):
-    """ Transform a coma-separated list of host names into a list.
-
-    :param compute_hosts: A coma-separated list of host names.
-     :type compute_hosts: str
-
-    :return: A list of host names.
-     :rtype: list(str)
-    """
-    return filter(None, re.split('\W+', compute_hosts))
+            'compute_hosts': common.parse_compute_hosts(
+                                        config['compute_hosts'])}
 
 
 @contract

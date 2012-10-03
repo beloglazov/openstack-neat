@@ -146,6 +146,13 @@ class Common(TestCase):
         self.assertEqual(common.parse_parameters(params), {'param1': 0.56,
                                                            'param2': 'abc'})
 
+    def test_parse_compute_hosts(self):
+        assert common.parse_compute_hosts('') == []
+        assert common.parse_compute_hosts('test1, test2') == \
+            ['test1', 'test2']
+        assert common.parse_compute_hosts('t1,,  t2 , t3') == \
+            ['t1', 't2', 't3']
+
     @qc(10)
     def calculate_migration_time(
         data=dict_(
