@@ -4,3 +4,11 @@ RPM package
 2. Added #!/usr/bin/python2 to start-*.py
 3. cp start-data-collector.py /usr/bin/neat-data-collector
 4. cp initscripts/* /etc/init.d/
+
+RPM manuals:
+
+https://fedoraproject.org/wiki/How_to_create_an_RPM_package
+https://fedoraproject.org/wiki/Packaging:Guidelines
+https://fedoraproject.org/wiki/Packaging:Python
+http://fedoraproject.org/wiki/Packaging:SysVInitScript
+http://docs.python.org/distutils/builtdist.html
