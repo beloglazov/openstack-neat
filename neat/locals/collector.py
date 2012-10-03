@@ -118,7 +118,7 @@ def start():
 
     common.init_logging(
         config['log_directory'],
-        'collector.log',
+        'data-collector.log',
         int(config['log_level']))
 
     vm_path = common.build_local_vm_path(config['local_data_directory'])
