@@ -32,5 +32,4 @@ for host in compute_hosts:
         stderr=subprocess.STDOUT,
         shell=True).communicate()[0]
     if output:
-        print output 
-    
+        print output
