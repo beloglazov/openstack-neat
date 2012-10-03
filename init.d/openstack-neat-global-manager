@@ -1,29 +1,29 @@
 #!/bin/sh
 #
-# openstack-neat-data-collector  OpenStack Neat Data Collector
+# openstack-neat-global-manager  OpenStack Neat Global Manager
 #
 # chkconfig:   - 99 01
-# description: The data collector monitors the virtual machines \
-#              running on the host and collects the data on the \
-#              CPU utilization. The collected data are stored   \
-#              locally in files and in the central database to  \
-#              be used by the local and global managers.        
+# description: The global manager runs a REST web service      \ 
+#              listening to requests from the local managers.  \
+#              Once a request is received, the global manager  \
+#              executes the actions corresponding to the type  \
+#              of the request: underload, or overload of a host.
 
 ### BEGIN INIT INFO
-# Provides: openstack_neat_data_collector
+# Provides: openstack_neat_global_manager
 # Required-Start: $remote_fs $network $syslog
 # Required-Stop: $remote_fs $network $syslog
-# Short-Description: OpenStack Neat Data Collector
-# Description: The data collector monitors the virtual machines 
-#              running on the host and collects the data on the 
-#              CPU utilization. The collected data are stored   
-#              locally in files and in the central database to  
-#              be used by the local and global managers.        
+# Short-Description: OpenStack Neat Global Manager
+# Description: The global manager runs a REST web service       
+#              listening to requests from the local managers.  
+#              Once a request is received, the global manager  
+#              executes the actions corresponding to the type  
+#              of the request: underload, or overload of a host.
 ### END INIT INFO
 
 . /etc/rc.d/init.d/functions
 
-suffix=data-collector
+suffix=global-manager
 prog=openstack-neat-$suffix
 exec="/usr/bin/neat-$suffix"
 pidfile="/var/run/neat/neat-$suffix.pid"
