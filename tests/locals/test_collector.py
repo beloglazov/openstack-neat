@@ -45,7 +45,7 @@ class Collector(TestCase):
             fields = collector.REQUIRED_FIELDS
             expect(collector).read_and_validate_config(paths, fields). \
                 and_return(config).once()
-            expect(common).init_logging('dir', 'collector.log', 2).once()
+            expect(common).init_logging('dir', 'data-collector.log', 2).once()
             expect(common).start(collector.init_state,
                                  collector.execute,
                                  config,
