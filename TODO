@@ -4,6 +4,7 @@ RPM package
 2. Added #!/usr/bin/python2 to start-*.py
 3. cp start-data-collector.py /usr/bin/neat-data-collector
 4. cp initscripts/* /etc/init.d/
+5. cp neat.conf /etc/neat/neat.conf
 
 RPM manuals:
 
