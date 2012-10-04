@@ -84,4 +84,11 @@ setup(
     packages=find_packages(),
     test_suite='tests',
     tests_require=['pyqcy', 'mocktest', 'PyContracts'],
+    entry_points = {
+        'console_scripts': [
+            'neat-data-collector = neat.locals.collector:start',
+            'neat-global-manager = neat.globals.manager:start',
+            'neat-local-manager = neat.locals.manager:start',
+            ]
+        }
 )
