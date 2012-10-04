@@ -87,8 +87,11 @@ setup(
     entry_points = {
         'console_scripts': [
             'neat-data-collector = neat.locals.collector:start',
+            'neat-local-manager  = neat.locals.manager:start',
             'neat-global-manager = neat.globals.manager:start',
-            'neat-local-manager = neat.locals.manager:start',
             ]
-        }
+        },
+    data_files = [('/etc/init.d', ['init.d/openstack-neat-data-collector',
+                                   'init.d/openstack-neat-local-manager',
+                                   'init.d/openstack-neat-global-manager'])],
 )
