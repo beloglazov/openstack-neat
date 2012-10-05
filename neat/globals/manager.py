@@ -338,6 +338,9 @@ def execute_underload(config, state, host):
     if log.isEnabledFor(logging.INFO):
         log.info('Underload: obtained a new placement %s', str(placement))
 
+    if not placement:
+        log.info('Nothing to migrate')
+
     for vm, host in placement.items():
         state['nova'].servers.live_migrate(vm, host, False, False)
         if log.isEnabledFor(logging.INFO):
@@ -523,6 +526,9 @@ def execute_overload(config, state, vm_uuids):
 
     if log.isEnabledFor(logging.INFO):
         log.info('Overload: obtained a new placement %s', str(placement))
+
+    if not placement:
+        log.info('Nothing to migrate')
 
     for vm, host in placement.items():
         state['nova'].servers.live_migrate(vm, host, False, False)
