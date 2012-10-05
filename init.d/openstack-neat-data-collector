@@ -40,8 +40,6 @@ start() {
     mkdir -p $piddir
     daemon --user root --pidfile $pidfile "$exec &>/dev/null & echo \$! > $pidfile"
     retval=$?
-    echo $pidfile
-    cat $pidfile
     echo
     [ $retval -eq 0 ] && touch $lockfile
     return $retval
