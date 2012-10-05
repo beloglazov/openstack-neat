@@ -25,4 +25,4 @@ common.execute_on_hosts(
     compute_hosts, 
     ['rm -f /etc/init.d/openstack-neat-*',
      'cd openstack-neat',
-     'python2 setup.py install'])
+     'python2 setup.py install -f'])
