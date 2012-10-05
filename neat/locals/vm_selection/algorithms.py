@@ -41,7 +41,7 @@ def random_factory(time_step, migration_time, params):
     :return: A function implementing the random VM selection algorithm.
      :rtype: function
     """
-    return lambda vms_cpu, vms_ram, state=None: (random(vms_cpu), {})
+    return lambda vms_cpu, vms_ram, state=None: ([random(vms_cpu)], {})
 
 
 @contract
@@ -61,7 +61,7 @@ def minimum_utilization_factory(time_step, migration_time, params):
      :rtype: function
     """
     return lambda vms_cpu, vms_ram, state=None: \
-        (minimum_utilization(vms_cpu), {})
+        ([minimum_utilization(vms_cpu)], {})
 
 
 @contract
@@ -81,7 +81,7 @@ def minimum_migration_time_factory(time_step, migration_time, params):
      :rtype: function
     """
     return lambda vms_cpu, vms_ram, state=None: \
-        (minimum_migration_time(vms_ram), {})
+        ([minimum_migration_time(vms_ram)], {})
 
 
 @contract

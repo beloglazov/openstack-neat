@@ -35,7 +35,7 @@ class Selection(TestCase):
         values = x.values()
         vm_index = values.index(min(values))
         vm = x.keys()[vm_index]
-        assert alg(dict(), x) == (vm, {})
+        assert alg(dict(), x) == ([vm], {})
 
     @qc(10)
     def minimum_utilization_factory(
@@ -52,7 +52,7 @@ class Selection(TestCase):
             last_utilization.append(utilization[-1])
         vm_index = last_utilization.index(min(last_utilization))
         vm = x.keys()[vm_index]
-        assert alg(x, dict()) == (vm, {})
+        assert alg(x, dict()) == ([vm], {})
 
     @qc(10)
     def random_factory(
@@ -67,7 +67,7 @@ class Selection(TestCase):
             alg = selection.random_factory(300, 20., dict())
             vm = x.keys()[random.randrange(len(x))]
             expect(selection).choice(x.keys()).and_return(vm).once()
-            assert alg(x, dict()) == (vm, {})
+            assert alg(x, dict()) == ([vm], {})
 
     @qc(10)
     def minimum_migration_time(
