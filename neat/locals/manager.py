@@ -265,13 +265,16 @@ def execute(config, state):
 
     if underload:
         log.info('Underload detected')
-        requests.put('http://' + config['global_manager_host'] + \
-                           ':' + config['global_manager_port'], 
-                     {'username': state['hashed_username'], 
-                      'password': state['hashed_password'], 
-                      'reason': 0, 
-                      'host': state['hostname']})
-        pass
+        try:
+            requests.put('http://' + config['global_manager_host'] + \
+                               ':' + config['global_manager_port'], 
+                         {'username': state['hashed_username'], 
+                          'password': state['hashed_password'], 
+                          'reason': 0, 
+                          'host': state['hostname']})
+        except requests.exceptions.ConnectionError:
+            log.exception('Exception at underload request:')
+
     else:
         overload, state['overload_detection_state'] = overload_detection(
             host_cpu_utilization, state['overload_detection_state'])
@@ -280,12 +283,15 @@ def execute(config, state):
             vm_uuids, state['vm_selection_state'] = vm_selection(
                 host_cpu_utilization, vm_ram, state['vm_selection_state'])
             log.info('Selected VMs to migrate: %s', str(vm_uuids))
-            requests.put('http://' + config['global_manager_host'] + \
-                               ':' + config['global_manager_port'], 
-                         {'username': state['hashed_username'], 
-                          'password': state['hashed_password'], 
-                          'reason': 1, 
-                          'vm_uuids': ','.join(vm_uuids)})
+            try:
+                requests.put('http://' + config['global_manager_host'] + \
+                                   ':' + config['global_manager_port'], 
+                             {'username': state['hashed_username'], 
+                              'password': state['hashed_password'], 
+                              'reason': 1, 
+                              'vm_uuids': ','.join(vm_uuids)})
+            except requests.exceptions.ConnectionError:
+                log.exception('Exception at overload request:')
         else:
             log.info('No underload or overload detected')
 
