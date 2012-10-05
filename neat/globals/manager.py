@@ -196,7 +196,7 @@ def get_remote_addr(request):
 
 @bottle.put('/')
 def service():
-    # If some VMs are being migrated, no new requests should be processed
+    # TODO: If some VMs are being migrated, no new requests should be processed
     params = get_params(bottle.request)
     state = bottle.app().state
     validate_params(state['state']['hashed_username'], 
