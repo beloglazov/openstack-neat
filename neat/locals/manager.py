@@ -262,7 +262,7 @@ def execute(config, state):
     underload, state['underload_detection_state'] = underload_detection(
         host_cpu_utilization, state['underload_detection_state'])
 
-    if not underload:
+    if underload:
         log.info('Underload detected')
         requests.put('http://' + config['global_manager_host'] + \
                            ':' + config['global_manager_port'], 
@@ -274,7 +274,7 @@ def execute(config, state):
     else:
         overload, state['overload_detection_state'] = overload_detection(
             host_cpu_utilization, state['overload_detection_state'])
-        if not overload:
+        if overload:
             log.info('Overload detected')
             vm_uuids, state['vm_selection_state'] = vm_selection(
                 host_cpu_utilization, vm_ram, state['vm_selection_state'])
