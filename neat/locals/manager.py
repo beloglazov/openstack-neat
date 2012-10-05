@@ -274,7 +274,6 @@ def execute(config, state):
                       'password': state['hashed_password'], 
                       'reason': 0, 
                       'host': state['hostname']})
-        # Send a request to the global manager with the host name
         pass
     else:
         overload, overload_detection_state = overload_detection(
@@ -285,8 +284,14 @@ def execute(config, state):
             vms = vm_selection(
                 host_cpu_utilization, vm_ram, vm_selection_state)
             log.info('Selected VMs to migrate: %s', str(vms))
-            # send a request to the global manager
-            # with the selected VMs to migrate
+            requests.put('http://' + config['global_manager_host'] + \
+                               ':' + config['global_manager_port'], 
+                         {'username': state['hashed_username'], 
+                          'password': state['hashed_password'], 
+                          'reason': 1, 
+                          'vm_uuids': ','.join(vms)})
+        else:
+            log.info('No underload or overload detected')
 
     return state
 
