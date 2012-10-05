@@ -363,10 +363,11 @@ def get_max_ram(vir_connection, uuid):
     :return: The maximum RAM of the VM in MB.
      :rtype: int|None
     """
-    domain = vir_connection.lookupByUUIDString(uuid)
-    if domain:
+    try: 
+        domain = vir_connection.lookupByUUIDString(uuid)
         return domain.maxMemory() / 1024
-    return None
+    except libvirt.libvirtError:
+        return None
 
 
 @contract
