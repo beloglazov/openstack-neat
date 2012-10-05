@@ -93,5 +93,6 @@ setup(
         },
     data_files = [('/etc/init.d', ['init.d/openstack-neat-data-collector',
                                    'init.d/openstack-neat-local-manager',
-                                   'init.d/openstack-neat-global-manager'])],
+                                   'init.d/openstack-neat-global-manager']),
+                  ('/etc/neat', ['neat.conf'])],
 )
