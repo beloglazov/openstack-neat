@@ -285,6 +285,13 @@ def execute_underload(config, state, host):
     hosts_to_vms = vms_by_hosts(state['nova'], state['compute_hosts'])
     vms_last_cpu = state['db'].select_last_cpu_mhz_for_vms()
 
+    # Remove VMs from hosts_to_vms that are not in vms_last_cpu
+    # These VMs are new and no data have been collected from them
+    for host, vms in hosts_to_vms.items():
+        for i, vm in enumerate(vms):
+            if not vm in vms_last_cpu:
+                del hosts_to_vms[host][i]
+
     hosts_cpu_usage = {}
     hosts_ram_usage = {}
     for host, vms in hosts_to_vms.items():
@@ -477,6 +484,13 @@ def execute_overload(config, state, vm_uuids):
     hosts_cpu_total, hosts_ram_total = state['db'].select_host_characteristics()
     hosts_to_vms = vms_by_hosts(state['nova'], state['compute_hosts'])
     vms_last_cpu = state['db'].select_last_cpu_mhz_for_vms()
+
+    # Remove VMs from hosts_to_vms that are not in vms_last_cpu
+    # These VMs are new and no data have been collected from them
+    for host, vms in hosts_to_vms.items():
+        for i, vm in enumerate(vms):
+            if not vm in vms_last_cpu:
+                del hosts_to_vms[host][i]
 
     hosts_cpu_usage = {}
     hosts_ram_usage = {}
