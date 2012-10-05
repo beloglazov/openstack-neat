@@ -524,6 +524,11 @@ def execute_overload(config, state, vm_uuids):
     if log.isEnabledFor(logging.INFO):
         log.info('Overload: obtained a new placement %s', str(placement))
 
+    for vm, host in placement.items():
+        state['nova'].servers.live_migrate(vm, host, False, False)
+        if log.isEnabledFor(logging.INFO):
+            log.info('Started migration of VM %s to %s', vm, host)
+
     # Switch on the inactive hosts required to accommodate the VMs
     # TODO: initiate VM migrations according to the obtained placement
 
