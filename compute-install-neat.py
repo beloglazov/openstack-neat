@@ -12,19 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import subprocess
+from neat.config import *
+import neat.common as common
 
-python = 'python'
-scripts = ['compute-clone-neat.py', 'compute-install-neat.py']
+config = read_and_validate_config([DEFAILT_CONFIG_PATH, CONFIG_PATH],
+                                  REQUIRED_FIELDS)
+compute_hosts = common.parse_compute_hosts(config['compute_hosts'])
 
-for script in scripts:
-    command = python + ' ' + script
-    print '[' + command + ']'
-    print
-    output = subprocess.Popen(
-        command, 
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
-        shell=True).communicate()[0]
-    if output:
-        print output
+common.execute_on_hosts(
+    compute_hosts, 
+    ['cd openstack-neat',
+     'python2 setup.py install'])
