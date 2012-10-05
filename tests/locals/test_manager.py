@@ -62,12 +62,14 @@ class LocalManager(TestCase):
                 and_return(db).once()
             expect(common).physical_cpu_mhz_total(vir_connection). \
                 and_return(mhz)
+            expect(vir_connection).getHostname().and_return('host').once()
             config = {'sql_connection': 'db'}
             state = manager.init_state(config)
             assert state['previous_time'] == 0
             assert state['vir_connection'] == vir_connection
             assert state['db'] == db
             assert state['physical_cpu_mhz_total'] == mhz
+            assert state['hostname'] == 'host'
 
     @qc(1)
     def get_local_data(

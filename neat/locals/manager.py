@@ -104,6 +104,8 @@ from contracts import contract
 from neat.contracts_extra import *
 
 import itertools
+import requests
+from hashlib import sha1
 
 import neat.common as common
 from neat.config import *
@@ -158,7 +160,8 @@ def init_state(config):
     return {'previous_time': 0.,
             'vir_connection': vir_connection,
             'db': init_db(config['sql_connection']),
-            'physical_cpu_mhz_total': physical_cpu_mhz_total}
+            'physical_cpu_mhz_total': physical_cpu_mhz_total,
+            'hostname': vir_connection.getHostname()}
 
 
 @contract
@@ -263,6 +266,17 @@ def execute(config, state):
 
     if underload:
         log.info('Underload detected')
+        host = 'http://' + config['global_manager_host'] + \
+               ':' + config['global_manager_port']
+        username = sha1(config['os_admin_user']).hexdigest()
+        password = sha1(config['os_admin_password']).hexdigest()
+        log.info('Request: host %s, username %s, password %s',
+                 host, username, password)
+        requests.put(host, 
+                     {'username': username, 
+                      'password': password, 
+                      'reason': 0, 
+                      'host': state['hostname']})
         # Send a request to the global manager with the host name
         pass
     else:
