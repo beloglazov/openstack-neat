@@ -150,9 +150,11 @@ class LocalManager(TestCase):
         uuid=str_(of='abc123-', min_length=36, max_length=36)
     ):
         with MockTransaction:
+            def raise_libvirt_error():
+                raise libvirt.libvirtError(None)                
             connection = libvirt.virConnect()
             expect(connection).lookupByUUIDString(uuid). \
-                and_return(None).once()
+                and_call(lambda _: raise_libvirt_error())
             assert manager.get_max_ram(connection, uuid) is None
 
     def test_vm_mhz_to_percentage(self):

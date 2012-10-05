@@ -337,8 +337,10 @@ def execute_underload(config, state, host):
 
     if log.isEnabledFor(logging.INFO):
         log.info('Underload: obtained a new placement %s', str(placement))
-        for vm, host in placement.items():
-            state['nova'].servers.live_migrate(vm, host, False, False)
+
+    for vm, host in placement.items():
+        state['nova'].servers.live_migrate(vm, host, False, False)
+        if log.isEnabledFor(logging.INFO):
             log.info('Started migration of VM %s to %s', vm, host)
 
     # TODO: initiate VM migrations according to the obtained placement
