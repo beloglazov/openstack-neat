@@ -161,7 +161,9 @@ def init_state(config):
             'vir_connection': vir_connection,
             'db': init_db(config['sql_connection']),
             'physical_cpu_mhz_total': physical_cpu_mhz_total,
-            'hostname': vir_connection.getHostname()}
+            'hostname': vir_connection.getHostname(),
+            'hashed_username': sha1(config['os_admin_user']).hexdigest(),
+            'hashed_password': sha1(config['os_admin_password']).hexdigest()}
 
 
 @contract
@@ -266,15 +268,10 @@ def execute(config, state):
 
     if underload:
         log.info('Underload detected')
-        host = 'http://' + config['global_manager_host'] + \
-               ':' + config['global_manager_port']
-        username = sha1(config['os_admin_user']).hexdigest()
-        password = sha1(config['os_admin_password']).hexdigest()
-        log.info('Request: host %s, username %s, password %s',
-                 host, username, password)
-        requests.put(host, 
-                     {'username': username, 
-                      'password': password, 
+        requests.put('http://' + config['global_manager_host'] + \
+                           ':' + config['global_manager_port'], 
+                     {'username': state['hashed_username'], 
+                      'password': state['hashed_password'], 
                       'reason': 0, 
                       'host': state['hostname']})
         # Send a request to the global manager with the host name
