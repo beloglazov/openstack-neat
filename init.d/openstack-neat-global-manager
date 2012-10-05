@@ -28,6 +28,8 @@ prog=openstack-neat-$suffix
 exec="/usr/bin/neat-$suffix"
 piddir="/var/run/neat"
 pidfile="$piddir/neat-$suffix.pid"
+logdir="/var/log/neat"
+logfile="$logdir/global-manager-service.log"
 
 [ -e /etc/sysconfig/$prog ] && . /etc/sysconfig/$prog
 
@@ -38,7 +40,8 @@ start() {
     [ -f $config ] || exit 6
     echo -n $"Starting $prog: "
     mkdir -p $piddir
-    daemon --user root --pidfile $pidfile "$exec &>/dev/null & echo \$! > $pidfile"
+    mkdir -p $logdir
+    daemon --user root --pidfile $pidfile "$exec &>$logfile & echo \$! > $pidfile"
     retval=$?
     echo
     [ $retval -eq 0 ] && touch $lockfile
