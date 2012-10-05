@@ -26,7 +26,8 @@
 suffix=data-collector
 prog=openstack-neat-$suffix
 exec="/usr/bin/neat-$suffix"
-pidfile="/var/run/neat/neat-$suffix.pid"
+piddir="/var/run/neat"
+pidfile="$piddir/neat-$suffix.pid"
 
 [ -e /etc/sysconfig/$prog ] && . /etc/sysconfig/$prog
 
@@ -36,8 +37,10 @@ start() {
     [ -x $exec ] || exit 5
     [ -f $config ] || exit 6
     echo -n $"Starting $prog: "
+    mkdir -p piddir
     daemon --user root --pidfile $pidfile "$exec &>/dev/null & echo \$! > $pidfile"
     retval=$?
+    cat pidfile
     echo
     [ $retval -eq 0 ] && touch $lockfile
     return $retval
