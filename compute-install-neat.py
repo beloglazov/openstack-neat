@@ -21,5 +21,6 @@ compute_hosts = common.parse_compute_hosts(config['compute_hosts'])
 
 common.execute_on_hosts(
     compute_hosts, 
-    ['cd openstack-neat',
+    ['rm -f /etc/init.d/openstack-neat-*',
+     'cd openstack-neat',
      'python2 setup.py install'])

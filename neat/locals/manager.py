@@ -212,6 +212,7 @@ def execute(config, state):
     vm_cpu_mhz = cleanup_vm_data(vm_cpu_mhz, vm_ram.keys())
 
     if not vm_cpu_mhz:
+        log.info('The host is idle')
         return state
 
     physical_cpu_mhz_total = int(state['physical_cpu_mhz_total'])
