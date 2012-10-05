@@ -121,13 +121,13 @@ class GlobalManager(TestCase):
                 'global_manager_port': 8080}
             paths = [manager.DEFAILT_CONFIG_PATH, manager.CONFIG_PATH]
             fields = manager.REQUIRED_FIELDS
-            when(manager).read_and_validate_config(paths, fields). \
-                and_return(config)#.once()
+            expect(manager).read_and_validate_config(paths, fields). \
+                and_return(config).once()
             expect(common).init_logging('dir', 'global-manager.log', 2).once()
-            when(manager).init_state(config). \
-                and_return(state)#.once()
-            when(bottle).app().and_return(app)#.once()
-            when(bottle).run(host='localhost', port=8080)#.once()
+            expect(manager).init_state(config). \
+                and_return(state).once()
+            expect(bottle).app().and_return(app).once()
+            expect(bottle).run(host='localhost', port=8080).once()
             manager.start()
 
     def test_init_state(self):
@@ -165,26 +165,28 @@ class GlobalManager(TestCase):
         app.state = {'state': state,
                      'config': config}
 
-        # with MockTransaction:
-        #     params = {'reason': 0,
-        #               'host': 'host'}
-        #     expect(manager).get_params(Any).and_return(params).once()
-        #     expect(bottle).app().and_return(app).once()
-        #     expect(manager).validate_params('user', 'password', params). \
-        #         and_return(True).once()
-        #     expect(manager).execute_underload(config, state, 'host').once()
-        #     manager.service()
+        with MockTransaction:
+            params = {'reason': 0,
+                      'host': 'host'}
+            expect(manager).get_params(Any).and_return(params).once()
+            expect(manager).get_remote_addr(Any).and_return('addr').once()
+            expect(bottle).app().and_return(app).once()
+            expect(manager).validate_params('user', 'password', params). \
+                and_return(True).once()
+            expect(manager).execute_underload(config, state, 'host').once()
+            manager.service()
 
-        # with MockTransaction:
-        #     params = {'reason': 1,
-        #               'vm_uuids': 'vm_uuids'}
-        #     expect(manager).get_params(Any).and_return(params).once()
-        #     expect(bottle).app().and_return(app).once()
-        #     expect(manager).validate_params('user', 'password', params). \
-        #         and_return(True).once()
-        #     expect(manager).execute_overload(config, state, 'vm_uuids'). \
-        #         once()
-        #     manager.service()
+        with MockTransaction:
+            params = {'reason': 1,
+                      'vm_uuids': 'vm_uuids'}
+            expect(manager).get_params(Any).and_return(params).once()
+            expect(manager).get_remote_addr(Any).and_return('addr').once()
+            expect(bottle).app().and_return(app).once()
+            expect(manager).validate_params('user', 'password', params). \
+                and_return(True).once()
+            expect(manager).execute_overload(config, state, 'vm_uuids'). \
+                once()
+            manager.service()
 
     @qc(20)
     def vms_by_host(

@@ -178,8 +178,20 @@ def get_params(request):
         params['reason'] = int(params['reason'])
     if 'vm_uuids' in params:
         params['vm_uuids'] = params['vm_uuids'].split(',')
-    print params
     return params
+
+
+@contract
+def get_remote_addr(request):
+    """ Return the IP address of the client.
+
+    :param request: A Bottle request object.
+     :type request: *
+
+    :return: The IP address of the remote client.
+     :rtype: str
+    """
+    return bottle.request.remote_addr
 
 
 @bottle.put('/')
@@ -190,24 +202,24 @@ def service():
                     state['state']['hashed_password'], 
                     params)
     log.info('Received a request from %s: %s', 
-             bottle.request.remote_addr,
+             get_remote_addr(bottle.request),
              str(params))
-    # try: 
-    #     if params['reason'] == 0:
-    #         log.info('Processing an underload of a host %s', params['host'])
-    #         execute_underload(
-    #             state['config'],
-    #             state['state'],
-    #             params['host'])
-    #     else:
-    #         log.info('Processing an overload, VMs: %s', str(params['vm_uuids']))
-    #         execute_overload(
-    #             state['config'],
-    #             state['state'],
-    #             params['vm_uuids'])
-    # except:
-    #     log.exception('Exception during request processing:')
-    #     raise
+    try: 
+        if params['reason'] == 0:
+            log.info('Processing an underload of a host %s', params['host'])
+            execute_underload(
+                state['config'],
+                state['state'],
+                params['host'])
+        else:
+            log.info('Processing an overload, VMs: %s', str(params['vm_uuids']))
+            execute_overload(
+                state['config'],
+                state['state'],
+                params['vm_uuids'])
+    except:
+        log.exception('Exception during request processing:')
+        raise
 
 
 @bottle.route('/', method='ANY')
