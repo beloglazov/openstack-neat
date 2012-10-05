@@ -256,17 +256,13 @@ def execute(config, state):
         state['vm_selection_state'] = {}
     else:
         underload_detection = state['underload_detection']
-        underload_detection_state = state['underload_detection_state']
         overload_detection = state['overload_detection']
-        overload_detection_state = state['overload_detection_state']
         vm_selection = state['vm_selection']
-        vm_selection_state = state['vm_selection_state']
 
-    underload, underload_detection_state = underload_detection(
-        host_cpu_utilization, underload_detection_state)
-    state['underload_detection_state'] = underload_detection_state
+    underload, state['underload_detection_state'] = underload_detection(
+        host_cpu_utilization, state['underload_detection_state'])
 
-    if underload:
+    if not underload:
         log.info('Underload detected')
         requests.put('http://' + config['global_manager_host'] + \
                            ':' + config['global_manager_port'], 
@@ -276,20 +272,19 @@ def execute(config, state):
                       'host': state['hostname']})
         pass
     else:
-        overload, overload_detection_state = overload_detection(
-            host_cpu_utilization, overload_detection_state)
-        state['overload_detection_state'] = overload_detection_state
-        if overload:
+        overload, state['overload_detection_state'] = overload_detection(
+            host_cpu_utilization, state['overload_detection_state'])
+        if not overload:
             log.info('Overload detected')
-            vms = vm_selection(
-                host_cpu_utilization, vm_ram, vm_selection_state)
-            log.info('Selected VMs to migrate: %s', str(vms))
+            vm_uuids, state['vm_selection_state'] = vm_selection(
+                host_cpu_utilization, vm_ram, state['vm_selection_state'])
+            log.info('Selected VMs to migrate: %s', str(vm_uuids))
             requests.put('http://' + config['global_manager_host'] + \
                                ':' + config['global_manager_port'], 
                          {'username': state['hashed_username'], 
                           'password': state['hashed_password'], 
                           'reason': 1, 
-                          'vm_uuids': ','.join(vms)})
+                          'vm_uuids': ','.join(vm_uuids)})
         else:
             log.info('No underload or overload detected')
 
