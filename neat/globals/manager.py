@@ -407,7 +407,10 @@ def host_used_ram(nova, host):
     :return: The used RAM of the host.
      :rtype: int
     """
-    return nova.hosts.get(host)[1].memory_mb
+    data = nova.hosts.get(host)
+    if len(data) > 2 and data[2].memory_mb != 0:
+        return data[2].memory_mb
+    return data[1].memory_mb
 
 
 @contract

@@ -261,6 +261,20 @@ class GlobalManager(TestCase):
                 and_return([host1, host2]).once()
             assert manager.host_used_ram(nova, hostname) == 3000
 
+        with MockTransaction:
+            hostname = 'hosthost'
+            nova = mock('nova')
+            nova.hosts = mock('hosts')
+            host1 = mock('host1')
+            host1.memory_mb = 4000
+            host2 = mock('host2')
+            host2.memory_mb = 3000
+            host3 = mock('host3')
+            host3.memory_mb = 3500
+            expect(nova.hosts).get(hostname). \
+                and_return([host1, host2, host3]).once()
+            assert manager.host_used_ram(nova, hostname) == 3500
+
     def test_flavors_ram(self):
         with MockTransaction:
             nova = mock('nova')
