@@ -348,10 +348,12 @@ def execute_underload(config, state, host):
     if not placement:
         log.info('Nothing to migrate')
 
-    for vm, host in placement.items():
-        state['nova'].servers.live_migrate(vm, host, False, False)
-        if log.isEnabledFor(logging.INFO):
-            log.info('Started migration of VM %s to %s', vm, host)
+    migrate_vms(state['nova'], placement)
+
+    # for vm, host in placement.items():
+    #     state['nova'].servers.live_migrate(vm, host, False, False)
+    #     if log.isEnabledFor(logging.INFO):
+    #         log.info('Started migration of VM %s to %s', vm, host)
 
     # TODO: initiate VM migrations according to the obtained placement
     # Switch of the underloaded host when the migrations are completed
@@ -544,12 +546,62 @@ def execute_overload(config, state, vm_uuids):
     if not placement:
         log.info('Nothing to migrate')
 
-    for vm, host in placement.items():
-        state['nova'].servers.live_migrate(vm, host, False, False)
-        if log.isEnabledFor(logging.INFO):
-            log.info('Started migration of VM %s to %s', vm, host)
+    migrate_vms(state['nova'], placement)
+
+    # for vm, host in placement.items():
+    #     state['nova'].servers.live_migrate(vm, host, False, False)
+    #     if log.isEnabledFor(logging.INFO):
+    #         log.info('Started migration of VM %s to %s', vm, host)
 
     # Switch on the inactive hosts required to accommodate the VMs
     # TODO: initiate VM migrations according to the obtained placement
 
     return state
+
+
+@contract
+def is_vm_migrating(nova, vm):
+    """ Checking if a VM is migrating.
+
+    :param nova: A Nova client.
+     :type nova: *
+
+    :param vm: A VM UUID.
+     :type vm: str
+
+    :return: Whether the VM is migrating.
+     :rtype: bool
+    """
+    return nova.servers.get('vm').status == u'ACTIVE'
+
+
+@contract
+def migrate_vms(nova, placement):
+    """ Synchronously live migrate a set of VMs.
+
+    :param nova: A Nova client.
+     :type nova: *
+
+    :param placement: A dict of VM UUIDs to host names.
+     :type placement: dict(str: str)
+    """
+    for vm, host in placement.items():
+        nova.servers.live_migrate(vm, host, False, False)
+        if log.isEnabledFor(logging.INFO):
+            log.info('Started migration of VM %s to %s', vm, host)
+
+    time.sleep(5)
+    vms = placement.keys()
+
+    while True:
+        for vm in list(vms):
+            if (is_vm_migrating(vm)):
+                break
+            else:
+                vms.remove(vm)          
+                if log.isEnabledFor(logging.INFO):
+                    log.info('Completed migration of VM %s to %s', 
+                             vm, placement[vm])
+        else:
+            return
+        time.sleep(3)
