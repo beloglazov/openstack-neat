@@ -582,14 +582,20 @@ def migrate_vms(nova, placement):
     time.sleep(5)
 
     while True:
-        for vm_uuid in vms:
+        for vm_uuid in placement.keys():
             vm = nova.servers.get(vm_uuid)
-            if vm_hostname(vm) != placement[vm] or vm.status != u'ACTIVE':
+            if log.isEnabledFor(logging.DEBUG):
+                log.info('VM %s: %s, %s', 
+                         vm_uuid, 
+                         vm_hostname(vm), 
+                         vm.status)
+            if vm_hostname(vm) != placement[vm_uuid] or \
+                    vm.status != u'ACTIVE':
                 break
             else:
                 if log.isEnabledFor(logging.INFO):
                     log.info('Completed migration of VM %s to %s', 
-                             vm, placement[vm])
+                             vm_uuid, placement[vm_uuid])
         else:
             return
         time.sleep(3)

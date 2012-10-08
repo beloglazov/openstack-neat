@@ -34,7 +34,14 @@ nova = client.Client(config['os_admin_user'],
 
 
 
-placement = dict((str(vm.human_id), vm_hostname(vm)) for vm in nova.servers.list())
+placement = dict((str(vm.human_id), 
+                  (vm.status, 
+                   vm_hostname(vm),
+                   nova.hosts.get(vm_hostname(vm))[2].memory_mb)) 
+                 for vm in nova.servers.list())
 
 for vm in sorted(placement.keys()):
-    print '{0:15} ==> {1}'.format(vm, placement[vm])
+    print '{0:10} {1:10} {2} [{3} MB used]'.format(vm, 
+                                           placement[vm][0], 
+                                           placement[vm][1],
+                                           placement[vm][2])
