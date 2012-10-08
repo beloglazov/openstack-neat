@@ -74,6 +74,7 @@ import bottle
 import json
 from hashlib import sha1
 from novaclient.v1_1 import client
+import time
 
 import neat.common as common
 from neat.config import *
