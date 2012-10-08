@@ -565,22 +565,6 @@ def execute_overload(config, state, vm_uuids):
 
 
 @contract
-def is_vm_migrating(nova, vm):
-    """ Checking if a VM is migrating.
-
-    :param nova: A Nova client.
-     :type nova: *
-
-    :param vm: A VM UUID.
-     :type vm: str
-
-    :return: Whether the VM is migrating.
-     :rtype: bool
-    """
-    return nova.servers.get(vm).status != u'ACTIVE'
-
-
-@contract
 def migrate_vms(nova, placement):
     """ Synchronously live migrate a set of VMs.
 
@@ -596,14 +580,13 @@ def migrate_vms(nova, placement):
             log.info('Started migration of VM %s to %s', vm, host)
 
     time.sleep(5)
-    vms = placement.keys()
 
     while True:
-        for vm in list(vms):
-            if (is_vm_migrating(nova, vm)):
+        for vm_uuid in vms:
+            vm = nova.servers.get(vm_uuid)
+            if vm_hostname(vm) != placement[vm] or vm.status != u'ACTIVE':
                 break
             else:
-                vms.remove(vm)          
                 if log.isEnabledFor(logging.INFO):
                     log.info('Completed migration of VM %s to %s', 
                              vm, placement[vm])
