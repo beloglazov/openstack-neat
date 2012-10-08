@@ -573,7 +573,7 @@ def is_vm_migrating(nova, vm):
     :return: Whether the VM is migrating.
      :rtype: bool
     """
-    return nova.servers.get('vm').status == u'ACTIVE'
+    return nova.servers.get('vm').status != u'ACTIVE'
 
 
 @contract
