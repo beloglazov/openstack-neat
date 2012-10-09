@@ -81,8 +81,13 @@ class Database(object):
         vms_cpu_mhz = dict(self.connection.execute(sel).fetchall())
         vms_uuids = dict(self.vms.select().execute().fetchall())
 
-        return dict((str(uuid), int(vms_cpu_mhz[id]))
-                    for id, uuid in vms_uuids.items())
+        vms_last_mhz = {}
+        for id, uuid in vms_uuids.items():
+            if id in vms_cpu_mhz:
+                vms_last_mhz[str(uuid)] = int(vms_cpu_mhz[id])
+            else:
+                vms_last_mhz[str(uuid)] = 0
+        return vms_last_mhz
 
     @contract
     def select_vm_id(self, uuid):
