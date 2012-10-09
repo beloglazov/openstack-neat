@@ -79,10 +79,14 @@ for host in sorted(hosts_to_vms.keys()):
                hosts_ram_total[host])
     for vm, uuid in vms_names:
         if uuid in vms:
+            if uuid not in vms_ram_usage:
+                vms_ram = 0
+            else:
+                vms_ram = vms_ram_usage[uuid]
             print '    {0:10} {1:9} {2:5d} / {3:5d} MHz {4:5d} / {5:5d} MB'. \
                 format(vm,
                        vms_status[uuid],
                        vms_cpu_usage[uuid], 
                        hosts_cpu_core[host],
-                       vms_ram_usage[uuid],
-                       vms_ram_usage[uuid])
+                       vms_ram,
+                       vms_ram)
