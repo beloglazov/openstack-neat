@@ -35,7 +35,11 @@ nova = client.Client(config['os_admin_user'],
                      service_type="compute")
 hosts = common.parse_compute_hosts(config['compute_hosts'])
 
-hosts_cpu_total, hosts_ram_total = db.select_host_characteristics()
+hosts_cpu_total, hosts_cpu_cores, hosts_ram_total = \
+    db.select_host_characteristics()
+hosts_cpu_core = \
+    dict((host, int(hosts_cpu_total[host] / hosts_cpu_cores[host]))
+         for host in hosts_cpu_total.keys())
 hosts_to_vms = manager.vms_by_hosts(nova, hosts)
 vms = [item for sublist in hosts_to_vms.values() for item in sublist]
 
@@ -62,17 +66,18 @@ for host, vms in hosts_to_vms.items():
         
 
 for host, vms in hosts_to_vms.items():
-    print '{0:24} {1:5d} / {2:5d} MHz {3:5d} / {4:5d} MB'.format(
-        host, 
-        hosts_cpu_usage[host], 
-        hosts_cpu_total[host],
-        hosts_ram_usage[host],
-        hosts_ram_total[host])
+    print '{0:24} {1:5d} / {2:5d} MHz {3:5d} / {4:5d} MB'. \
+        format(host, 
+               hosts_cpu_usage[host], 
+               hosts_cpu_total[host],
+               hosts_ram_usage[host],
+               hosts_ram_total[host])
     for vm, uuid in vms_names:
         if uuid in vms:
-            print '    {0:10} {1:9} {2:5d}       MHz {3:5d} / {4:5d} MB'. \
+            print '    {0:10} {1:9} {2:5d} / {3:5d} MHz {4:5d} / {5:5d} MB'. \
                 format(vm,
                        vms_status[uuid],
                        vms_cpu_usage[uuid], 
+                       hosts_cpu_core[host],
                        vms_ram_usage[uuid],
                        vms_ram_usage[uuid])
