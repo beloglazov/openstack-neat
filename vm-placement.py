@@ -50,7 +50,6 @@ for uuid in vms:
     vms_names.append((vm.human_id, uuid))
     vms_status[uuid] = str(vm.status)
 vms_names = sorted(vms_names)
-#sorted((str(nova.servers.get(vm).human_id), vm) for vm in vms)
 
 vms_cpu_usage = db.select_last_cpu_mhz_for_vms()
 for vm in vms:
