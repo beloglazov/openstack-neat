@@ -316,6 +316,16 @@ def execute_underload(config, state, host):
     vms_cpu = dict((x, vms_last_cpu[x]) for x in vms_to_migrate)
     vms_ram = vms_ram_limit(state['nova'], vms_to_migrate)
 
+    # Remove VMs that are not in vms_ram 
+    # These instances might have been deleted
+    for i, vm in enumerate(vms_to_migrate):
+        if not vm in vms_ram:
+            del vms_to_migrate[i]
+
+    for vm in vms_cpu.keys():
+        if not vm in vms_ram:
+            del vms_cpu[i]
+
     time_step = int(config['data_collector_interval'])
     migration_time = common.calculate_migration_time(
         vms_ram,
@@ -390,8 +400,14 @@ def vms_ram_limit(nova, vms):
      :rtype: dict(str: int)
     """
     flavors_to_ram = flavors_ram(nova)
-    return dict((uuid, flavors_to_ram[nova.servers.get(uuid).flavor['id']])
-                for uuid in vms)
+    vms_ram = {}
+    for uuid in vms:
+        try:
+            vm = nova.servers.get(uuid)
+            vms_ram[uuid] = flavors_to_ram[vm.flavor['id']]
+        except novaclient.exceptions.NotFound:
+            pass
+    return vms_ram
 
 
 @contract
@@ -517,6 +533,16 @@ def execute_overload(config, state, vm_uuids):
     vms_to_migrate = vm_uuids
     vms_cpu = dict((x, vms_last_cpu[x]) for x in vms_to_migrate)
     vms_ram = vms_ram_limit(state['nova'], vms_to_migrate)
+
+    # Remove VMs that are not in vms_ram 
+    # These instances might have been deleted
+    for i, vm in enumerate(vms_to_migrate):
+        if not vm in vms_ram:
+            del vms_to_migrate[i]
+
+    for vm in vms_cpu.keys():
+        if not vm in vms_ram:
+            del vms_cpu[i]
 
     time_step = int(config['data_collector_interval'])
     migration_time = common.calculate_migration_time(
