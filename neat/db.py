@@ -128,8 +128,8 @@ class Database(object):
         :param cpu_mhz: The total CPU frequency of the host in MHz.
          :type cpu_mhz: int,>0
 
-        :param cpu_mhz: The number of physical CPU cores.
-         :type cpu_mhz: int,>0
+        :param cpu_cores: The number of physical CPU cores.
+         :type cpu_cores: int,>0
 
         :param ram: The total amount of RAM of the host in MB.
          :type ram: int,>0
