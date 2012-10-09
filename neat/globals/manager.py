@@ -73,6 +73,7 @@ from neat.contracts_extra import *
 import bottle
 import json
 from hashlib import sha1
+import novaclient
 from novaclient.v1_1 import client
 import time
 
