@@ -65,7 +65,11 @@ for host, vms in hosts_to_vms.items():
     hosts_ram_usage[host] = manager.host_used_ram(nova, host)
         
 
+first = True
 for host in sorted(hosts_to_vms.keys()):
+    if not first:
+        print "-----------------------------------------------------------"
+    first = False
     vms = hosts_to_vms[host]
     print '{0:24} {1:5d} / {2:5d} MHz {3:5d} / {4:5d} MB'. \
         format(host, 
