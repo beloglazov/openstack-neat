@@ -34,7 +34,7 @@ class DbUtils(TestCase):
         assert isinstance(db.vms, Table)
         assert isinstance(db.vm_resource_usage, Table)
         assert db.hosts.c.keys() == \
-            ['id', 'hostname', 'cpu_mhz', 'ram']
+            ['id', 'hostname', 'cpu_mhz', 'cpu_cores', 'ram']
         assert db.vms.c.keys() == \
             ['id', 'uuid']
         assert db.vm_resource_usage.c.keys() == \

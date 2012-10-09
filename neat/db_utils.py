@@ -42,6 +42,7 @@ def init_db(sql_connection):
                   Column('id', Integer, primary_key=True),
                   Column('hostname', String(255), nullable=False),
                   Column('cpu_mhz', Integer, nullable=False),
+                  Column('cpu_cores', Integer, nullable=False),
                   Column('ram', Integer, nullable=False))
 
     vms = Table('vms', metadata,

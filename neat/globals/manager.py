@@ -282,7 +282,7 @@ def execute_underload(config, state, host):
      :rtype: dict(str: *)
     """
     underloaded_host = host
-    hosts_cpu_total, hosts_ram_total = state['db'].select_host_characteristics()
+    hosts_cpu_total, _, hosts_ram_total = state['db'].select_host_characteristics()
 
     hosts_to_vms = vms_by_hosts(state['nova'], state['compute_hosts'])
     vms_last_cpu = state['db'].select_last_cpu_mhz_for_vms()
@@ -488,7 +488,7 @@ def execute_overload(config, state, vm_uuids):
     :return: The updated state dictionary.
      :rtype: dict(str: *)
     """
-    hosts_cpu_total, hosts_ram_total = state['db'].select_host_characteristics()
+    hosts_cpu_total, _, hosts_ram_total = state['db'].select_host_characteristics()
     hosts_to_vms = vms_by_hosts(state['nova'], state['compute_hosts'])
     vms_last_cpu = state['db'].select_last_cpu_mhz_for_vms()
 

@@ -110,29 +110,32 @@ class Db(TestCase):
     @qc(1)
     def update_host():
         db = db_utils.init_db('sqlite:///:memory:')
-        db.update_host('host1', 3000, 4000)
+        db.update_host('host1', 3000, 4, 4000)
         hosts = db.hosts.select().execute().fetchall()
         assert len(hosts) == 1
         host = hosts[0]
         assert host['hostname'] == 'host1'
         assert host['cpu_mhz'] == 3000
+        assert host['cpu_cores'] == 4
         assert host['ram'] == 4000
 
-        db.update_host('host1', 3500, 8000)
+        db.update_host('host1', 3500, 8, 8000)
         hosts = db.hosts.select().execute().fetchall()
         assert len(hosts) == 1
         host = hosts[0]
         assert host['hostname'] == 'host1'
         assert host['cpu_mhz'] == 3500
+        assert host['cpu_cores'] == 8
         assert host['ram'] == 8000
 
     @qc(1)
     def select_host_characteristics():
         db = db_utils.init_db('sqlite:///:memory:')
-        assert db.select_host_characteristics() == ({}, {})
+        assert db.select_host_characteristics() == ({}, {}, {})
 
-        db.update_host('host1', 3000, 4000)
-        db.update_host('host2', 3500, 8000)
+        db.update_host('host1', 3000, 4, 4000)
+        db.update_host('host2', 3500, 8, 8000)
         assert db.select_host_characteristics() == \
             ({'host1': 3000, 'host2': 3500},
+             {'host1': 4,    'host2': 8},
              {'host1': 4000, 'host2': 8000})

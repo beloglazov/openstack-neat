@@ -119,13 +119,16 @@ class Database(object):
             self.vm_resource_usage.insert().execute(query)
 
     @contract
-    def update_host(self, hostname, cpu_mhz, ram):
+    def update_host(self, hostname, cpu_mhz, cpu_cores, ram):
         """ Insert new or update the corresponding host record.
 
         :param hostname: A host name.
          :type hostname: str
 
         :param cpu_mhz: The total CPU frequency of the host in MHz.
+         :type cpu_mhz: int,>0
+
+        :param cpu_mhz: The number of physical CPU cores.
          :type cpu_mhz: int,>0
 
         :param ram: The total amount of RAM of the host in MB.
@@ -141,6 +144,7 @@ class Database(object):
             id = self.hosts.insert().execute(
                 hostname=hostname,
                 cpu_mhz=cpu_mhz,
+                cpu_cores=cpu_cores,
                 ram=ram).inserted_primary_key[0]
             log.info('Created a new DB record for a host %s, id=%d',
                      hostname, id)
@@ -149,6 +153,7 @@ class Database(object):
             self.connection.execute(self.hosts.update().
                                     where(self.hosts.c.id == row['id']).
                                     values(cpu_mhz=cpu_mhz,
+                                           cpu_cores=cpu_cores,
                                            ram=ram))
             return row['id']
 
@@ -156,13 +161,15 @@ class Database(object):
     def select_host_characteristics(self):
         """ Select the characteristics of all the hosts.
 
-        :return: Two dicts of host names to their CPU MHz and RAM.
-         :rtype: tuple(dict(str: int), dict(str: int))
+        :return: Three dicts of hostnames to CPU MHz, cores, and RAM.
+         :rtype: tuple(dict(str: int), dict(str: int), dict(str: int))
         """
-        hosts_cpu = {}
+        hosts_cpu_mhz = {}
+        hosts_cpu_cores = {}
         hosts_ram = {}
         for x in self.hosts.select().execute().fetchall():
             hostname = str(x[1])
-            hosts_cpu[hostname] = int(x[2])
-            hosts_ram[hostname] = int(x[3])
-        return hosts_cpu, hosts_ram
+            hosts_cpu_mhz[hostname] = int(x[2])
+            hosts_cpu_cores[hostname] = int(x[3])
+            hosts_ram[hostname] = int(x[4])
+        return hosts_cpu_mhz, hosts_cpu_cores, hosts_ram

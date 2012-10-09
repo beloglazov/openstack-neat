@@ -160,7 +160,7 @@ def init_state(config):
     physical_cpus = common.physical_cpu_count(vir_connection)
 
     db = init_db(config['sql_connection'])
-    db.update_host(hostname, host_cpu_mhz, host_ram)
+    db.update_host(hostname, host_cpu_mhz, physical_cpus, host_ram)
 
     return {'previous_time': 0.,
             'previous_cpu_time': dict(),
