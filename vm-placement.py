@@ -38,7 +38,15 @@ hosts = common.parse_compute_hosts(config['compute_hosts'])
 hosts_cpu_total, hosts_ram_total = db.select_host_characteristics()
 hosts_to_vms = manager.vms_by_hosts(nova, hosts)
 vms = [item for sublist in hosts_to_vms.values() for item in sublist]
-vms_names = sorted((str(nova.servers.get(vm).human_id), vm) for vm in vms)
+
+vms_names = []
+vms_status = {}
+for uuid in vms:
+    vm = nova.servers.get(uuid)
+    vms_names.append((vm.human_id, uuid))
+    vms_status[uuid] = str(vm.status)
+vms_names = sorted(vms_names)
+#sorted((str(nova.servers.get(vm).human_id), vm) for vm in vms)
 
 vms_cpu_usage = db.select_last_cpu_mhz_for_vms()
 for vm in vms:
@@ -54,7 +62,7 @@ for host, vms in hosts_to_vms.items():
         
 
 for host, vms in hosts_to_vms.items():
-    print '{0:10} {1:5d}/{2:5d} MHz {3:5d}/{4:5d} MB'.format(
+    print '{0:24} {1:5d} / {2:5d} MHz {3:5d} / {4:5d} MB'.format(
         host, 
         hosts_cpu_usage[host], 
         hosts_cpu_total[host],
@@ -62,7 +70,9 @@ for host, vms in hosts_to_vms.items():
         hosts_ram_total[host])
     for vm, uuid in vms_names:
         if uuid in vms:
-            print '    {0:12} {1:5d} MHz {2:11d} MB'.format(
-                vm,
-                vms_cpu_usage[uuid], 
-                vms_ram_usage[uuid])
+            print '    {0:10} {1:9} {2:5d}       MHz {3:5d} / {4:5d} MB'. \
+                format(vm,
+                       vms_status[uuid],
+                       vms_cpu_usage[uuid], 
+                       vms_ram_usage[uuid],
+                       vms_ram_usage[uuid])
