@@ -92,9 +92,8 @@ ERRORS = {
          'specified in the configuration file',
     405: 'Method not allowed: the request is made with ' +
          'a method other than the only supported PUT',
-    422: 'Unprocessable entity: one or more VMs could not ' +
-         'be found using the list of UUIDs specified in ' +
-         'the vm_uuids parameter'}
+    412: 'Precondition failed: some VMs possibly have been in ' +
+         'migration when the request has been sent - retry'}
 
 
 @contract
@@ -136,8 +135,12 @@ def validate_params(user, password, params):
         return False
     if 'reason' not in params or \
        params['reason'] == 1 and 'vm_uuids' not in params or \
-       params['reason'] == 0 and 'host' not in params:
+       params['reason'] == 0 and 'host' not in params or \
+       'time' not in params:
         raise_error(400)
+        return False
+    if params['time'] + 5 < time.time():
+        raise_error(412)
         return False
     log.debug('Request parameters validated')
     return True
@@ -176,6 +179,8 @@ def get_params(request):
      :rtype: dict(str: *)
     """
     params = dict(request.forms)
+    if 'time' in params:
+        params['time'] = float(params['time'])
     if 'reason' in params:
         params['reason'] = int(params['reason'])
     if 'vm_uuids' in params:

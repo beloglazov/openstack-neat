@@ -18,6 +18,7 @@ from pyqcy import *
 import bottle
 from hashlib import sha1
 from novaclient.v1_1 import client
+import time
 
 import neat.globals.manager as manager
 import neat.common as common
@@ -29,7 +30,7 @@ logging.disable(logging.CRITICAL)
 class GlobalManager(TestCase):
 
     def test_raise_error(self):
-        for error_code in [400, 401, 403, 405, 422]:
+        for error_code in [400, 401, 403, 405, 412]:
             try:
                 manager.raise_error(error_code)
             except bottle.HTTPResponse as e:
@@ -80,6 +81,7 @@ class GlobalManager(TestCase):
                 sha1('test2').hexdigest(),
                 {'username': sha1('test1').hexdigest(),
                  'password': sha1('test2').hexdigest(),
+                 'time': time.time(),
                  'reason': 1,
                  'vm_uuids': ['qwe', 'asd']})
 
@@ -88,27 +90,63 @@ class GlobalManager(TestCase):
                 sha1('test2').hexdigest(),
                 {'username': sha1('test1').hexdigest(),
                  'password': sha1('test2').hexdigest(),
+                 'time': time.time(),
                  'reason': 0,
                  'host': 'test'})
 
         with MockTransaction:
-            expect(manager).raise_error(400).exactly(5).times()
-            manager.validate_params('test', 'test', {'username': 'test',
-                                                     'password': 'test'})
+            expect(manager).raise_error(400).exactly(6).times()
             manager.validate_params('test', 'test', {'username': 'test',
                                                      'password': 'test',
+                                                     'time': time.time()})
+            manager.validate_params('test', 'test', {'username': 'test',
+                                                     'password': 'test',
+                                                     'time': time.time(),
                                                      'reason': 1})
             manager.validate_params('test', 'test', {'username': 'test',
                                                      'password': 'test',
+                                                     'time': time.time(),
                                                      'reason': 0})
             manager.validate_params('test', 'test', {'username': 'test',
                                                      'password': 'test',
+                                                     'time': time.time(),
                                                      'reason': 1,
                                                      'host': 'test'})
             manager.validate_params('test', 'test', {'username': 'test',
                                                      'password': 'test',
+                                                     'time': time.time(),
                                                      'reason': 0,
                                                      'vm_uuids': []})
+            manager.validate_params('test', 'test', {'username': 'test',
+                                                     'password': 'test',
+                                                     'reason': 0,
+                                                     'vm_uuids': []})
+
+        with MockTransaction:
+            expect(manager).raise_error(412).exactly(2).times()
+            manager.validate_params('test', 'test', {'username': 'test',
+                                                     'password': 'test',
+                                                     'time': 1.,
+                                                     'reason': 0,
+                                                     'host': 'test'})
+            manager.validate_params('test', 'test', {'username': 'test',
+                                                     'password': 'test',
+                                                     'time': time.time() - 6,
+                                                     'reason': 0,
+                                                     'host': 'test'})
+            assert manager.validate_params('test', 'test', 
+                                           {'username': 'test',
+                                            'password': 'test',
+                                            'time': time.time(),
+                                            'reason': 0,
+                                            'host': 'test'})
+            assert manager.validate_params('test', 'test', 
+                                           {'username': 'test',
+                                            'password': 'test',
+                                            'time': time.time() - 4,
+                                            'reason': 0,
+                                            'host': 'test'})
+
 
     def test_start(self):
         with MockTransaction:
