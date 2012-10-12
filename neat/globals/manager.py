@@ -92,8 +92,9 @@ ERRORS = {
          'specified in the configuration file',
     405: 'Method not allowed: the request is made with ' +
          'a method other than the only supported PUT',
-    412: 'Precondition failed: some VMs possibly have been in ' +
-         'migration when the request has been sent - retry'}
+    412: 'Precondition failed: the request has been sent more ' +
+         'than 5 seconds ago, the states of the hosts/VMs may ' +
+         'have changed - retry'}
 
 
 @contract
