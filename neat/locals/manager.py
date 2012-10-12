@@ -106,6 +106,7 @@ from neat.contracts_extra import *
 import itertools
 import requests
 from hashlib import sha1
+import time
 
 import neat.common as common
 from neat.config import *
@@ -131,8 +132,9 @@ def start():
         int(config['log_level']))
 
     interval = config['local_manager_interval']
-    log.info('Starting the local manager, ' +
-             'iterations every %s seconds', interval)
+    if log.isEnabledFor(logging.INFO):
+        log.info('Starting the local manager, ' +
+                 'iterations every %s seconds', interval)
     return common.start(
         init_state,
         execute,
@@ -212,7 +214,8 @@ def execute(config, state):
     vm_cpu_mhz = cleanup_vm_data(vm_cpu_mhz, vm_ram.keys())
 
     if not vm_cpu_mhz:
-        log.info('The host is idle')
+        if log.isEnabledFor(logging.INFO):
+            log.info('The host is idle')
         return state
 
     physical_cpu_mhz_total = int(state['physical_cpu_mhz_total'])
@@ -264,14 +267,19 @@ def execute(config, state):
         host_cpu_utilization, state['underload_detection_state'])
 
     if underload:
-        log.info('Underload detected')
+        if log.isEnabledFor(logging.INFO):
+            log.info('Underload detected')
         try:
-            requests.put('http://' + config['global_manager_host'] + \
-                               ':' + config['global_manager_port'], 
-                         {'username': state['hashed_username'], 
-                          'password': state['hashed_password'], 
-                          'reason': 0, 
-                          'host': state['hostname']})
+            r = requests.put('http://' + config['global_manager_host'] + \
+                                 ':' + config['global_manager_port'], 
+                             {'username': state['hashed_username'], 
+                              'password': state['hashed_password'], 
+                              'time': time.time(),
+                              'reason': 0, 
+                              'host': state['hostname']})
+            if log.isEnabledFor(logging.INFO):
+                log.info('Received response: [%s] %s', 
+                         r.status_code, r.content)
         except requests.exceptions.ConnectionError:
             log.exception('Exception at underload request:')
 
@@ -279,21 +287,28 @@ def execute(config, state):
         overload, state['overload_detection_state'] = overload_detection(
             host_cpu_utilization, state['overload_detection_state'])
         if overload:
-            log.info('Overload detected')
+            if log.isEnabledFor(logging.INFO):
+                log.info('Overload detected')
             vm_uuids, state['vm_selection_state'] = vm_selection(
                 host_cpu_utilization, vm_ram, state['vm_selection_state'])
-            log.info('Selected VMs to migrate: %s', str(vm_uuids))
+            if log.isEnabledFor(logging.INFO):
+                log.info('Selected VMs to migrate: %s', str(vm_uuids))
             try:
-                requests.put('http://' + config['global_manager_host'] + \
-                                   ':' + config['global_manager_port'], 
-                             {'username': state['hashed_username'], 
-                              'password': state['hashed_password'], 
-                              'reason': 1, 
-                              'vm_uuids': ','.join(vm_uuids)})
+                r = requests.put('http://' + config['global_manager_host'] + \
+                                     ':' + config['global_manager_port'], 
+                                 {'username': state['hashed_username'], 
+                                  'password': state['hashed_password'], 
+                                  'time': time.time(),
+                                  'reason': 1, 
+                                  'vm_uuids': ','.join(vm_uuids)})
+                if log.isEnabledFor(logging.INFO):
+                    log.info('Received response: [%s] %s', 
+                             r.status_code, r.content)
             except requests.exceptions.ConnectionError:
                 log.exception('Exception at overload request:')
         else:
-            log.info('No underload or overload detected')
+            if log.isEnabledFor(logging.INFO):
+                log.info('No underload or overload detected')
 
     return state
 
