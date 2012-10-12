@@ -331,7 +331,7 @@ def execute_underload(config, state, host):
 
     for vm in vms_cpu.keys():
         if not vm in vms_ram:
-            del vms_cpu[i]
+            del vms_cpu[vm]
 
     time_step = int(config['data_collector_interval'])
     migration_time = common.calculate_migration_time(
