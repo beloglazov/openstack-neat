@@ -214,4 +214,9 @@ class Database(object):
         :param hosts: A dict of hostnames to states (0, 1).
          :type hosts: dict(str: int)
         """
-        pass
+        host_ids = self.select_host_ids()
+        to_insert = [{'host_id': host_ids[k],
+                      'state': v} 
+                     for k, v in hosts.items()]        
+        self.connection.execute(
+            self.host_states.insert(), to_insert)

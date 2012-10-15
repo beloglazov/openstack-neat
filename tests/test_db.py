@@ -168,3 +168,20 @@ class Db(TestCase):
         db.cleanup_vm_resource_usage(time.replace(second=5))
         assert db.select_cpu_mhz_for_vm(uuid, 100) == range(5, 10)
 
+    def test_insert_host_states(self):
+        db = db_utils.init_db('sqlite:///:memory:')
+        hosts = {}
+        hosts['host1'] = db.update_host('host1', 1, 1, 1)
+        hosts['host2'] = db.update_host('host2', 1, 1, 1)
+        db.insert_host_states({'host1': 0, 'host2': 1})
+        db.insert_host_states({'host1': 0, 'host2': 0})
+        db.insert_host_states({'host1': 1, 'host2': 1})
+        result = db.host_states.select().execute().fetchall()
+        host1 = [x[3] for x in sorted(filter(
+                    lambda x: x[1] == hosts['host1'], 
+                    result), key=lambda x: x[0])]
+        self.assertEqual(host1, [0, 0, 1])
+        host2 = [x[3] for x in sorted(filter(
+                    lambda x: x[1] == hosts['host2'], 
+                    result), key=lambda x: x[0])]
+        self.assertEqual(host1, [0, 0, 1])        
