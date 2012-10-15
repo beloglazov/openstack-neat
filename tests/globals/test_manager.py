@@ -22,6 +22,7 @@ import time
 
 import neat.globals.manager as manager
 import neat.common as common
+import neat.db_utils as db_utils
 
 import logging
 logging.disable(logging.CRITICAL)
@@ -342,3 +343,14 @@ class GlobalManager(TestCase):
             expect(nova.servers).get('vm2').and_return(vm2).once()
             assert manager.vms_ram_limit(nova, ['vm1', 'vm2']) == \
                 {'vm1': 512, 'vm2': 1024}
+
+    def test_log_host_states(self):
+        with MockTransaction:
+            db = db_utils.init_db('sqlite:///:memory:')
+            
+            expect(db).insert_host_states({
+                    'h1': 0,
+                    'h2': 1,
+                    'h3': 1,
+                    'h4': 0}).once()
+            manager.log_host_states(db, ['h2', 'h3'], ['h1', 'h4'])
