@@ -19,6 +19,7 @@ import datetime
 
 import neat.globals.db_cleaner as cleaner
 import neat.common as common
+import neat.db_utils as db_utils
 
 import logging
 logging.disable(logging.CRITICAL)
@@ -59,3 +60,27 @@ class DbCleaner(TestCase):
             state = cleaner.init_state(config)
             assert state['db'] == db
             assert state['time_delta'] == datetime.timedelta(0, 7200)
+
+    @qc(1)
+    def execute(
+        uuid=str_(of='abc123-', min_length=36, max_length=36)
+    ):
+        with MockTransaction:
+            db = db_utils.init_db('sqlite:///:memory:')
+            result = db.vms.insert().execute(uuid=uuid)
+            vm_id = result.inserted_primary_key[0]
+            time = datetime.datetime.today()
+            for i in range(10):
+                db.vm_resource_usage.insert().execute(
+                    vm_id=1,
+                    cpu_mhz=i,
+                    timestamp=time.replace(second=i))
+            state = {
+                'db': db,
+                'time_delta': datetime.timedelta(seconds=5)}
+            expect(cleaner).today(). \
+                and_return(time.replace(second=10)).once()
+            assert db.select_cpu_mhz_for_vm(uuid, 100) == range(10)
+            cleaner.execute({}, state)
+            assert db.select_cpu_mhz_for_vm(uuid, 100) == range(5, 10)
+                
