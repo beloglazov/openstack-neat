@@ -49,6 +49,7 @@ class GlobalManager(TestCase):
             manager.error()
         except bottle.HTTPResponse as e:
             print "============="
+            print dir(e)
             print e.status
             print "============="
             assert e.status == 405
