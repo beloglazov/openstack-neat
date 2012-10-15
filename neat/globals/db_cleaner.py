@@ -14,7 +14,7 @@
 
 """ The database cleaner module.
 
-This module is responsible for periodic clean up of the database.
+This module is responsible for periodic cleaning up the database.
 """
 
 from contracts import contract
