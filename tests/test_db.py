@@ -143,6 +143,15 @@ class Db(TestCase):
              {'host1': 4000, 'host2': 8000})
 
     @qc(1)
+    def select_host_ids():
+        db = db_utils.init_db('sqlite:///:memory:')
+        assert db.select_host_ids() == {}
+        hosts = {}
+        hosts['host1'] = db.update_host('host1', 1, 1, 1)
+        hosts['host2'] = db.update_host('host2', 1, 1, 1)
+        assert db.select_host_ids() == hosts
+
+    @qc(1)
     def cleanup_vm_resource_usage(
         uuid=str_(of='abc123-', min_length=36, max_length=36)
     ):
@@ -158,3 +167,4 @@ class Db(TestCase):
         assert db.select_cpu_mhz_for_vm(uuid, 100) == range(10)
         db.cleanup_vm_resource_usage(time.replace(second=5))
         assert db.select_cpu_mhz_for_vm(uuid, 100) == range(5, 10)
+

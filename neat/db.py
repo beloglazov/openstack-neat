@@ -186,6 +186,16 @@ class Database(object):
             hosts_ram[hostname] = int(x[4])
         return hosts_cpu_mhz, hosts_cpu_cores, hosts_ram
 
+    @contract
+    def select_host_ids(self):
+        """ Select the IDs of all the hosts.
+
+        :return: A dict of host names to IDs.
+         :rtype: dict(str: int)
+        """
+        return dict((str(x[1]), int(x[0])) 
+                    for x in self.hosts.select().execute().fetchall())
+
     @contract(datetime_threshold=datetime.datetime)
     def cleanup_vm_resource_usage(self, datetime_threshold):
         """ Delete VM resource usage data older than the threshold.
@@ -197,3 +207,11 @@ class Database(object):
             self.vm_resource_usage.delete().where(
                 self.vm_resource_usage.c.timestamp < datetime_threshold))
 
+    @contract
+    def insert_host_states(self, hosts):
+        """ Insert host states for a set of hosts.
+
+        :param hosts: A dict of hostnames to states (0, 1).
+         :type hosts: dict(str: int)
+        """
+        pass
