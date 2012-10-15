@@ -364,15 +364,16 @@ def execute_underload(config, state, host):
     if log.isEnabledFor(logging.INFO):
         log.info('Underload: obtained a new placement %s', str(placement))
 
+    active_hosts = hosts_cpu_total.keys()
+    inactive_hosts = list(set(state['compute_hosts']) - set(active_hosts))
     if not placement:
         log.info('Nothing to migrate')
+    else:
+        migrate_vms(state['nova'], placement)
+        active_hosts.remove(underloaded_host)
+        inaction_hosts.append(underloaded_host)
 
-    migrate_vms(state['nova'], placement)
-
-    # for vm, host in placement.items():
-    #     state['nova'].servers.live_migrate(vm, host, False, False)
-    #     if log.isEnabledFor(logging.INFO):
-    #         log.info('Started migration of VM %s to %s', vm, host)
+    log_host_states(active_hosts, inactive_hosts)
 
     # TODO: initiate VM migrations according to the obtained placement
     # Switch of the underloaded host when the migrations are completed
@@ -586,11 +587,6 @@ def execute_overload(config, state, vm_uuids):
 
     migrate_vms(state['nova'], placement)
 
-    # for vm, host in placement.items():
-    #     state['nova'].servers.live_migrate(vm, host, False, False)
-    #     if log.isEnabledFor(logging.INFO):
-    #         log.info('Started migration of VM %s to %s', vm, host)
-
     # Switch on the inactive hosts required to accommodate the VMs
     # TODO: initiate VM migrations according to the obtained placement
 
@@ -632,3 +628,58 @@ def migrate_vms(nova, placement):
         else:
             return
         time.sleep(3)
+
+@contract
+def migrate_vms(nova, placement):
+    """ Synchronously live migrate a set of VMs.
+
+    :param nova: A Nova client.
+     :type nova: *
+
+    :param placement: A dict of VM UUIDs to host names.
+     :type placement: dict(str: str)
+    """
+    for vm, host in placement.items():
+        nova.servers.live_migrate(vm, host, False, False)
+        if log.isEnabledFor(logging.INFO):
+            log.info('Started migration of VM %s to %s', vm, host)
+
+    time.sleep(5)
+
+    while True:
+        for vm_uuid in placement.keys():
+            vm = nova.servers.get(vm_uuid)
+            if log.isEnabledFor(logging.DEBUG):
+                log.info('VM %s: %s, %s', 
+                         vm_uuid, 
+                         vm_hostname(vm), 
+                         vm.status)
+            if vm_hostname(vm) != placement[vm_uuid] or \
+                    vm.status != u'ACTIVE':
+                break
+            else:
+                if log.isEnabledFor(logging.INFO):
+                    log.info('Completed migration of VM %s to %s', 
+                             vm_uuid, placement[vm_uuid])
+        else:
+            return
+        time.sleep(3)
+
+
+@contract
+def log_host_states(db, active_hosts, inactive_hosts):
+    """ Log the host states into the database.
+
+    :param db: The database object.
+     :type db: Database
+
+    :param active_hosts: A list of active hosts.
+     :type active_hosts: list(str)
+
+    :param inactive_hosts: A list of inactive hosts.
+     :type inactive_hosts: list(str)
+    """
+    hosts = dict((x, 1) for x in active_hosts)
+    hosts.update(dict((x, 0) for x in inactive_hosts))
+    db.insert_host_states(hosts)
+    
