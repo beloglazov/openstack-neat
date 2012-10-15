@@ -14,7 +14,9 @@
 
 """ The database cleaner module.
 
-This module is responsible for periodic cleaning up the database.
+The database cleaner periodically cleans up the data on resource usage
+by VMs stored in the database. This is requried to avoid excess growth
+of the database size.
 """
 
 from contracts import contract
