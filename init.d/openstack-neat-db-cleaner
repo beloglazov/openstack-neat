@@ -1,0 +1,110 @@
+#!/bin/sh
+#
+# openstack-neat-db-cleaner  OpenStack Neat Database Cleaner
+#
+# chkconfig:   - 99 01
+# description: The database cleaner periodically cleans up    \
+#              the data on resource usage by VMs stored in    \
+#              the database. This is requried to avoid excess \
+#              growth of the database size.
+
+### BEGIN INIT INFO
+# Provides: openstack_neat_db_cleaner
+# Required-Start: $remote_fs $network $syslog
+# Required-Stop: $remote_fs $network $syslog
+# Short-Description: OpenStack Neat Database Cleaner
+# Description: The database cleaner periodically cleans up
+#              the data on resource usage by VMs stored in
+#              the database. This is requried to avoid excess
+#              growth of the database size.
+### END INIT INFO
+
+. /etc/rc.d/init.d/functions
+
+suffix=db-cleaner
+prog=openstack-neat-$suffix
+exec="/usr/bin/neat-$suffix"
+piddir="/var/run/neat"
+pidfile="$piddir/neat-$suffix.pid"
+logdir="/var/log/neat"
+logfile="$logdir/db-cleaner-service.log"
+
+[ -e /etc/sysconfig/$prog ] && . /etc/sysconfig/$prog
+
+lockfile=/var/lock/subsys/$prog
+
+start() {
+    [ -x $exec ] || exit 5
+    [ -f $config ] || exit 6
+    echo -n $"Starting $prog: "
+    mkdir -p $piddir
+    mkdir -p $logdir
+    daemon --user root --pidfile $pidfile "$exec &>$logfile & echo \$! > $pidfile"
+    retval=$?
+    echo
+    [ $retval -eq 0 ] && touch $lockfile
+    return $retval
+}
+
+stop() {
+    echo -n $"Stopping $prog: "
+    killproc -p $pidfile $prog
+    retval=$?
+    echo
+    [ $retval -eq 0 ] && rm -f $lockfile
+    return $retval
+}
+
+restart() {
+    stop
+    start
+}
+
+reload() {
+    restart
+}
+
+force_reload() {
+    restart
+}
+
+rh_status() {
+    status -p $pidfile $prog
+}
+
+rh_status_q() {
+    rh_status >/dev/null 2>&1
+}
+
+
+case "$1" in
+    start)
+        rh_status_q && exit 0
+        $1
+        ;;
+    stop)
+        rh_status_q || exit 0
+        $1
+        ;;
+    restart)
+        $1
+        ;;
+    reload)
+        rh_status_q || exit 7
+        $1
+        ;;
+    force-reload)
+        force_reload
+        ;;
+    status)
+        rh_status
+        ;;
+    condrestart|try-restart)
+        rh_status_q || exit 0
+        restart
+        ;;
+    *)
+        echo $"Usage: $0 {start|stop|status|restart|condrestart|try-restart|reload|force-reload}"
+        exit 2
+esac
+exit $?
