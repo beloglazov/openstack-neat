@@ -48,6 +48,7 @@ REQUIRED_FIELDS = [
     'compute_hosts',
     'global_manager_host',
     'global_manager_port',
+    'db_cleaner_interval',
     'local_data_directory',
     'local_manager_interval',
     'data_collector_interval',
