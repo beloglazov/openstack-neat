@@ -373,7 +373,7 @@ def execute_underload(config, state, host):
         active_hosts.remove(underloaded_host)
         inaction_hosts.append(underloaded_host)
 
-    log_host_states(active_hosts, inactive_hosts)
+    log_host_states(state['db'], active_hosts, inactive_hosts)
 
     # TODO: initiate VM migrations according to the obtained placement
     # Switch of the underloaded host when the migrations are completed
@@ -584,8 +584,13 @@ def execute_overload(config, state, vm_uuids):
 
     if not placement:
         log.info('Nothing to migrate')
+    else:
+        migrate_vms(state['nova'], placement)
 
-    migrate_vms(state['nova'], placement)
+    inactive_hosts = list(set(inactive_hosts_cpu.keys()) - \
+                          set(placement.values())
+    active_hosts = list(set(state['compute_hosts']) - set(inactive_hosts))
+    log_host_states(state['db'], active_hosts, inactive_hosts)
 
     # Switch on the inactive hosts required to accommodate the VMs
     # TODO: initiate VM migrations according to the obtained placement
