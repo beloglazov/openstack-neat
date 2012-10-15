@@ -34,13 +34,13 @@ class GlobalManager(TestCase):
             try:
                 manager.raise_error(error_code)
             except bottle.HTTPResponse as e:
-                assert e.status == error_code
+                assert e.status_code == error_code
             else:
                 assert False
         try:
             manager.raise_error(1)
         except bottle.HTTPResponse as e:
-            assert e.status == 500
+            assert e.status_code == 500
         else:
             assert False
 
@@ -48,11 +48,7 @@ class GlobalManager(TestCase):
         try:
             manager.error()
         except bottle.HTTPResponse as e:
-            print "============="
-            print dir(e)
-            print e.status
-            print "============="
-            assert e.status == 405
+            assert e.status_code == 405
         else:
             assert False
 
