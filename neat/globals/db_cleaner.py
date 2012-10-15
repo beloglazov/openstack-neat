@@ -96,7 +96,7 @@ def execute(config, state):
 
 
 @contract
-def today(config, state):
+def today():
     """ Return the today's datetime.
 
     :return: A datetime object representing current date and time.
