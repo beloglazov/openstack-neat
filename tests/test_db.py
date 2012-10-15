@@ -15,6 +15,8 @@
 from mocktest import *
 from pyqcy import *
 
+import datetime
+
 import neat.db_utils as db_utils
 
 import logging
@@ -139,3 +141,20 @@ class Db(TestCase):
             ({'host1': 3000, 'host2': 3500},
              {'host1': 4,    'host2': 8},
              {'host1': 4000, 'host2': 8000})
+
+    @qc(1)
+    def cleanup_vm_resource_usage(
+        uuid=str_(of='abc123-', min_length=36, max_length=36)
+    ):
+        db = db_utils.init_db('sqlite:///:memory:')
+        result = db.vms.insert().execute(uuid=uuid)
+        vm_id = result.inserted_primary_key[0]
+        time = datetime.datetime.today()
+        for i in range(10):
+            db.vm_resource_usage.insert().execute(
+                vm_id=1,
+                cpu_mhz=i,
+                timestamp=time.replace(second=i))
+        assert db.select_cpu_mhz_for_vm(uuid, 100) == range(10)
+        db.cleanup_vm_resource_usage(time.replace(second=5))
+        assert db.select_cpu_mhz_for_vm(uuid, 100) == range(5, 10)

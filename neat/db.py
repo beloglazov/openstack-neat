@@ -13,6 +13,9 @@
 # limitations under the License.
 
 from contracts import contract
+from neat.contracts_extra import *
+
+import datetime
 from sqlalchemy import *
 from sqlalchemy.engine.base import Connection
 
@@ -178,3 +181,15 @@ class Database(object):
             hosts_cpu_cores[hostname] = int(x[3])
             hosts_ram[hostname] = int(x[4])
         return hosts_cpu_mhz, hosts_cpu_cores, hosts_ram
+
+    @contract(datetime_threshold=datetime.datetime)
+    def cleanup_vm_resource_usage(self, datetime_threshold):
+        """ Delete VM resource usage data older than the threshold.
+
+        :param datetime_threshold: A datetime threshold.
+         :type datetime_threshold: datetime.datetime
+        """
+        self.connection.execute(
+            self.vm_resource_usage.delete().where(
+                self.vm_resource_usage.c.timestamp < datetime_threshold))
+
