@@ -30,19 +30,23 @@ class Database(object):
     @contract(connection=Connection,
               hosts=Table,
               vms=Table,
-              vm_resource_usage=Table)
-    def __init__(self, connection, hosts, vms, vm_resource_usage):
+              vm_resource_usage=Table,
+              host_states=Table)
+    def __init__(self, connection, hosts, vms, 
+                 vm_resource_usage, host_states):
         """ Initialize the database.
 
         :param connection: A database connection table.
         :param hosts: The hosts table.
         :param vms: The vms table.
         :param vm_resource_usage: The vm_resource_usage table.
+        :param host_states: The host_states table.
         """
         self.connection = connection
         self.hosts = hosts
         self.vms = vms
         self.vm_resource_usage = vm_resource_usage
+        self.host_states = host_states
         log.debug('Instantiated a Database object')
 
     @contract
