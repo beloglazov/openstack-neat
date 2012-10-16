@@ -160,7 +160,9 @@ def start():
         int(config['log_level']))
 
     state = init_state(config)
-    switch_hosts_on(state['db'], state['compute_hosts'])
+    switch_hosts_on(state['db'], 
+                    state['host_macs'], 
+                    state['compute_hosts'])
 
     bottle.debug(True)
     bottle.app().state = {
@@ -488,7 +490,9 @@ def execute_overload(config, state, vm_uuids):
         activated_hosts = list(
             set(inactive_hosts_cpu.keys()).intersection(
                 set(placement.values())))
-        switch_hosts_on(state['db'], activated_hosts)
+        switch_hosts_on(state['db'], 
+                        state['host_macs'], 
+                        activated_hosts)
         migrate_vms(state['nova'], placement)
 
     return state
