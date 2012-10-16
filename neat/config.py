@@ -40,6 +40,7 @@ CONFIG_PATH = "/etc/neat/neat.conf"
 REQUIRED_FIELDS = [
     'log_directory',
     'log_level',
+    'vm_instance_directory',
     'sql_connection',
     'os_admin_tenant_name',
     'os_admin_user',

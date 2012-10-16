@@ -629,52 +629,22 @@ def vm_hostname(vm):
 
 
 @contract
-def migrate_vms(nova, placement):
+def migrate_vms(nova, vm_instance_directory, placement):
     """ Synchronously live migrate a set of VMs.
 
     :param nova: A Nova client.
      :type nova: *
 
-    :param placement: A dict of VM UUIDs to host names.
-     :type placement: dict(str: str)
-    """
-    for vm, host in placement.items():
-        nova.servers.live_migrate(vm, host, False, False)
-        if log.isEnabledFor(logging.INFO):
-            log.info('Started migration of VM %s to %s', vm, host)
-
-    time.sleep(5)
-
-    while True:
-        for vm_uuid in placement.keys():
-            vm = nova.servers.get(vm_uuid)
-            if log.isEnabledFor(logging.DEBUG):
-                log.info('VM %s: %s, %s', 
-                         vm_uuid, 
-                         vm_hostname(vm), 
-                         vm.status)
-            if vm_hostname(vm) != placement[vm_uuid] or \
-                    vm.status != u'ACTIVE':
-                break
-            else:
-                if log.isEnabledFor(logging.INFO):
-                    log.info('Completed migration of VM %s to %s', 
-                             vm_uuid, placement[vm_uuid])
-        else:
-            return
-        time.sleep(3)
-
-@contract
-def migrate_vms(nova, placement):
-    """ Synchronously live migrate a set of VMs.
-
-    :param nova: A Nova client.
-     :type nova: *
+    :param vm_instance_directory: The VM instance directory.
+     :type vm_instance_directory: str
 
     :param placement: A dict of VM UUIDs to host names.
      :type placement: dict(str: str)
     """
     for vm, host in placement.items():
+        # To avoid problems with migration, need the following:
+        subprocess.call('chown -R nova:nova ' + vm_instance_directory, 
+                        shell=True)
         nova.servers.live_migrate(vm, host, False, False)
         if log.isEnabledFor(logging.INFO):
             log.info('Started migration of VM %s to %s', vm, host)
