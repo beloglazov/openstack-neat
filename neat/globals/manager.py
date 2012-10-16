@@ -368,6 +368,10 @@ def execute_underload(config, state, host):
     if log.isEnabledFor(logging.INFO):
         log.info('Underload: obtained a new placement %s', str(placement))
 
+    active_hosts = hosts_cpu_total.keys()
+    inactive_hosts = list(set(state['compute_hosts']) - set(active_hosts))
+    switch_hosts_off(config['sleep_command'], inactive_hosts)
+
     if not placement:
         log.info('Nothing to migrate')
     else:
