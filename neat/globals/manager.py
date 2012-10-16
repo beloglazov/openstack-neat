@@ -676,6 +676,8 @@ def switch_hosts_off(db, sleep_command, hosts):
      :type hosts: list(str)
     """
     # TODO: implement running the sleep command over SSH
+    if log.isEnabledFor(logging.INFO):
+        log.info('Switch off hosts: %s', str(hosts))   
     db.insert_host_states(dict((x, 0) for x in hosts))
 
 
@@ -689,4 +691,6 @@ def switch_hosts_on(db, hosts):
     :param hosts: A list of hosts to switch on.
      :type hosts: list(str)
     """
+    if log.isEnabledFor(logging.INFO):
+        log.info('Switch on hosts: %s', str(hosts))
     db.insert_host_states(dict((x, 1) for x in hosts))
