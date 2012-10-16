@@ -157,7 +157,8 @@ class GlobalManager(TestCase):
             hosts = ['host1', 'host2']
             state = {'property': 'value',
                      'db': db,
-                     'compute_hosts': hosts}
+                     'compute_hosts': hosts,
+                     'host_macs': {}}
             config = {
                 'log_directory': 'dir',
                 'log_level': 2,
@@ -170,7 +171,7 @@ class GlobalManager(TestCase):
             expect(common).init_logging('dir', 'global-manager.log', 2).once()
             expect(manager).init_state(config). \
                 and_return(state).once()
-            expect(manager).switch_hosts_on(db, hosts).once()
+            expect(manager).switch_hosts_on(db, {}, hosts).once()
             expect(bottle).app().and_return(app).once()
             expect(bottle).run(host='localhost', port=8080).once()
             manager.start()
