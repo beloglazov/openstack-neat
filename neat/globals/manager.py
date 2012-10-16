@@ -158,10 +158,13 @@ def start():
         'global-manager.log',
         int(config['log_level']))
 
+    state = init_state(config)
+    switch_hosts_on(state['compute_hosts'])
+
     bottle.debug(True)
     bottle.app().state = {
         'config': config,
-        'state': init_state(config)}
+        'state': state}
 
     host = config['global_manager_host']
     port = config['global_manager_port']
