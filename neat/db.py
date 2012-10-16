@@ -244,3 +244,25 @@ class Database(object):
             else:
                 host_states[str(host)] = 1
         return host_states
+
+    @contract
+    def select_active_hosts(self):
+        """ Select the currently active hosts.
+
+        :return: A list of host names.
+         :rtype: list(str)
+        """
+        return [host 
+                for host, state in self.select_host_states().items() 
+                if state == 1]
+
+    @contract
+    def select_inactive_hosts(self):
+        """ Select the currently inactive hosts.
+
+        :return: A list of host names.
+         :rtype: list(str)
+        """
+        return [host 
+                for host, state in self.select_host_states().items() 
+                if state == 0]

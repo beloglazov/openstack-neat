@@ -186,7 +186,7 @@ class Db(TestCase):
                     result), key=lambda x: x[0])]
         self.assertEqual(host1, [0, 0, 1])        
 
-    @qc(1)
+    @qc(10)
     def select_host_states(
         hosts=dict_(
             keys=str_(of='abc123', min_length=1, max_length=5),
@@ -203,4 +203,44 @@ class Db(TestCase):
                 db.insert_host_states({host: state})
             if data:
                 res[host] = data[-1]
+            else:
+                res[host] = 1
         assert db.select_host_states() == res
+
+    @qc(10)
+    def select_active_hosts(
+        hosts=dict_(
+            keys=str_(of='abc123', min_length=1, max_length=5),
+            values=list_(of=int_(min=0, max=1),
+                         min_length=0, max_length=10),
+            min_length=0, max_length=3
+        )
+    ):
+        db = db_utils.init_db('sqlite:///:memory:')
+        res = []
+        for host, data in hosts.items():
+            db.update_host(host, 1, 1, 1)
+            for state in data:
+                db.insert_host_states({host: state})
+            if data and data[-1] == 1 or not data:
+                res.append(host)
+        assert db.select_active_hosts() == res
+
+    @qc(10)
+    def select_inactive_hosts(
+        hosts=dict_(
+            keys=str_(of='abc123', min_length=1, max_length=5),
+            values=list_(of=int_(min=0, max=1),
+                         min_length=0, max_length=10),
+            min_length=0, max_length=3
+        )
+    ):
+        db = db_utils.init_db('sqlite:///:memory:')
+        res = []
+        for host, data in hosts.items():
+            db.update_host(host, 1, 1, 1)
+            for state in data:
+                db.insert_host_states({host: state})
+            if data and data[-1] == 0:
+                res.append(host)
+        assert db.select_inactive_hosts() == res
