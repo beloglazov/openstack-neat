@@ -227,32 +227,32 @@ class GlobalManager(TestCase):
                 once()
             manager.service()
 
-    # @qc(20)
-    # def vms_by_host(
-    #     x=dict_(
-    #         keys=str_(of='abc123-', min_length=36, max_length=36),
-    #         values=str_(of='abc123-', min_length=10, max_length=10),
-    #         min_length=0, max_length=3
-    #     ),
-    #     y=list_(str_(of='abc123-', min_length=36, max_length=36),
-    #             min_length=0, max_length=3),
-    #     host=str_(of='abc123-', min_length=5, max_length=5)
-    # ):
-    #     with MockTransaction:
-    #         extra_vms = {}
-    #         for vm in y:
-    #             extra_vms[vm] = host
-    #         x.update(extra_vms)
-    #         vms = []
-    #         for vm_uuid, h in x.items():
-    #             vm = mock(vm_uuid)
-    #             vm.id = vm_uuid
-    #             expect(manager).vm_hostname(vm).and_return(h).once()
-    #             vms.append(vm)
-    #         nova = mock('nova')
-    #         nova.servers = mock('servers')
-    #         expect(nova.servers).list().and_return(vms).once()
-    #         assert set(manager.vms_by_host(nova, host)) == set(y)
+    @qc(20)
+    def vms_by_host(
+        x=dict_(
+            keys=str_(of='abc123-', min_length=36, max_length=36),
+            values=str_(of='abc123-', min_length=10, max_length=10),
+            min_length=0, max_length=3
+        ),
+        y=list_(str_(of='abc123-', min_length=36, max_length=36),
+                min_length=0, max_length=3),
+        host=str_(of='abc123-', min_length=5, max_length=5)
+    ):
+        with MockTransaction:
+            extra_vms = {}
+            for vm in y:
+                extra_vms[vm] = host
+            x.update(extra_vms)
+            vms = []
+            for vm_uuid, h in x.items():
+                vm = mock(vm_uuid)
+                vm.id = vm_uuid
+                expect(manager).vm_hostname(vm).and_return(h).once()
+                vms.append(vm)
+            nova = mock('nova')
+            nova.servers = mock('servers')
+            expect(nova.servers).list().and_return(vms).once()
+            assert set(manager.vms_by_host(nova, host)) == set(y)
 
     @qc(1)
     def vms_by_hosts(
@@ -344,13 +344,18 @@ class GlobalManager(TestCase):
             assert manager.vms_ram_limit(nova, ['vm1', 'vm2']) == \
                 {'vm1': 512, 'vm2': 1024}
 
-    def test_log_host_states(self):
+    def test_switch_hosts_off(self):
         with MockTransaction:
-            db = db_utils.init_db('sqlite:///:memory:')
-            
+            db = db_utils.init_db('sqlite:///:memory:')          
             expect(db).insert_host_states({
                     'h1': 0,
-                    'h2': 1,
-                    'h3': 1,
-                    'h4': 0}).once()
-            manager.log_host_states(db, ['h2', 'h3'], ['h1', 'h4'])
+                    'h2': 0}).once()
+            manager.switch_hosts_off(db, 'sleep', ['h1', 'h2'])
+
+    def test_switch_hosts_on(self):
+        with MockTransaction:
+            db = db_utils.init_db('sqlite:///:memory:')          
+            expect(db).insert_host_states({
+                    'h1': 1,
+                    'h2': 1}).once()
+            manager.switch_hosts_on(db, ['h1', 'h2'])

@@ -364,19 +364,11 @@ def execute_underload(config, state, host):
     if log.isEnabledFor(logging.INFO):
         log.info('Underload: obtained a new placement %s', str(placement))
 
-    active_hosts = hosts_cpu_total.keys()
-    inactive_hosts = list(set(state['compute_hosts']) - set(active_hosts))
     if not placement:
         log.info('Nothing to migrate')
     else:
         migrate_vms(state['nova'], placement)
-        active_hosts.remove(underloaded_host)
-        inaction_hosts.append(underloaded_host)
-
-    log_host_states(state['db'], active_hosts, inactive_hosts)
-
-    # TODO: initiate VM migrations according to the obtained placement
-    # Switch of the underloaded host when the migrations are completed
+        switch_hosts_off(config['sleep_command'], [underloaded_host])
 
     return state
 
@@ -585,15 +577,11 @@ def execute_overload(config, state, vm_uuids):
     if not placement:
         log.info('Nothing to migrate')
     else:
+        activated_hosts = list(
+            set(inactive_hosts_cpu.keys()).intersection(
+                set(placement.values())))
+        switch_hosts_on(activated_hosts)
         migrate_vms(state['nova'], placement)
-
-    inactive_hosts = list(set(inactive_hosts_cpu.keys()) - \
-                          set(placement.values())
-    active_hosts = list(set(state['compute_hosts']) - set(inactive_hosts))
-    log_host_states(state['db'], active_hosts, inactive_hosts)
-
-    # Switch on the inactive hosts required to accommodate the VMs
-    # TODO: initiate VM migrations according to the obtained placement
 
     return state
 
@@ -672,19 +660,30 @@ def migrate_vms(nova, placement):
 
 
 @contract
-def log_host_states(db, active_hosts, inactive_hosts):
-    """ Log the host states into the database.
+def switch_hosts_off(db, sleep_command, hosts):
+    """ Switch hosts to a low-power mode.
 
     :param db: The database object.
      :type db: Database
 
-    :param active_hosts: A list of active hosts.
-     :type active_hosts: list(str)
+    :param sleep_command: A Shell command to switch off a host.
+     :type sleep_command: str
 
-    :param inactive_hosts: A list of inactive hosts.
-     :type inactive_hosts: list(str)
+    :param hosts: A list of hosts to switch off.
+     :type hosts: list(str)
     """
-    hosts = dict((x, 1) for x in active_hosts)
-    hosts.update(dict((x, 0) for x in inactive_hosts))
-    db.insert_host_states(hosts)
-    
+    # TODO: implement running the sleep command over SSH
+    db.insert_host_states(dict((x, 0) for x in hosts))
+
+
+@contract
+def switch_hosts_on(db, hosts):
+    """ Switch hosts to the active mode.
+
+    :param db: The database object.
+     :type db: Database
+
+    :param hosts: A list of hosts to switch on.
+     :type hosts: list(str)
+    """
+    db.insert_host_states(dict((x, 1) for x in hosts))
