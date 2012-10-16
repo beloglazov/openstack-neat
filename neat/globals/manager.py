@@ -76,6 +76,7 @@ from hashlib import sha1
 import novaclient
 from novaclient.v1_1 import client
 import time
+import subprocess
 
 import neat.common as common
 from neat.config import *
@@ -159,7 +160,7 @@ def start():
         int(config['log_level']))
 
     state = init_state(config)
-    switch_hosts_on(state['compute_hosts'])
+    switch_hosts_on(state['db'], state['compute_hosts'])
 
     bottle.debug(True)
     bottle.app().state = {
@@ -675,9 +676,16 @@ def switch_hosts_off(db, sleep_command, hosts):
     :param hosts: A list of hosts to switch off.
      :type hosts: list(str)
     """
-    # TODO: implement running the sleep command over SSH
+    if sleep_command:
+        for host in hosts:
+            if log.isEnabledFor(logging.DEBUG):
+                log.debug('Calling: ssh {0} "{1}"'. \
+                              format(host, sleep_command))   
+            subprocess.call(
+                'ssh {0} "{1}"'.format(host, sleep_command), 
+                shell=True)
     if log.isEnabledFor(logging.INFO):
-        log.info('Switch off hosts: %s', str(hosts))   
+        log.info('Switched off hosts: %s', str(hosts))   
     db.insert_host_states(dict((x, 0) for x in hosts))
 
 
@@ -692,5 +700,5 @@ def switch_hosts_on(db, hosts):
      :type hosts: list(str)
     """
     if log.isEnabledFor(logging.INFO):
-        log.info('Switch on hosts: %s', str(hosts))
+        log.info('Switched on hosts: %s', str(hosts))
     db.insert_host_states(dict((x, 1) for x in hosts))

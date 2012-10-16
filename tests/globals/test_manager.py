@@ -19,6 +19,7 @@ import bottle
 from hashlib import sha1
 from novaclient.v1_1 import client
 import time
+import subprocess
 
 import neat.globals.manager as manager
 import neat.common as common
@@ -152,8 +153,10 @@ class GlobalManager(TestCase):
     def test_start(self):
         with MockTransaction:
             app = mock('app')
+            db = mock('db')
             hosts = ['host1', 'host2']
             state = {'property': 'value',
+                     'db': db,
                      'compute_hosts': hosts}
             config = {
                 'log_directory': 'dir',
@@ -167,7 +170,7 @@ class GlobalManager(TestCase):
             expect(common).init_logging('dir', 'global-manager.log', 2).once()
             expect(manager).init_state(config). \
                 and_return(state).once()
-            expect(manager).switch_hosts_on(hosts).once()
+            expect(manager).switch_hosts_on(db, hosts).once()
             expect(bottle).app().and_return(app).once()
             expect(bottle).run(host='localhost', port=8080).once()
             manager.start()
@@ -348,12 +351,22 @@ class GlobalManager(TestCase):
                 {'vm1': 512, 'vm2': 1024}
 
     def test_switch_hosts_off(self):
+        db = db_utils.init_db('sqlite:///:memory:')          
+
         with MockTransaction:
-            db = db_utils.init_db('sqlite:///:memory:')          
+            expect(subprocess).call('ssh h1 "sleep"', shell=True).once()
+            expect(subprocess).call('ssh h2 "sleep"', shell=True).once()
             expect(db).insert_host_states({
                     'h1': 0,
                     'h2': 0}).once()
             manager.switch_hosts_off(db, 'sleep', ['h1', 'h2'])
+
+        with MockTransaction:
+            expect(subprocess).call.never()
+            expect(db).insert_host_states({
+                    'h1': 0,
+                    'h2': 0}).once()
+            manager.switch_hosts_off(db, '', ['h1', 'h2'])
 
     def test_switch_hosts_on(self):
         with MockTransaction:
