@@ -378,7 +378,8 @@ def execute_underload(config, state, host):
 
     if not placement:
         log.info('Nothing to migrate')
-        hosts_to_deactivate.remove(underloaded_host)
+        if underloaded_host in hosts_to_deactivate:
+            hosts_to_deactivate.remove(underloaded_host)
     else:
         migrate_vms(state['nova'], placement)
 
