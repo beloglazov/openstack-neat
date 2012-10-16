@@ -374,7 +374,7 @@ def execute_underload(config, state, host):
     active_hosts = hosts_cpu_total.keys()
     inactive_hosts = set(state['compute_hosts']) - set(active_hosts)
     prev_inactive_hosts = set(state['db'].select_inactive_hosts())
-    hosts_to_deactivate = set(inactive_hosts - prev_inactive_hosts)
+    hosts_to_deactivate = list(inactive_hosts - prev_inactive_hosts)
 
     if not placement:
         log.info('Nothing to migrate')
@@ -382,9 +382,10 @@ def execute_underload(config, state, host):
     else:
         migrate_vms(state['nova'], placement)
 
-    switch_hosts_off(state['db'], 
-                     config['sleep_command'], 
-                     hosts_to_deactivate)
+    if hosts_to_deactivate:
+        switch_hosts_off(state['db'], 
+                         config['sleep_command'], 
+                         hosts_to_deactivate)
     return state
 
 
@@ -487,12 +488,13 @@ def execute_overload(config, state, vm_uuids):
     if not placement:
         log.info('Nothing to migrate')
     else:
-        activated_hosts = list(
+        hosts_to_activate = list(
             set(inactive_hosts_cpu.keys()).intersection(
                 set(placement.values())))
-        switch_hosts_on(state['db'], 
-                        state['host_macs'], 
-                        activated_hosts)
+        if hosts_to_activate:
+            switch_hosts_on(state['db'], 
+                            state['host_macs'], 
+                            hosts_to_activate)
         migrate_vms(state['nova'], placement)
 
     return state
