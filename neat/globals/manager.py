@@ -263,7 +263,8 @@ def init_state(config):
             'hashed_username': sha1(config['os_admin_user']).hexdigest(),
             'hashed_password': sha1(config['os_admin_password']).hexdigest(),
             'compute_hosts': common.parse_compute_hosts(
-                                        config['compute_hosts'])}
+                                        config['compute_hosts']),
+            'host_macs': {}}
 
 
 @contract
@@ -386,111 +387,6 @@ def execute_underload(config, state, host):
 
 
 @contract
-def flavors_ram(nova):
-    """ Get a dict of flavor IDs to the RAM limits.
-
-    :param nova: A Nova client.
-     :type nova: *
-
-    :return: A dict of flavor IDs to the RAM limits.
-     :rtype: dict(str: int)
-    """
-    return dict((str(fl.id), fl.ram) for fl in nova.flavors.list())
-
-
-@contract
-def vms_ram_limit(nova, vms):
-    """ Get the RAM limit from the flavors of the VMs.
-
-    :param nova: A Nova client.
-     :type nova: *
-
-    :param vms: A list of VM UUIDs.
-     :type vms: list(str)
-
-    :return: A dict of VM UUIDs to the RAM limits.
-     :rtype: dict(str: int)
-    """
-    flavors_to_ram = flavors_ram(nova)
-    vms_ram = {}
-    for uuid in vms:
-        try:
-            vm = nova.servers.get(uuid)
-            vms_ram[uuid] = flavors_to_ram[vm.flavor['id']]
-        except novaclient.exceptions.NotFound:
-            pass
-    return vms_ram
-
-
-@contract
-def host_used_ram(nova, host):
-    """ Get the used RAM of the host using the Nova API.
-
-    :param nova: A Nova client.
-     :type nova: *
-
-    :param host: A host name.
-     :type host: str
-
-    :return: The used RAM of the host.
-     :rtype: int
-    """
-    data = nova.hosts.get(host)
-    if len(data) > 2 and data[2].memory_mb != 0:
-        return data[2].memory_mb
-    return data[1].memory_mb
-
-
-@contract
-def vms_by_host(nova, host):
-    """ Get VMs from the specified host using the Nova API.
-
-    :param nova: A Nova client.
-     :type nova: *
-
-    :param host: A host name.
-     :type host: str
-
-    :return: A list of VM UUIDs from the specified host.
-     :rtype: list(str)
-    """
-    return [str(vm.id) for vm in nova.servers.list()
-            if vm_hostname(vm) == host]
-
-
-@contract
-def vms_by_hosts(nova, hosts):
-    """ Get a map of host names to VMs using the Nova API.
-
-    :param nova: A Nova client.
-     :type nova: *
-
-    :param hosts: A list of host names.
-     :type hosts: list(str)
-
-    :return: A dict of host names to lists of VM UUIDs.
-     :rtype: dict(str: list(str))
-    """
-    result = dict((host, []) for host in hosts)
-    for vm in nova.servers.list():
-        result[vm_hostname(vm)].append(str(vm.id))
-    return result
-
-
-@contract
-def vm_hostname(vm):
-    """ Get the name of the host where VM is running.
-
-    :param vm: A Nova VM object.
-     :type vm: *
-
-    :return: The hostname.
-     :rtype: str
-    """
-    return str(getattr(vm, 'OS-EXT-SRV-ATTR:host'))
-
-
-@contract
 def execute_overload(config, state, vm_uuids):
     """ Process an overloaded host: migrate the selected VMs from it.
 
@@ -599,6 +495,133 @@ def execute_overload(config, state, vm_uuids):
 
 
 @contract
+def flavors_ram(nova):
+    """ Get a dict of flavor IDs to the RAM limits.
+
+    :param nova: A Nova client.
+     :type nova: *
+
+    :return: A dict of flavor IDs to the RAM limits.
+     :rtype: dict(str: int)
+    """
+    return dict((str(fl.id), fl.ram) for fl in nova.flavors.list())
+
+
+@contract
+def vms_ram_limit(nova, vms):
+    """ Get the RAM limit from the flavors of the VMs.
+
+    :param nova: A Nova client.
+     :type nova: *
+
+    :param vms: A list of VM UUIDs.
+     :type vms: list(str)
+
+    :return: A dict of VM UUIDs to the RAM limits.
+     :rtype: dict(str: int)
+    """
+    flavors_to_ram = flavors_ram(nova)
+    vms_ram = {}
+    for uuid in vms:
+        try:
+            vm = nova.servers.get(uuid)
+            vms_ram[uuid] = flavors_to_ram[vm.flavor['id']]
+        except novaclient.exceptions.NotFound:
+            pass
+    return vms_ram
+
+
+@contract
+def host_used_ram(nova, host):
+    """ Get the used RAM of the host using the Nova API.
+
+    :param nova: A Nova client.
+     :type nova: *
+
+    :param host: A host name.
+     :type host: str
+
+    :return: The used RAM of the host.
+     :rtype: int
+    """
+    data = nova.hosts.get(host)
+    if len(data) > 2 and data[2].memory_mb != 0:
+        return data[2].memory_mb
+    return data[1].memory_mb
+
+
+@contract
+def host_mac(host):
+    """ Get mac address of a host.
+
+    :param host: A host name.
+     :type host: str
+
+    :return: The mac address of the host.
+     :rtype: str
+    """
+    mac = subprocess.Popen(
+        ("ping -c 1 {0} > /dev/null;" + 
+         "arp -a {0} | awk '{{print $4}}'").format(host), 
+        stdout=subprocess.PIPE,
+        shell=True).communicate()[0].strip()
+    if len(mac) != 17:
+        log.warning('Received a wrong mac address for %s: %s',
+                    host, mac)
+        return ''
+    return mac
+
+
+@contract
+def vms_by_host(nova, host):
+    """ Get VMs from the specified host using the Nova API.
+
+    :param nova: A Nova client.
+     :type nova: *
+
+    :param host: A host name.
+     :type host: str
+
+    :return: A list of VM UUIDs from the specified host.
+     :rtype: list(str)
+    """
+    return [str(vm.id) for vm in nova.servers.list()
+            if vm_hostname(vm) == host]
+
+
+@contract
+def vms_by_hosts(nova, hosts):
+    """ Get a map of host names to VMs using the Nova API.
+
+    :param nova: A Nova client.
+     :type nova: *
+
+    :param hosts: A list of host names.
+     :type hosts: list(str)
+
+    :return: A dict of host names to lists of VM UUIDs.
+     :rtype: dict(str: list(str))
+    """
+    result = dict((host, []) for host in hosts)
+    for vm in nova.servers.list():
+        result[vm_hostname(vm)].append(str(vm.id))
+    return result
+
+
+@contract
+def vm_hostname(vm):
+    """ Get the name of the host where VM is running.
+
+    :param vm: A Nova VM object.
+     :type vm: *
+
+    :return: The hostname.
+     :rtype: str
+    """
+    return str(getattr(vm, 'OS-EXT-SRV-ATTR:host'))
+
+
+@contract
 def migrate_vms(nova, placement):
     """ Synchronously live migrate a set of VMs.
 
@@ -686,27 +709,36 @@ def switch_hosts_off(db, sleep_command, hosts):
     """
     if sleep_command:
         for host in hosts:
+            command = 'ssh {0} "{1}"'. \
+                format(host, sleep_command)
             if log.isEnabledFor(logging.DEBUG):
-                log.debug('Calling: ssh {0} "{1}"'. \
-                              format(host, sleep_command))   
-            subprocess.call(
-                'ssh {0} "{1}"'.format(host, sleep_command), 
-                shell=True)
+                log.debug('Calling: %s', command)   
+            subprocess.call(command, shell=True)
     if log.isEnabledFor(logging.INFO):
         log.info('Switched off hosts: %s', str(hosts))   
     db.insert_host_states(dict((x, 0) for x in hosts))
 
 
 @contract
-def switch_hosts_on(db, hosts):
+def switch_hosts_on(db, host_macs, hosts):
     """ Switch hosts to the active mode.
 
     :param db: The database object.
      :type db: Database
 
+    :param host_macs: A dict of host names to mac addresses.
+     :type host_macs: dict(str: str)
+
     :param hosts: A list of hosts to switch on.
      :type hosts: list(str)
     """
+    for host in hosts:
+        if host not in host_macs:
+            host_macs[host] = host_mac(host)
+        command = 'ether-wake {0}'.format(host_macs[host])
+        if log.isEnabledFor(logging.DEBUG):
+            log.debug('Calling: %s', command)   
+        subprocess.call(command, shell=True)        
     if log.isEnabledFor(logging.INFO):
         log.info('Switched on hosts: %s', str(hosts))
     db.insert_host_states(dict((x, 1) for x in hosts))

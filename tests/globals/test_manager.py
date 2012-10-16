@@ -200,6 +200,7 @@ class GlobalManager(TestCase):
             assert state['hashed_username'] == sha1('user').hexdigest()
             assert state['hashed_password'] == sha1('password').hexdigest()
             assert state['compute_hosts'] == hosts
+            assert state['host_macs'] == {}
 
     def test_service(self):
         app = mock('app')
@@ -369,9 +370,23 @@ class GlobalManager(TestCase):
             manager.switch_hosts_off(db, '', ['h1', 'h2'])
 
     def test_switch_hosts_on(self):
+        db = db_utils.init_db('sqlite:///:memory:')          
+
         with MockTransaction:
-            db = db_utils.init_db('sqlite:///:memory:')          
+            expect(subprocess).call('ether-wake mac1', shell=True).once()
+            expect(subprocess).call('ether-wake mac2', shell=True).once()
+            expect(manager).host_mac('h1').and_return('mac1').once()
             expect(db).insert_host_states({
                     'h1': 1,
                     'h2': 1}).once()
-            manager.switch_hosts_on(db, ['h1', 'h2'])
+            manager.switch_hosts_on(db, {'h2': 'mac2'}, ['h1', 'h2'])
+
+        with MockTransaction:
+            expect(subprocess).call('ether-wake mac1', shell=True).once()
+            expect(subprocess).call('ether-wake mac2', shell=True).once()
+            expect(manager).host_mac('h1').and_return('mac1').once()
+            expect(manager).host_mac('h2').and_return('mac2').once()
+            expect(db).insert_host_states({
+                    'h1': 1,
+                    'h2': 1}).once()
+            manager.switch_hosts_on(db, {}, ['h1', 'h2'])
