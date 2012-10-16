@@ -220,3 +220,27 @@ class Database(object):
                      for k, v in hosts.items()]        
         self.connection.execute(
             self.host_states.insert(), to_insert)
+
+    @contract
+    def select_host_states(self):
+        """ Select the current states of all the hosts.
+
+        :return: A dict of host names to states.
+         :rtype: dict(str: int)
+        """
+        hs1 = self.host_states
+        hs2 = self.host_states.alias()
+        sel = select([hs1.c.host_id, hs1.c.state], from_obj=[
+            hs1.outerjoin(hs2, and_(
+                hs1.c.host_id == hs2.c.host_id,
+                hs1.c.id < hs2.c.id))]). \
+             where(hs2.c.id == None)
+        data = dict(self.connection.execute(sel).fetchall())
+        host_ids = self.select_host_ids()
+        host_states = {}
+        for host, id in host_ids.items():
+            if id in data:
+                host_states[str(host)] = int(data[id])
+            else:
+                host_states[str(host)] = 1
+        return host_states
