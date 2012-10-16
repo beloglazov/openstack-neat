@@ -381,7 +381,9 @@ def execute_underload(config, state, host):
         if underloaded_host in hosts_to_deactivate:
             hosts_to_deactivate.remove(underloaded_host)
     else:
-        migrate_vms(state['nova'], placement)
+        migrate_vms(state['nova'], 
+                    config['vm_instance_directory'], 
+                    placement)
 
     if hosts_to_deactivate:
         switch_hosts_off(state['db'], 
@@ -496,8 +498,9 @@ def execute_overload(config, state, vm_uuids):
             switch_hosts_on(state['db'], 
                             state['host_macs'], 
                             hosts_to_activate)
-        migrate_vms(state['nova'], placement)
-
+        migrate_vms(state['nova'], 
+                    config['vm_instance_directory'], 
+                    placement)
     return state
 
 
