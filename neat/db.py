@@ -300,3 +300,18 @@ class Database(object):
         self.host_overload.insert().execute(
             host_id=self.select_host_id(hostname),
             overload=int(overload))
+
+    @contract
+    def insert_vm_migration(self, vm, hostname):
+        """ Insert a VM migration.
+
+        :param hostname: A VM UUID.
+         :type hostname: str[36]
+
+        :param hostname: A host name.
+         :type hostname: str
+        """
+        self.vm_migrations.insert().execute(
+            vm_id=self.select_vm_id(vm),
+            host_id=self.select_host_id(hostname))
+        

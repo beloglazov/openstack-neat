@@ -279,3 +279,14 @@ class Db(TestCase):
                     lambda x: x[1] == hosts['host2'], 
                     result), key=lambda x: x[0])]
         self.assertEqual(host2, [0, 1])        
+
+    @qc(1)
+    def insert_select():
+        db = db_utils.init_db('sqlite:///:memory:')
+        db.vms.insert().execute(uuid='x' * 36).inserted_primary_key[0]
+        vm_id = db.vms.insert().execute(uuid='vm' * 18).inserted_primary_key[0]
+        host_id = db.update_host('host', 1, 1, 1)
+        db.insert_vm_migration('vm' * 18, 'host')
+        result = db.vm_migrations.select().execute().first()
+        assert result[1] == vm_id
+        assert result[2] == host_id

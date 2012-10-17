@@ -60,8 +60,8 @@ def init_db(sql_connection):
         Table('vm_migrations', metadata,
               Column('id', Integer, primary_key=True),
               Column('vm_id', Integer, ForeignKey('vms.id'), nullable=False),
-              Column('timestamp', DateTime, default=func.now()),
-              Column('hostname', String(255), nullable=False))
+              Column('host_id', Integer, ForeignKey('hosts.id'), nullable=False),
+              Column('timestamp', DateTime, default=func.now()))
 
     host_states = \
         Table('host_states', metadata,
