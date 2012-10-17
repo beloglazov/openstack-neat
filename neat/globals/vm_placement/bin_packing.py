@@ -56,7 +56,7 @@ def get_available_resources(threshold, usage, total):
     """ Get a map of the available resource capacity.
 
     :param threshold: A threshold on the maximum allowed resource usage.
-     :type threshold: float,>=0,<=1
+     :type threshold: float,>=0
 
     :param usage: A map of hosts to the resource usage.
      :type usage: dict(str: number)
