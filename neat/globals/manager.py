@@ -380,7 +380,8 @@ def execute_underload(config, state, host):
         if underloaded_host in hosts_to_deactivate:
             hosts_to_deactivate.remove(underloaded_host)
     else:
-        migrate_vms(state['nova'], 
+        migrate_vms(state['db'],
+                    state['nova'], 
                     config['vm_instance_directory'], 
                     placement)
 
@@ -497,7 +498,8 @@ def execute_overload(config, state, vm_uuids):
             switch_hosts_on(state['db'], 
                             state['host_macs'], 
                             hosts_to_activate)
-        migrate_vms(state['nova'], 
+        migrate_vms(state['db'],
+                    state['nova'], 
                     config['vm_instance_directory'], 
                     placement)
     return state
@@ -631,8 +633,11 @@ def vm_hostname(vm):
 
 
 @contract
-def migrate_vms(nova, vm_instance_directory, placement):
+def migrate_vms(db, nova, vm_instance_directory, placement):
     """ Synchronously live migrate a set of VMs.
+
+    :param db: The database object.
+     :type db: Database
 
     :param nova: A Nova client.
      :type nova: *
@@ -665,6 +670,7 @@ def migrate_vms(nova, vm_instance_directory, placement):
                     vm.status != u'ACTIVE':
                 break
             else:
+                db.insert_vm_migration(vm_uuid, placement[vm_uuid])
                 if log.isEnabledFor(logging.INFO):
                     log.info('Completed migration of VM %s to %s', 
                              vm_uuid, placement[vm_uuid])
