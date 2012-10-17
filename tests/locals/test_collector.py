@@ -76,6 +76,7 @@ class Collector(TestCase):
 
             state = collector.init_state(config)
             assert state['previous_time'] == 0
+            assert state['previous_overload'] == -1
             assert isinstance(state['previous_cpu_time'], dict)
             assert state['vir_connection'] == vir_connection
             assert state['hostname'] == hostname
@@ -459,11 +460,28 @@ class Collector(TestCase):
     def log_host_overload():
         db = db_utils.init_db('sqlite:///:memory:')
         with MockTransaction:
-            expect(db).insert_host_overload('host', True).once()
-            assert collector.log_host_overload(db, 0.9, 'host', 3000, 
+            expect(db).insert_host_overload('host', 1).once()
+            assert collector.log_host_overload(db, 0.9, 'host', -1, 3000, 
                                                [1000, 1000, 800])
+        with MockTransaction:
+            expect(db).insert_host_overload('host', 0).once()
+            assert not collector.log_host_overload(db, 0.9, 'host', -1, 3000, 
+                                                   [1000, 1000, 600])
 
         with MockTransaction:
-            expect(db).insert_host_overload('host', False).once()
-            assert not collector.log_host_overload(db, 0.9, 'host', 3000, 
+            expect(db).insert_host_overload('host', 1).once()
+            assert collector.log_host_overload(db, 0.9, 'host', 0, 3000, 
+                                               [1000, 1000, 800])
+        with MockTransaction:
+            expect(db).insert_host_overload('host', 0).once()
+            assert not collector.log_host_overload(db, 0.9, 'host', 1, 3000, 
+                                                   [1000, 1000, 600])
+
+        with MockTransaction:
+            expect(db).insert_host_overload.never()
+            assert collector.log_host_overload(db, 0.9, 'host', 1, 3000, 
+                                               [1000, 1000, 800])
+        with MockTransaction:
+            expect(db).insert_host_overload.never()
+            assert not collector.log_host_overload(db, 0.9, 'host', 0, 3000, 
                                                    [1000, 1000, 600])

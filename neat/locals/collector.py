@@ -164,6 +164,7 @@ def init_state(config):
 
     return {'previous_time': 0.,
             'previous_cpu_time': dict(),
+            'previous_overload': -1,
             'vir_connection': vir_connection,
             'hostname': hostname,
             'physical_cpus': physical_cpus,
@@ -257,12 +258,15 @@ def execute(config, state):
         append_data_remotely(state['db'], cpu_mhz)
         if log.isEnabledFor(logging.DEBUG):
             log.debug('Collected new data: %s', str(cpu_mhz))
-        # TODO: save the previous overload state and only log if it's changed
-        log_host_overload(state['db'],
-                          config['host_cpu_overload_threshold'],
-                          state['hostname'],
-                          state['physical_cpu_mhz'],
-                          cpu_mhz.values())
+
+        state['previous_overload'] = log_host_overload(
+            state['db'],
+            config['host_cpu_overload_threshold'],
+            state['hostname'],
+            state['previous_overload'],
+            state['physical_cpu_mhz'],
+            cpu_mhz.values())
+
     state['previous_time'] = current_time
     state['previous_cpu_time'] = cpu_time
     return state
@@ -563,8 +567,8 @@ def get_host_characteristics(vir_connection):
 
 
 @contract()
-def log_host_overload(db, overload_threshold, 
-                      hostname, host_mhz, vms_mhz):
+def log_host_overload(db, overload_threshold, hostname, 
+                      previous_overload, host_mhz, vms_mhz):
     """ Log to the DB whether the host is overloaded.
 
     :param db: The database object.
@@ -576,6 +580,9 @@ def log_host_overload(db, overload_threshold,
     :param hostname: The host name.
      :type hostname: str
 
+    :param previous_overload: Whether the host has been overloaded.
+     :type previous_overload: int
+
     :param host_mhz: The total frequency of the CPU in MHz.
      :type host_mhz: int
 
@@ -583,8 +590,11 @@ def log_host_overload(db, overload_threshold,
      :type vms_mhz: list(int)
 
     :return: Whether the host is overloaded.
-     :rtype: bool
+     :rtype: int
     """
     overload = overload_threshold * host_mhz < sum(vms_mhz)
-    db.insert_host_overload(hostname, overload)
-    return overload
+    overload_int = int(overload)
+    if previous_overload != -1 and previous_overload != overload_int \
+            or previous_overload == -1:
+        db.insert_host_overload(hostname, overload)
+    return overload_int
