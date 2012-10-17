@@ -1,4 +1,4 @@
-# Copyright 2012 Anton Beloglazov
+s# Copyright 2012 Anton Beloglazov
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -210,7 +210,6 @@ def get_remote_addr(request):
 
 @bottle.put('/')
 def service():
-    # TODO: If some VMs are being migrated, no new requests should be processed
     params = get_params(bottle.request)
     state = bottle.app().state
     validate_params(state['state']['hashed_username'], 
