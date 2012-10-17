@@ -78,6 +78,7 @@ class Collector(TestCase):
             assert state['previous_time'] == 0
             assert isinstance(state['previous_cpu_time'], dict)
             assert state['vir_connection'] == vir_connection
+            assert state['hostname'] == hostname
             assert state['physical_cpus'] == physical_cpus
             assert state['physical_cpu_mhz'] == mhz
             assert state['physical_core_mhz'] == mhz / physical_cpus
@@ -453,3 +454,16 @@ class Collector(TestCase):
                 ['x86_64', ram, cores, mhz, 1, 1, 4, 2]).once()
             assert collector.get_host_characteristics(connection) == \
                 (cores * mhz, ram)
+
+    @qc(1)
+    def log_host_overload():
+        db = db_utils.init_db('sqlite:///:memory:')
+        with MockTransaction:
+            expect(db).insert_host_overload('host', True).once()
+            collector.log_host_overload(db, 0.9, 'host', 3000, 
+                                        [1000, 1000, 800])
+
+        with MockTransaction:
+            expect(db).insert_host_overload('host', False).once()
+            collector.log_host_overload(db, 0.9, 'host', 3000, 
+                                        [1000, 1000, 600])

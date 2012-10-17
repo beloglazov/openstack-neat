@@ -165,6 +165,7 @@ def init_state(config):
     return {'previous_time': 0.,
             'previous_cpu_time': dict(),
             'vir_connection': vir_connection,
+            'hostname': hostname,
             'physical_cpus': physical_cpus,
             'physical_cpu_mhz': host_cpu_mhz,
             'physical_core_mhz': host_cpu_mhz / physical_cpus,
@@ -256,6 +257,11 @@ def execute(config, state):
         append_data_remotely(state['db'], cpu_mhz)
         if log.isEnabledFor(logging.DEBUG):
             log.debug('Collected new data: %s', str(cpu_mhz))
+        log_host_overload(state['db'],
+                          config['host_cpu_overload_threshold'],
+                          state['hostname'],
+                          state['physical_cpu_mhz'],
+                          cpu_mhz.values())
     state['previous_time'] = current_time
     state['previous_cpu_time'] = cpu_time
     return state
@@ -553,3 +559,28 @@ def get_host_characteristics(vir_connection):
     """
     info = vir_connection.getInfo()
     return info[2] * info[3], info[1]
+
+
+@contract()
+def log_host_overload(db, overload_threshold, 
+                      hostname, host_mhz, vms_mhz):
+    """ Log to the DB whether the host is overloaded.
+
+    :param db: The database object.
+     :type db: Database
+
+    :param overload_threshold: The host overload threshold.
+     :type overload_threshold: float
+
+    :param hostname: The host name.
+     :type hostname: str
+
+    :param host_mhz: The total frequency of the CPU in MHz.
+     :type host_mhz: int
+
+    :param vms_mhz: A list of CPU utilization of VMs in MHz.
+     :type vms_mhz: list(int)
+    """
+    db.insert_host_overload(
+        hostname, 
+        overload_threshold * host_mhz < sum(vms_mhz))
