@@ -166,6 +166,7 @@ def init_state(config):
             'previous_cpu_time': dict(),
             'vir_connection': vir_connection,
             'physical_cpus': physical_cpus,
+            'physical_cpu_mhz': host_cpu_mhz,
             'physical_core_mhz': host_cpu_mhz / physical_cpus,
             'db': db}
 

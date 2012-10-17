@@ -79,6 +79,7 @@ class Collector(TestCase):
             assert isinstance(state['previous_cpu_time'], dict)
             assert state['vir_connection'] == vir_connection
             assert state['physical_cpus'] == physical_cpus
+            assert state['physical_cpu_mhz'] == mhz
             assert state['physical_core_mhz'] == mhz / physical_cpus
             assert state['db'] == db
 
