@@ -257,6 +257,7 @@ def execute(config, state):
         append_data_remotely(state['db'], cpu_mhz)
         if log.isEnabledFor(logging.DEBUG):
             log.debug('Collected new data: %s', str(cpu_mhz))
+        # TODO: save the previous overload state and only log if it's changed
         log_host_overload(state['db'],
                           config['host_cpu_overload_threshold'],
                           state['hostname'],
@@ -580,7 +581,10 @@ def log_host_overload(db, overload_threshold,
 
     :param vms_mhz: A list of CPU utilization of VMs in MHz.
      :type vms_mhz: list(int)
+
+    :return: Whether the host is overloaded.
+     :rtype: bool
     """
-    db.insert_host_overload(
-        hostname, 
-        overload_threshold * host_mhz < sum(vms_mhz))
+    overload = overload_threshold * host_mhz < sum(vms_mhz)
+    db.insert_host_overload(hostname, overload)
+    return overload

@@ -460,10 +460,10 @@ class Collector(TestCase):
         db = db_utils.init_db('sqlite:///:memory:')
         with MockTransaction:
             expect(db).insert_host_overload('host', True).once()
-            collector.log_host_overload(db, 0.9, 'host', 3000, 
-                                        [1000, 1000, 800])
+            assert collector.log_host_overload(db, 0.9, 'host', 3000, 
+                                               [1000, 1000, 800])
 
         with MockTransaction:
             expect(db).insert_host_overload('host', False).once()
-            collector.log_host_overload(db, 0.9, 'host', 3000, 
-                                        [1000, 1000, 600])
+            assert not collector.log_host_overload(db, 0.9, 'host', 3000, 
+                                                   [1000, 1000, 600])
