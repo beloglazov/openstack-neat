@@ -54,6 +54,7 @@ REQUIRED_FIELDS = [
     'local_manager_interval',
     'data_collector_interval',
     'data_collector_data_length',
+    'host_cpu_overload_threshold',
     'compute_user',
     'compute_password',
     'sleep_command',
