@@ -46,3 +46,7 @@ class DbUtils(TestCase):
             ['id', 'host_id', 'timestamp', 'state']
         assert list(db.host_states.foreign_keys)[0].target_fullname \
             == 'hosts.id'
+        assert db.host_overload.c.keys() == \
+            ['id', 'host_id', 'timestamp', 'overload']
+        assert list(db.host_overload.foreign_keys)[0].target_fullname \
+            == 'hosts.id'

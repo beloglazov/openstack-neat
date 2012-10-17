@@ -63,9 +63,17 @@ def init_db(sql_connection):
               Column('timestamp', DateTime, default=func.now()),
               Column('state', Integer, nullable=False))
 
+    host_overload = \
+        Table('host_overload', metadata,
+              Column('id', Integer, primary_key=True),
+              Column('host_id', Integer, ForeignKey('hosts.id'), nullable=False),
+              Column('timestamp', DateTime, default=func.now()),
+              Column('overload', Integer, nullable=False))
+
     metadata.create_all()
     connection = engine.connect()
-    db = Database(connection, hosts, vms, vm_resource_usage, host_states)
+    db = Database(connection, hosts, vms, vm_resource_usage, 
+                  host_states, host_overload)
 
     log.debug('Initialized a DB connection to %s', sql_connection)
     return db
