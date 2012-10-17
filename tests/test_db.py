@@ -143,6 +143,22 @@ class Db(TestCase):
              {'host1': 4000, 'host2': 8000})
 
     @qc(1)
+    def select_host_id():
+        db = db_utils.init_db('sqlite:///:memory:')
+        host1_id = db.hosts.insert().execute(
+            hostname='host1',
+            cpu_mhz=1,
+            cpu_cores=1,
+            ram=1).inserted_primary_key[0]
+        host2_id = db.hosts.insert().execute(
+            hostname='host2',
+            cpu_mhz=1,
+            cpu_cores=1,
+            ram=1).inserted_primary_key[0]       
+        assert db.select_host_id('host1') == host1_id
+        assert db.select_host_id('host2') == host2_id
+
+    @qc(1)
     def select_host_ids():
         db = db_utils.init_db('sqlite:///:memory:')
         assert db.select_host_ids() == {}
@@ -184,7 +200,7 @@ class Db(TestCase):
         host2 = [x[3] for x in sorted(filter(
                     lambda x: x[1] == hosts['host2'], 
                     result), key=lambda x: x[0])]
-        self.assertEqual(host1, [0, 0, 1])        
+        self.assertEqual(host2, [1, 0, 1])        
 
     @qc(10)
     def select_host_states(
@@ -244,3 +260,22 @@ class Db(TestCase):
             if data and data[-1] == 0:
                 res.append(host)
         assert db.select_inactive_hosts() == res
+
+    def test_insert_host_overload(self):
+        db = db_utils.init_db('sqlite:///:memory:')
+        hosts = {}
+        hosts['host1'] = db.update_host('host1', 1, 1, 1)
+        hosts['host2'] = db.update_host('host2', 1, 1, 1)
+        db.insert_host_overload('host2', False)
+        db.insert_host_overload('host1', True)
+        db.insert_host_overload('host1', False)
+        db.insert_host_overload('host2', True)
+        result = db.host_overload.select().execute().fetchall()
+        host1 = [x[3] for x in sorted(filter(
+                    lambda x: x[1] == hosts['host1'], 
+                    result), key=lambda x: x[0])]
+        self.assertEqual(host1, [1, 0])
+        host2 = [x[3] for x in sorted(filter(
+                    lambda x: x[1] == hosts['host2'], 
+                    result), key=lambda x: x[0])]
+        self.assertEqual(host2, [0, 1])        

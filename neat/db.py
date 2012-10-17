@@ -190,6 +190,20 @@ class Database(object):
         return hosts_cpu_mhz, hosts_cpu_cores, hosts_ram
 
     @contract
+    def select_host_id(self, hostname):
+        """ Select the ID of a host.
+
+        :param hostname: A host name.
+         :type hostname: str
+
+        :return: The ID of the host.
+         :rtype: int
+        """
+        sel = select([self.hosts.c.id]). \
+            where(self.hosts.c.hostname == hostname)
+        return int(self.connection.execute(sel).fetchone()['id'])
+
+    @contract
     def select_host_ids(self):
         """ Select the IDs of all the hosts.
 
@@ -269,3 +283,17 @@ class Database(object):
         return [host 
                 for host, state in self.select_host_states().items() 
                 if state == 0]
+
+    @contract
+    def insert_host_overload(self, hostname, overload):
+        """ Insert whether a host is overloaded.
+
+        :param hostname: A host name.
+         :type hostname: str
+
+        :param overload: Whether the host is overloaded.
+         :type overload: bool
+        """
+        self.host_overload.insert().execute(
+            host_id=self.select_host_id(hostname),
+            overload=int(overload))
