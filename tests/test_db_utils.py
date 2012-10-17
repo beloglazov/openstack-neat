@@ -42,6 +42,10 @@ class DbUtils(TestCase):
             ['id', 'vm_id', 'timestamp', 'cpu_mhz']
         assert list(db.vm_resource_usage.foreign_keys)[0].target_fullname \
             == 'vms.id'
+        assert db.vm_migrations.c.keys() == \
+            ['id', 'vm_id', 'timestamp', 'hostname']
+        assert list(db.vm_migrations.foreign_keys)[0].target_fullname \
+            == 'vms.id'
         assert db.host_states.c.keys() == \
             ['id', 'host_id', 'timestamp', 'state']
         assert list(db.host_states.foreign_keys)[0].target_fullname \

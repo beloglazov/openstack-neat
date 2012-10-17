@@ -31,16 +31,18 @@ class Database(object):
               hosts=Table,
               vms=Table,
               vm_resource_usage=Table,
+              vm_migrations=Table,
               host_states=Table,
               host_overload=Table)
-    def __init__(self, connection, hosts, vms, 
-                 vm_resource_usage, host_states, host_overload):
+    def __init__(self, connection, hosts, vms, vm_resource_usage,
+                 vm_migrations, host_states, host_overload):
         """ Initialize the database.
 
         :param connection: A database connection table.
         :param hosts: The hosts table.
         :param vms: The vms table.
         :param vm_resource_usage: The vm_resource_usage table.
+        :param vm_migrations: The vm_migrations table.
         :param host_states: The host_states table.
         :param host_overload: The host_overload table.
         """
@@ -48,6 +50,7 @@ class Database(object):
         self.hosts = hosts
         self.vms = vms
         self.vm_resource_usage = vm_resource_usage
+        self.vm_migrations = vm_migrations
         self.host_states = host_states
         self.host_overload = host_overload
         log.debug('Instantiated a Database object')

@@ -56,6 +56,13 @@ def init_db(sql_connection):
               Column('timestamp', DateTime, default=func.now()),
               Column('cpu_mhz', Integer, nullable=False))
 
+    vm_migrations = \
+        Table('vm_migrations', metadata,
+              Column('id', Integer, primary_key=True),
+              Column('vm_id', Integer, ForeignKey('vms.id'), nullable=False),
+              Column('timestamp', DateTime, default=func.now()),
+              Column('hostname', String(255), nullable=False))
+
     host_states = \
         Table('host_states', metadata,
               Column('id', Integer, primary_key=True),
@@ -73,7 +80,7 @@ def init_db(sql_connection):
     metadata.create_all()
     connection = engine.connect()
     db = Database(connection, hosts, vms, vm_resource_usage, 
-                  host_states, host_overload)
+                  vm_migrations, host_states, host_overload)
 
     log.debug('Initialized a DB connection to %s', sql_connection)
     return db
