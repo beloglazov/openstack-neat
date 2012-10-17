@@ -61,7 +61,8 @@ class Collector(TestCase):
             physical_cpus = 13
             expect(common).physical_cpu_count(vir_connection). \
                 and_return(physical_cpus).once()
-            config = {'sql_connection': 'db'}
+            config = {'sql_connection': 'db',
+                      'host_cpu_overload_threshold': '0.95'}
 
             hostname = 'host1'
             mhz = 13540
@@ -80,6 +81,7 @@ class Collector(TestCase):
             assert isinstance(state['previous_cpu_time'], dict)
             assert state['vir_connection'] == vir_connection
             assert state['hostname'] == hostname
+            assert state['host_cpu_overload_threshold'] == 0.95
             assert state['physical_cpus'] == physical_cpus
             assert state['physical_cpu_mhz'] == mhz
             assert state['physical_core_mhz'] == mhz / physical_cpus

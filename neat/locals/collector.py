@@ -167,6 +167,8 @@ def init_state(config):
             'previous_overload': -1,
             'vir_connection': vir_connection,
             'hostname': hostname,
+            'host_cpu_overload_threshold': 
+                float(config['host_cpu_overload_threshold']),
             'physical_cpus': physical_cpus,
             'physical_cpu_mhz': host_cpu_mhz,
             'physical_core_mhz': host_cpu_mhz / physical_cpus,
@@ -261,7 +263,7 @@ def execute(config, state):
 
         state['previous_overload'] = log_host_overload(
             state['db'],
-            config['host_cpu_overload_threshold'],
+            state['host_cpu_overload_threshold'],
             state['hostname'],
             state['previous_overload'],
             state['physical_cpu_mhz'],
