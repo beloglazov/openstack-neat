@@ -44,6 +44,7 @@ class DbUtils(TestCase):
             == 'vms.id'
         assert db.vm_migrations.c.keys() == \
             ['id', 'vm_id', 'host_id', 'timestamp']
+        print db.vm_migrations.foreign_keys
         assert list(db.vm_migrations.foreign_keys)[0].target_fullname \
             == 'vms.id'
         assert list(db.vm_migrations.foreign_keys)[1].target_fullname \
