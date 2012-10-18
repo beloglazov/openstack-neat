@@ -299,8 +299,11 @@ def get_current_vms(vir_connection):
     """
     vm_uuids = {}
     for vm_id in vir_connection.listDomainsID():
-        vm = vir_connection.lookupByID(vm_id)
-        vm_uuids[vm.UUIDString()] = vm.state(0)[0]
+        try:
+            vm = vir_connection.lookupByID(vm_id)
+            vm_uuids[vm.UUIDString()] = vm.state(0)[0]
+        except libvirt.libvirtError:
+            pass
     return vm_uuids
 
 
@@ -523,8 +526,11 @@ def get_cpu_time(vir_connection, uuid):
     :return: The CPU time of the VM.
      :rtype: number
     """
-    domain = vir_connection.lookupByUUIDString(uuid)
-    return domain.getCPUStats(True, 0)[0]['cpu_time']
+    try:
+        domain = vir_connection.lookupByUUIDString(uuid)
+        return domain.getCPUStats(True, 0)[0]['cpu_time']
+    except libvirt.libvirtError:
+        return 0.
 
 
 @contract
