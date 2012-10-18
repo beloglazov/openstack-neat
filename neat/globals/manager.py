@@ -114,8 +114,6 @@ def raise_error(status_code):
     log.error('REST service: Unknown error')
     raise bottle.HTTPResponse('Unknown error', 500)
 
-# TODO: add raise warning, move 412 there
-
 
 @contract
 def validate_params(user, password, params):
