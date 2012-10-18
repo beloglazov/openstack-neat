@@ -106,10 +106,15 @@ def raise_error(status_code):
      :type status_code: int
     """
     if status_code in ERRORS:
-        log.error('REST service: %s', ERRORS[status_code])
+        if status_code == 412 and log.isEnabledFor(logging.INFO):
+            log.info('REST service: %s', ERRORS[status_code])
+        else:
+            log.error('REST service: %s', ERRORS[status_code])
         raise bottle.HTTPResponse(ERRORS[status_code], status_code)
     log.error('REST service: Unknown error')
     raise bottle.HTTPResponse('Unknown error', 500)
+
+# TODO: add raise warning, move 412 there
 
 
 @contract
