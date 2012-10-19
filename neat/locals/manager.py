@@ -220,10 +220,9 @@ def execute(config, state):
             log.info('The host is idle')
         return state
 
-    physical_cpu_mhz_total = state['physical_cpu_mhz_total']
     host_cpu_utilization = vm_mhz_to_percentage(
         vm_cpu_mhz, 
-        physical_cpu_mhz_total * float(config['host_cpu_usable_by_vms']))
+        state['physical_cpu_mhz_total'])
     time_step = int(config['data_collector_interval'])
     migration_time = common.calculate_migration_time(
         vm_ram, float(config['network_migration_bandwidth']))
