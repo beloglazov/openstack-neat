@@ -66,12 +66,13 @@ class LocalManager(TestCase):
             expect(vir_connection).getHostname().and_return('host').once()
             config = {'sql_connection': 'db',
                       'os_admin_user': 'user',
-                      'os_admin_password': 'password'}
+                      'os_admin_password': 'password',
+                      'host_cpu_usable_by_vms': 0.75}
             state = manager.init_state(config)
             assert state['previous_time'] == 0
             assert state['vir_connection'] == vir_connection
             assert state['db'] == db
-            assert state['physical_cpu_mhz_total'] == mhz
+            assert state['physical_cpu_mhz_total'] == mhz * 0.75
             assert state['hostname'] == 'host'
             assert state['hashed_username'] == sha1('user').hexdigest()
             assert state['hashed_password'] == sha1('password').hexdigest()
