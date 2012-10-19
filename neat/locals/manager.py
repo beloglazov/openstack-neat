@@ -158,9 +158,12 @@ def init_state(config):
         log.critical(message)
         raise OSError(message)
 
+    log.debug('physical_cpu_mhz_total: ' + str(common.physical_cpu_mhz_total(vir_connection)))
+    log.debug('float(config[host_cpu_usable_by_vms]): ' + str(float(config['host_cpu_usable_by_vms'])))
     physical_cpu_mhz_total = int(
         common.physical_cpu_mhz_total(vir_connection) * 
         float(config['host_cpu_usable_by_vms']))
+    log.debug('physical_cpu_mhz_total: ' + str(physical_cpu_mhz_total))
     return {'previous_time': 0.,
             'vir_connection': vir_connection,
             'db': init_db(config['sql_connection']),
