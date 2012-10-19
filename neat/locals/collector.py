@@ -158,9 +158,13 @@ def init_state(config):
     hostname = vir_connection.getHostname()
     host_cpu_mhz, host_ram = get_host_characteristics(vir_connection)
     physical_cpus = common.physical_cpu_count(vir_connection)
+    host_cpu_usable_by_vms = float(config['host_cpu_usable_by_vms'])
 
     db = init_db(config['sql_connection'])
-    db.update_host(hostname, host_cpu_mhz, physical_cpus, host_ram)
+    db.update_host(hostname, 
+                   int(host_cpu_mhz * host_cpu_usable_by_vms), 
+                   physical_cpus, 
+                   host_ram)
 
     return {'previous_time': 0.,
             'previous_cpu_time': dict(),
@@ -169,7 +173,7 @@ def init_state(config):
             'hostname': hostname,
             'host_cpu_overload_threshold': 
                 float(config['host_cpu_overload_threshold']) * \
-                float(config['host_cpu_usable_by_vms']),
+                host_cpu_usable_by_vms,
             'physical_cpus': physical_cpus,
             'physical_cpu_mhz': host_cpu_mhz,
             'physical_core_mhz': host_cpu_mhz / physical_cpus,

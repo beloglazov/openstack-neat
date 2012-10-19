@@ -73,7 +73,10 @@ class Collector(TestCase):
 
             db = mock('db')
             expect(collector).init_db('db').and_return(db).once()
-            expect(db).update_host(hostname, mhz, physical_cpus, ram).once()
+            expect(db).update_host(hostname, 
+                                   int(mhz * 0.75), 
+                                   physical_cpus, 
+                                   ram).once()
 
             state = collector.init_state(config)
             assert state['previous_time'] == 0
