@@ -56,7 +56,7 @@ class LocalManager(TestCase):
         with MockTransaction:
             vir_connection = mock('virConnect')
             db = mock('db')
-            mhz = mock('mhz')
+            mhz = 3000
             expect(libvirt).openReadOnly(None). \
                 and_return(vir_connection).once()
             expect(manager).init_db('db'). \

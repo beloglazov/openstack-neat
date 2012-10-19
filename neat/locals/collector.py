@@ -168,7 +168,8 @@ def init_state(config):
             'vir_connection': vir_connection,
             'hostname': hostname,
             'host_cpu_overload_threshold': 
-                float(config['host_cpu_overload_threshold']),
+                float(config['host_cpu_overload_threshold']) * \
+                float(config['host_cpu_usable_by_vms']),
             'physical_cpus': physical_cpus,
             'physical_cpu_mhz': host_cpu_mhz,
             'physical_core_mhz': host_cpu_mhz / physical_cpus,
