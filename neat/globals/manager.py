@@ -678,7 +678,7 @@ def migrate_vms(db, nova, vm_instance_directory, placement):
                         vm.status != u'ACTIVE':
                     break
                 else:
-                    vms.remove(vm_uuid)
+                    vm_pair.remove(vm_uuid)
                     db.insert_vm_migration(vm_uuid, placement[vm_uuid])
                     if log.isEnabledFor(logging.INFO):
                         log.info('Completed migration of VM %s to %s', 
