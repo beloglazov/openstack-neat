@@ -158,12 +158,9 @@ def init_state(config):
         log.critical(message)
         raise OSError(message)
 
-    log.debug('physical_cpu_mhz_total: ' + str(common.physical_cpu_mhz_total(vir_connection)))
-    log.debug('float(config[host_cpu_usable_by_vms]): ' + str(float(config['host_cpu_usable_by_vms'])))
     physical_cpu_mhz_total = int(
         common.physical_cpu_mhz_total(vir_connection) * 
         float(config['host_cpu_usable_by_vms']))
-    log.debug('physical_cpu_mhz_total: ' + str(physical_cpu_mhz_total))
     return {'previous_time': 0.,
             'vir_connection': vir_connection,
             'db': init_db(config['sql_connection']),
@@ -215,12 +212,9 @@ def execute(config, state):
     """
     path = common.build_local_vm_path(config['local_data_directory'])
     vm_cpu_mhz = get_local_data(path)
-    log.debug('vm_cpu_mhz: '  + str(vm_cpu_mhz))
     vm_ram = get_ram(state['vir_connection'], vm_cpu_mhz.keys())
-    log.debug('vm_ram: '  + str(vm_ram))
     vm_cpu_mhz = cleanup_vm_data(vm_cpu_mhz, vm_ram.keys())
-    log.debug('vm_cpu_mhz updated: '  + str(vm_cpu_mhz))
-    
+
     if not vm_cpu_mhz:
         if log.isEnabledFor(logging.INFO):
             log.info('The host is idle')
@@ -229,8 +223,6 @@ def execute(config, state):
     host_cpu_utilization = vm_mhz_to_percentage(
         vm_cpu_mhz, 
         state['physical_cpu_mhz_total'])
-    log.debug('state[physical_cpu_mhz_total]: '  + str(state['physical_cpu_mhz_total']))
-    log.debug('host_cpu_utilization: '  + str(host_cpu_utilization))
     time_step = int(config['data_collector_interval'])
     migration_time = common.calculate_migration_time(
         vm_ram, float(config['network_migration_bandwidth']))
