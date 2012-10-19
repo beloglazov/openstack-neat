@@ -651,37 +651,41 @@ def migrate_vms(db, nova, vm_instance_directory, placement):
     :param placement: A dict of VM UUIDs to host names.
      :type placement: dict(str: str)
     """
-    for vm, host in placement.items():
+    vms = placement.keys()
+    # Migrate only 2 VMs at a time, as otherwise migrations may fail
+    vm_pairs = [vms[x:x + 2] for x in xrange(0, len(vms), 2)]
+    for vm_pair in vm_pairs:
         # To avoid problems with migration, need the following:
         subprocess.call('chown -R nova:nova ' + vm_instance_directory, 
                         shell=True)
-        nova.servers.live_migrate(vm, host, False, False)
-        if log.isEnabledFor(logging.INFO):
-            log.info('Started migration of VM %s to %s', vm, host)
+        for vm in vm_pair:
+            host = placement[vm]
+            nova.servers.live_migrate(vm, host, False, False)
+            if log.isEnabledFor(logging.INFO):
+                log.info('Started migration of VM %s to %s', vm, host)            
+                
+        time.sleep(10)
 
-    time.sleep(5)
-
-    vms = placement.keys()
-    while True:
-        for vm_uuid in list(vms):
-            vm = nova.servers.get(vm_uuid)
-            if log.isEnabledFor(logging.DEBUG):
-                log.info('VM %s: %s, %s', 
-                         vm_uuid, 
-                         vm_hostname(vm), 
-                         vm.status)
-            if vm_hostname(vm) != placement[vm_uuid] or \
-                    vm.status != u'ACTIVE':
-                break
+        while True:
+            for vm_uuid in list(vm_pair):
+                vm = nova.servers.get(vm_uuid)
+                if log.isEnabledFor(logging.DEBUG):
+                    log.debug('VM %s: %s, %s', 
+                              vm_uuid, 
+                              vm_hostname(vm), 
+                              vm.status)
+                if vm_hostname(vm) != placement[vm_uuid] or \
+                        vm.status != u'ACTIVE':
+                    break
+                else:
+                    vms.remove(vm_uuid)
+                    db.insert_vm_migration(vm_uuid, placement[vm_uuid])
+                    if log.isEnabledFor(logging.INFO):
+                        log.info('Completed migration of VM %s to %s', 
+                                 vm_uuid, placement[vm_uuid])
             else:
-                vms.remove(vm_uuid)
-                db.insert_vm_migration(vm_uuid, placement[vm_uuid])
-                if log.isEnabledFor(logging.INFO):
-                    log.info('Completed migration of VM %s to %s', 
-                             vm_uuid, placement[vm_uuid])
-        else:
-            return
-        time.sleep(3)
+                break
+            time.sleep(3)
 
 
 @contract
