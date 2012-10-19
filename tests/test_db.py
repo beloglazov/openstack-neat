@@ -240,7 +240,7 @@ class Db(TestCase):
                 db.insert_host_states({host: state})
             if data and data[-1] == 1 or not data:
                 res.append(host)
-        assert db.select_active_hosts() == res
+        assert set(db.select_active_hosts()) == set(res)
 
     @qc(10)
     def select_inactive_hosts(
