@@ -118,10 +118,6 @@ def physical_cpu_mhz_total(vir_connection):
     :return: The total CPU frequency in MHz.
      :rtype: int
     """
-    log.debug('physical_cpu_count: ' + str(physical_cpu_count(vir_connection)))
-    log.debug('physical_cpu_mhz: ' + str(physical_cpu_mhz(vir_connection)))
-    log.debug('physical_cpu_mhz_total: ' + str(physical_cpu_count(vir_connection) * \
-                                                   physical_cpu_mhz(vir_connection)))
     return physical_cpu_count(vir_connection) * \
         physical_cpu_mhz(vir_connection)
 

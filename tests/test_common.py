@@ -59,7 +59,7 @@ class Common(TestCase):
     def physical_cpu_mhz(x=int_(min=0, max=8)):
         with MockTransaction:
             connection = libvirt.virConnect()
-            expect(connection).getInfo().and_return([0, x, 0]).once()
+            expect(connection).getInfo().and_return([0, 0, 0, x]).once()
             assert common.physical_cpu_mhz(connection) == x
 
     @qc(10)
