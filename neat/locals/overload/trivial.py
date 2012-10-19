@@ -75,9 +75,6 @@ def threshold(threshold, utilization):
     :return: The decision of the algorithm.
      :rtype: bool
     """
-    log.debug(str(utilization))
     if utilization:
-        log.debug('utilization[-1] = ' + str(utilization[-1]))
-        log.debug('threshold = ' + str(threshold))
         return utilization[-1] > threshold
     return False
