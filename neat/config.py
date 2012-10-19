@@ -55,6 +55,7 @@ REQUIRED_FIELDS = [
     'data_collector_interval',
     'data_collector_data_length',
     'host_cpu_overload_threshold',
+    'host_cpu_usable_by_vms',
     'compute_user',
     'compute_password',
     'sleep_command',
