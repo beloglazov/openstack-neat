@@ -105,7 +105,7 @@ def physical_cpu_mhz(vir_connection):
     :return: The CPU frequency in MHz.
      :rtype: int
     """
-    return vir_connection.getInfo()[1]
+    return vir_connection.getInfo()[3]
 
 
 @contract
