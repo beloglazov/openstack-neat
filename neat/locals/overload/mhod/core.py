@@ -149,7 +149,7 @@ def mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
         time_in_states = total_time
         time_in_state_n = get_time_in_state_n(state_config, state_history)
         tmp = set(p[current_state])
-        if len(tmp) != 1 or tmp[0] != 0:
+        if len(tmp) != 1 or 0 not in tmp:
             policy = bruteforce.optimize(
                 step, 1.0, otf, (migration_time / time_step), ls,
                 p, state_vector, time_in_states, time_in_state_n)
