@@ -407,4 +407,7 @@ def vm_mhz_to_percentage(vms, physical_cpu_mhz):
      :rtype: list(float)
     """
     data = itertools.izip_longest(*vms.values(), fillvalue=0)
+    log.debug('physical_cpu_mhz: ' + str(physical_cpu_mhz))
+    log.debug('sum_mhz: ' + str([float(sum(x)) for x in data]))
+    log.debug('host_cpu: ' + str([float(sum(x)) / physical_cpu_mhz for x in data]))
     return [float(sum(x)) / physical_cpu_mhz for x in data]
