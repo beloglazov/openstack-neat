@@ -27,6 +27,38 @@ log = logging.getLogger(__name__)
 
 
 @contract
+def mhod_factory(time_step, migration_time, params):
+    """ Creates the MHOD algorithm.
+
+    :param time_step: The length of the simulation time step in seconds.
+     :type time_step: int,>=0
+
+    :param migration_time: The VM migration time in time seconds.
+     :type migration_time: float,>=0
+
+    :param params: A dictionary containing the algorithm's parameters.
+     :type params: dict(str: *)
+
+    :return: A function implementing the MHOD algorithm.
+     :rtype: function
+    """
+    def mhod_wrapper(utilization, state=None):
+        if not state:
+            state = init_state(params['window_sizes'],
+                               len(params['state_config']) + 1)
+        return mhod(params['state_config'],
+                    params['otf'],
+                    params['window_sizes'],
+                    params['bruteforce_step'],
+                    params['learning_steps'],
+                    time_step,
+                    migration_time,
+                    utilization,
+                    state)        
+    return mhod_wrapper
+
+
+@contract
 def init_state(window_sizes, number_of_states):
     """ Initialize the state dictionary of the MHOD algorithm.
 
@@ -39,22 +71,21 @@ def init_state(window_sizes, number_of_states):
     :return: The initialization state dictionary.
      :rtype: dict(str: *)
     """
-    state = {}
-    state['previous_state'] = 0
-    state['request_windows'] = estimation.init_request_windows(
-        number_of_states)
-    state['estimate_windows'] = estimation.init_deque_structure(
-        window_sizes, number_of_states)
-    state['variances'] = estimation.init_variances(
-        window_sizes, number_of_states)
-    state['acceptable_variances'] = estimation.init_variances(
-        window_sizes, number_of_states)
-    return state
+    return {
+        'previous_state': 0,
+        'request_windows': estimation.init_request_windows(
+            number_of_states),
+        'estimate_windows': estimation.init_deque_structure(
+            window_sizes, number_of_states),
+        'variances': estimation.init_variances(
+            window_sizes, number_of_states),
+        'acceptable_variances': estimation.init_variances(
+            window_sizes, number_of_states)}
 
 
 @contract
-def execute(state_config, otf, window_sizes, bruteforce_step,
-            time_step, migration_time, utilization, state):
+def mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
+         time_step, migration_time, utilization, state):
     """ The MHOD algorithm returning whether the host is overloaded.
 
     :param state_config: The state configuration.
@@ -115,7 +146,7 @@ def execute(state_config, otf, window_sizes, bruteforce_step,
         state['previous_state'])
     state['previous_state'] = state
 
-    if len(utilization) >= 30:
+    if len(utilization) >= learning_steps:
         state_history = utilization_to_states(state_config, utilization)
         time_in_states = total_time
         time_in_state_n = get_time_in_state_n(state_config, state_history)
@@ -124,8 +155,8 @@ def execute(state_config, otf, window_sizes, bruteforce_step,
             policy = bruteforce.optimize(
                 step, 1.0, otf, (migration_time / time_step), ls,
                 p, state_vector, time_in_states, time_in_state_n)
-            return issue_command_deterministic(policy)
-    return false
+            return issue_command_deterministic(policy), state
+    return False, state
 
 
 @contract
