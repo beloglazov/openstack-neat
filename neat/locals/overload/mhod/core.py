@@ -100,11 +100,11 @@ def mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
     :param bruteforce_step: The step of the bruteforce algorithm.
      :type bruteforce_step: float
 
-    :param time_step: The lenght of a time frame in seconds.
-     :type time_step: int
+    :param time_step: The length of the simulation time step in seconds.
+     :type time_step: int,>=0
 
-    :param migration_time: The VM migration time in seconds.
-     :type migration_time: int
+    :param migration_time: The VM migration time in time seconds.
+     :type migration_time: float,>=0
 
     :param utilization: The history of the host's CPU utilization.
      :type utilization: list(float)
