@@ -144,16 +144,26 @@ def mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
         state['previous_state'])
     state['previous_state'] = current_state
 
+    log.debug('MHOD utilization:' + str(utilization))
     if len(utilization) >= learning_steps:
         state_history = utilization_to_states(state_config, utilization)
         time_in_states = total_time
         time_in_state_n = get_time_in_state_n(state_config, state_history)
+        log.debug('MHOD state_history:' + str(state_history))
+        log.debug('MHOD time_in_states:' + str(time_in_states))
+        log.debug('MHOD time_in_state_n:' + str(time_in_state_n))
+        log.debug('MHOD p:' + str(p))
+        log.debug('MHOD current_state:' + str(current_state))
+        log.debug('MHOD p[current_state]:' + str(p[current_state]))
         tmp = set(p[current_state])
         if len(tmp) != 1 or 0 not in tmp:
             policy = bruteforce.optimize(
                 bruteforce_step, 1.0, otf, (migration_time / time_step), 
                 ls, p, state_vector, time_in_states, time_in_state_n)
-            return issue_command_deterministic(policy), state
+            log.debug('MHOD policy:' + str(policy))
+            command = issue_command_deterministic(policy)
+            log.debug('MHOD command:' + str(command))
+            return command, state
     return False, state
 
 
