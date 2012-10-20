@@ -113,7 +113,7 @@ def mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
      :type state: dict
 
     :return: The updated state and decision of the algorithm.
-     :rtype: tuple(dict, bool)
+     :rtype: tuple(bool, dict)
     """
     total_time = len(utilization)
     state_vector = build_state_vector(state_config, utilization)
