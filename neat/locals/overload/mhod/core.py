@@ -129,7 +129,7 @@ def mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
     state['request_windows'] = estimation.update_request_windows(
         state['request_windows'],
         state['previous_state'],
-        state)
+        current_state)
     state['estimate_windows'] = estimation.update_estimate_windows(
         state['estimate_windows'],
         state['request_windows'],
