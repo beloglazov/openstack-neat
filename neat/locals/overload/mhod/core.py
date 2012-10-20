@@ -151,8 +151,8 @@ def mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
         tmp = set(p[current_state])
         if len(tmp) != 1 or 0 not in tmp:
             policy = bruteforce.optimize(
-                step, 1.0, otf, (migration_time / time_step), ls,
-                p, state_vector, time_in_states, time_in_state_n)
+                bruteforce_step, 1.0, otf, (migration_time / time_step), 
+                ls, p, state_vector, time_in_states, time_in_state_n)
             return issue_command_deterministic(policy), state
     return False, state
 
