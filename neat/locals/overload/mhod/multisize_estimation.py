@@ -256,16 +256,19 @@ def select_best_estimates(estimate_windows, selected_windows):
 
 
 @contract
-def init_request_windows(number_of_states):
+def init_request_windows(number_of_states, max_window_size):
     """ Initialize a request window data structure.
 
     :param number_of_states: The number of states.
      :type number_of_states: int,>0
 
+    :param max_window_size: The max size of the request windows.
+     :type max_window_size: int,>0
+
     :return: The initialized request windows data structure.
      :rtype: list(deque)
     """
-    return number_of_states * [deque()]
+    return number_of_states * [deque([], max_window_size)]
 
 
 @contract

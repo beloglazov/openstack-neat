@@ -74,7 +74,7 @@ def init_state(window_sizes, number_of_states):
     return {
         'previous_state': 0,
         'request_windows': estimation.init_request_windows(
-            number_of_states),
+            number_of_states, max(window_sizes)),
         'estimate_windows': estimation.init_deque_structure(
             window_sizes, number_of_states),
         'variances': estimation.init_variances(
@@ -116,7 +116,6 @@ def mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
      :rtype: tuple(dict, bool)
     """
     total_time = len(utilization)
-    max_window_size = max(window_sizes)
     state_vector = build_state_vector(state_config, utilization)
     current_state = get_current_state(state_vector)
     selected_windows = estimation.select_window(
@@ -129,7 +128,6 @@ def mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
 
     state['request_windows'] = estimation.update_request_windows(
         state['request_windows'],
-        max_window_size,
         state['previous_state'],
         state)
     state['estimate_windows'] = estimation.update_estimate_windows(

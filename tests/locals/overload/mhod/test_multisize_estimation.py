@@ -740,12 +740,23 @@ class Multisize(TestCase):
                           [0.0, 0.0]])
 
     def test_init_request_windows(self):
-        self.assertEqual(m.init_request_windows(1), [deque()])
-        self.assertEqual(m.init_request_windows(2), [deque(),
-                                                     deque()])
-        self.assertEqual(m.init_request_windows(3), [deque(),
-                                                     deque(),
-                                                     deque()])
+        structure = m.init_request_windows(1, 4)
+        self.assertEqual(structure, [deque()])
+        self.assertEqual(deque_maxlen(structure[0]), 4)
+
+        structure = m.init_request_windows(2, 4)
+        self.assertEqual(structure, [deque(),
+                                     deque()])
+        self.assertEqual(deque_maxlen(structure[0]), 4)
+        self.assertEqual(deque_maxlen(structure[1]), 4)
+
+        structure = m.init_request_windows(3, 4)
+        self.assertEqual(structure, [deque(),
+                                     deque(),
+                                     deque()])
+        self.assertEqual(deque_maxlen(structure[0]), 4)
+        self.assertEqual(deque_maxlen(structure[1]), 4)
+        self.assertEqual(deque_maxlen(structure[2]), 4)
 
     def test_init_variances(self):
         self.assertEqual(m.init_variances([2, 4], 1), [[{2: 1.0,
