@@ -82,10 +82,10 @@ class Core(TestCase):
         self.assertEqual(c.build_state_vector(state_config, [0.0, 1.0]),
                          [0, 0, 1])
 
-    def test_current_state(self):
-        self.assertEqual(c.current_state([1, 0, 0]), 0)
-        self.assertEqual(c.current_state([0, 1, 0]), 1)
-        self.assertEqual(c.current_state([0, 0, 1]), 2)
+    def test_get_current_state(self):
+        self.assertEqual(c.get_current_state([1, 0, 0]), 0)
+        self.assertEqual(c.get_current_state([0, 1, 0]), 1)
+        self.assertEqual(c.get_current_state([0, 0, 1]), 2)
 
     def test_utilization_to_states(self):
         state_config = [0.4, 0.7]

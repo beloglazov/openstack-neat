@@ -118,7 +118,7 @@ def mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
     total_time = len(utilization)
     max_window_size = max(window_sizes)
     state_vector = build_state_vector(state_config, utilization)
-    state = current_state(state_vector)
+    current_state = get_current_state(state_vector)
     selected_windows = estimation.select_window(
         state['variances'],
         state['acceptable_variances'],
@@ -144,13 +144,13 @@ def mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
         state['acceptable_variances'],
         state['estimate_windows'],
         state['previous_state'])
-    state['previous_state'] = state
+    state['previous_state'] = current_state
 
     if len(utilization) >= learning_steps:
         state_history = utilization_to_states(state_config, utilization)
         time_in_states = total_time
         time_in_state_n = get_time_in_state_n(state_config, state_history)
-        tmp = set(p[state])
+        tmp = set(p[current_state])
         if len(tmp) != 1 or tmp[0] != 0:
             policy = bruteforce.optimize(
                 step, 1.0, otf, (migration_time / time_step), ls,
@@ -199,7 +199,7 @@ def utilization_to_state(state_config, utilization):
 
 
 @contract
-def current_state(state_vector):
+def get_current_state(state_vector):
     """ Get the current state corresponding to the state probability vector.
 
     :param state_vector: The state PMF vector.
