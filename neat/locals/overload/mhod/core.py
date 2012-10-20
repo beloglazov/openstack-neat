@@ -92,7 +92,7 @@ def mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
      :type state_config: list(float)
 
     :param otf: The OTF parameter.
-     :type otf: int,>0
+     :type otf: float,>0
 
     :param window_sizes: A list of window sizes.
      :type window_sizes: list(int)
