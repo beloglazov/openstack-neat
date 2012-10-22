@@ -57,10 +57,13 @@ for vm in vms:
         vms_cpu_usage[vm] = 0
 vms_ram_usage = manager.vms_ram_limit(nova, vms)
 
+hosts_cpu_usage_hypervisor = db.select_last_cpu_mhz_for_hosts()
+
 hosts_cpu_usage = {}
 hosts_ram_usage = {}
 for host, vms in hosts_to_vms.items():
-    hosts_cpu_usage[host] = sum(vms_cpu_usage[x] for x in vms)
+    hosts_cpu_usage[host] = hosts_cpu_usage_hypervisor[host] + \
+                            sum(vms_cpu_usage[x] for x in vms)
     hosts_ram_usage[host] = manager.host_used_ram(nova, host)
         
 
