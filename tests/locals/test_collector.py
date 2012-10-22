@@ -485,6 +485,7 @@ class Collector(TestCase):
             context = mock('context')
             f = mock('file')
             when(context).__enter__().and_return(f)#.once()
+            when(context).__exit__()
             when(collector).open('/proc/stat', 'r').and_return(context)#.once()
             when(f).readline().and_return(
                 '1 ' + ' '.join([str(v) for v in x]) + ' 2 3')#.once()
