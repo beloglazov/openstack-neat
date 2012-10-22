@@ -272,6 +272,7 @@ def execute(config, state):
     if state['previous_time'] > 0:
         host_cpu_mhz_hypervisor = host_cpu_mhz - sum(cpu_mhz.values())
         append_data_locally(path, cpu_mhz, data_length)
+        # need to store this locally
         state['host_cpu_mhz_history'].append(host_cpu_mhz_hypervisor)
         append_data_remotely(state['db'], 
                              cpu_mhz, 
