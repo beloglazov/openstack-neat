@@ -45,6 +45,13 @@ def init_db(sql_connection):
                   Column('cpu_cores', Integer, nullable=False),
                   Column('ram', Integer, nullable=False))
 
+    host_resource_usage = \
+        Table('host_resource_usage', metadata,
+              Column('id', Integer, primary_key=True),
+              Column('host_id', Integer, ForeignKey('hosts.id'), nullable=False),
+              Column('timestamp', DateTime, default=func.now()),
+              Column('cpu_mhz', Integer, nullable=False))
+
     vms = Table('vms', metadata,
                 Column('id', Integer, primary_key=True),
                 Column('uuid', String(36), nullable=False))
@@ -79,8 +86,8 @@ def init_db(sql_connection):
 
     metadata.create_all()
     connection = engine.connect()
-    db = Database(connection, hosts, vms, vm_resource_usage, 
-                  vm_migrations, host_states, host_overload)
+    db = Database(connection, hosts, host_resource_usage, vms, 
+                  vm_resource_usage, vm_migrations, host_states, host_overload)
 
     log.debug('Initialized a DB connection to %s', sql_connection)
     return db

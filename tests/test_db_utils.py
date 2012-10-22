@@ -36,6 +36,10 @@ class DbUtils(TestCase):
         assert isinstance(db.host_states, Table)
         assert db.hosts.c.keys() == \
             ['id', 'hostname', 'cpu_mhz', 'cpu_cores', 'ram']
+        assert db.host_resource_usage.c.keys() == \
+            ['id', 'host_id', 'timestamp', 'cpu_mhz']
+        assert list(db.host_resource_usage.foreign_keys)[0].target_fullname \
+            == 'hosts.id'
         assert db.vms.c.keys() == \
             ['id', 'uuid']
         assert db.vm_resource_usage.c.keys() == \

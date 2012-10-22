@@ -62,7 +62,7 @@ class Db(TestCase):
         res = {}
         for uuid, data in vms.items():
             for value in data:
-                db.insert_cpu_mhz({uuid: value})
+                db.insert_vm_cpu_mhz({uuid: value})
             if data:
                 res[uuid] = data[-1]
         assert db.select_last_cpu_mhz_for_vms() == res
@@ -79,7 +79,7 @@ class Db(TestCase):
         assert db.select_vm_id(uuid2) == vm_id + 1
 
     @qc(10)
-    def insert_cpu_mhz(
+    def insert_vm_cpu_mhz(
         vms=dict_(
             keys=str_(of='abc123-', min_length=36, max_length=36),
             values=tuple_(int_(min=1, max=3000),
@@ -104,7 +104,7 @@ class Db(TestCase):
         if initial_data:
             db.vm_resource_usage.insert().execute(initial_data)
 
-        db.insert_cpu_mhz(data_to_submit)
+        db.insert_vm_cpu_mhz(data_to_submit)
 
         for uuid, data in final_data.items():
             assert db.select_cpu_mhz_for_vm(uuid, 11) == data
@@ -129,6 +129,52 @@ class Db(TestCase):
         assert host['cpu_mhz'] == 3500
         assert host['cpu_cores'] == 8
         assert host['ram'] == 8000
+
+    @qc(10)
+    def select_cpu_mhz_for_host(
+        hostname=str_(of='abc123', min_length=5, max_length=10),
+        cpu_mhz=list_(of=int_(min=0, max=3000), min_length=0, max_length=10),
+        n=int_(min=1, max=10)
+    ):
+        db = db_utils.init_db('sqlite:///:memory:')
+        host_id = db.update_host(hostname, 1, 1, 1)
+        for mhz in cpu_mhz:
+            db.host_resource_usage.insert().execute(
+                host_id=host_id,
+                cpu_mhz=mhz)
+        assert db.select_cpu_mhz_for_host(hostname, n) == cpu_mhz[-n:]
+
+    @qc(10)
+    def select_last_cpu_mhz_for_hosts(
+        hosts=dict_(
+            keys=str_(of='abc123', min_length=5, max_length=10),
+            values=list_(of=int_(min=1, max=3000),
+                         min_length=0, max_length=10),
+            min_length=0, max_length=3
+        )
+    ):
+        db = db_utils.init_db('sqlite:///:memory:')
+        res = {}
+        for hostname, data in hosts.items():
+            db.update_host(hostname, 1, 1, 1)
+            for value in data:
+                db.insert_host_cpu_mhz(hostname, value)
+            if data:
+                res[hostname] = data[-1]
+            else: 
+                res[hostname] = 0
+        assert db.select_last_cpu_mhz_for_hosts() == res
+
+    @qc(10)
+    def insert_host_cpu_mhz(
+        hostname=str_(of='abc123', min_length=5, max_length=10),
+        cpu_mhz=list_(of=int_(min=0, max=3000), min_length=1, max_length=10)
+    ):
+        db = db_utils.init_db('sqlite:///:memory:')
+        db.update_host(hostname, 1, 1, 1)
+        for value in cpu_mhz:
+            db.insert_host_cpu_mhz(hostname, value)
+        assert db.select_cpu_mhz_for_host(hostname, len(cpu_mhz)) == cpu_mhz
 
     @qc(1)
     def select_host_characteristics():

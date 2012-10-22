@@ -29,17 +29,19 @@ class Database(object):
 
     @contract(connection=Connection,
               hosts=Table,
+              host_resource_usage=Table,
               vms=Table,
               vm_resource_usage=Table,
               vm_migrations=Table,
               host_states=Table,
               host_overload=Table)
-    def __init__(self, connection, hosts, vms, vm_resource_usage,
-                 vm_migrations, host_states, host_overload):
+    def __init__(self, connection, hosts, host_resource_usage, vms, 
+                 vm_resource_usage, vm_migrations, host_states, host_overload):
         """ Initialize the database.
 
         :param connection: A database connection table.
         :param hosts: The hosts table.
+        :param host_resource_usage: The host_resource_usage table.
         :param vms: The vms table.
         :param vm_resource_usage: The vm_resource_usage table.
         :param vm_migrations: The vm_migrations table.
@@ -48,6 +50,7 @@ class Database(object):
         """
         self.connection = connection
         self.hosts = hosts
+        self.host_resource_usage = host_resource_usage
         self.vms = vms
         self.vm_resource_usage = vm_resource_usage
         self.vm_migrations = vm_migrations
@@ -122,7 +125,7 @@ class Database(object):
             return row['id']
 
     @contract
-    def insert_cpu_mhz(self, data):
+    def insert_vm_cpu_mhz(self, data):
         """ Insert a set of CPU MHz values for a set of VMs.
 
         :param data: A dictionary of VM UUIDs and CPU MHz values.
@@ -176,6 +179,69 @@ class Database(object):
             return row['id']
 
     @contract
+    def insert_host_cpu_mhz(self, hostname, cpu_mhz):
+        """ Insert a CPU MHz value for a host.
+
+        :param hostname: A host name.
+         :type hostname: str
+
+        :param cpu_mhz: The CPU usage of the host in MHz.
+         :type cpu_mhz: int
+        """
+        self.host_resource_usage.insert().execute(
+            host_id=self.select_host_id(hostname),
+            cpu_mhz=cpu_mhz)
+
+    @contract
+    def select_cpu_mhz_for_host(self, hostname, n):
+        """ Select n last values of CPU MHz for a host.
+
+        :param hostname: A host name.
+         :type hostname: str
+
+        :param n: The number of last values to select.
+         :type n: int,>0
+
+        :return: The list of n last CPU Mhz values.
+         :rtype: list(int)
+        """
+        sel = select([self.host_resource_usage.c.cpu_mhz]). \
+            where(and_(
+                self.hosts.c.id == self.host_resource_usage.c.host_id,
+                self.hosts.c.hostname == hostname)). \
+            order_by(self.host_resource_usage.c.id.desc()). \
+            limit(n)
+        res = self.connection.execute(sel).fetchall()
+        return list(reversed([int(x[0]) for x in res]))
+
+    @contract
+    def select_last_cpu_mhz_for_hosts(self):
+        """ Select the last value of CPU MHz for all the hosts.
+
+        :return: A dict of host names to the last CPU MHz values.
+         :rtype: dict(str: int)
+        """
+        hru1 = self.host_resource_usage
+        hru2 = self.host_resource_usage.alias()
+        sel = select([hru1.c.host_id, hru1.c.cpu_mhz], from_obj=[
+            hru1.outerjoin(hru2, and_(
+                hru1.c.host_id == hru2.c.host_id,
+                hru1.c.id < hru2.c.id))]). \
+             where(hru2.c.id == None)
+        hosts_cpu_mhz = dict(self.connection.execute(sel).fetchall())
+
+        sel = select([self.hosts.c.id, self.hosts.c.hostname])
+        hosts_names = dict(self.connection.execute(sel).fetchall())
+
+        hosts_last_mhz = {}
+        for id, hostname in hosts_names.items():
+            if id in hosts_cpu_mhz:
+                hosts_last_mhz[str(hostname)] = int(hosts_cpu_mhz[id])
+            else:
+                hosts_last_mhz[str(hostname)] = 0
+        return hosts_last_mhz
+
+    @contract
     def select_host_characteristics(self):
         """ Select the characteristics of all the hosts.
 
@@ -204,7 +270,10 @@ class Database(object):
         """
         sel = select([self.hosts.c.id]). \
             where(self.hosts.c.hostname == hostname)
-        return int(self.connection.execute(sel).fetchone()['id'])
+        row = self.connection.execute(sel).fetchone()
+        if not row:
+            raise LookupError('No host found for hostname: %s', hostname)
+        return int(row['id'])
 
     @contract
     def select_host_ids(self):
