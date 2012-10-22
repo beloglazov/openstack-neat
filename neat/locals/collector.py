@@ -279,7 +279,8 @@ def execute(config, state):
                              host_cpu_mhz)
         if log.isEnabledFor(logging.DEBUG):
             log.debug('Collected VM data: %s', str(cpu_mhz))
-            log.debug('Overall host utilization: %s', str(host_cpu_mhz / state['physical_cpu_mhz']))
+            log.debug('Overall host utilization: %s', 
+                      str(float(host_cpu_mhz) / state['physical_cpu_mhz']))
             log.debug('Collected host CPU MHz: %s', str(host_cpu_mhz))
             log.debug('Collected VM CPU MHz: %s', str(sum(cpu_mhz.values())))
             log.debug('Collected host - VMs CPU MHz: %s', str(host_cpu_mhz - sum(cpu_mhz.values())))
