@@ -168,6 +168,8 @@ def init_state(config):
 
     return {'previous_time': 0.,
             'previous_cpu_time': dict(),
+            'previous_host_cpu_time_total': 0.,
+            'previous_host_cpu_time_busy': 0.,
             'previous_overload': -1,
             'vir_connection': vir_connection,
             'hostname': hostname,
@@ -563,6 +565,41 @@ def calculate_cpu_mhz(cpu_mhz, previous_time, current_time,
     """
     return int(cpu_mhz * float(current_cpu_time - previous_cpu_time) / \
                ((current_time - previous_time) * 1000000000))
+
+
+@contract
+def get_host_cpu_mhz(cpu_mhz, previous_cpu_time_total, previous_cpu_time_busy):
+    """ Get the average CPU utilization in MHz for a set of VMs.
+
+    :param cpu_mhz: The total frequency of the physical CPU in MHz.
+     :type cpu_mhz: int
+
+    :param previous_cpu_time_total: The previous total CPU time.
+     :type previous_cpu_time_total: float
+
+    :param previous_cpu_time_busy: The previous busy CPU time.
+     :type previous_cpu_time_busy: float
+
+    :return: The current total and busy CPU time, and CPU utilization in MHz.
+     :rtype: tuple(float, float, int)
+    """
+    cpu_time_total, cpu_time_busy = get_host_cpu_time()
+    return cpu_time_total, \
+           cpu_time_busy, \
+           int(cpu_mhz * (cpu_time_busy - previous_cpu_time_busy) / \
+                         (cpu_time_total - previous_cpu_time_total))
+
+
+@contract()
+def get_host_cpu_time():
+    """ Get the total and busy CPU time of the host.
+
+    :return: A tuple of the total and busy CPU time.
+     :rtype: tuple(float, float)
+    """
+    with open('/proc/stat', 'r') as f:
+        values = [float(x) for x in f.readline().split()[1:8]]
+        return sum(values), sum(values[0:3])
 
 
 @contract()

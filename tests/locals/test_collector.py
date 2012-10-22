@@ -80,8 +80,10 @@ class Collector(TestCase):
 
             state = collector.init_state(config)
             assert state['previous_time'] == 0
-            assert state['previous_overload'] == -1
             assert isinstance(state['previous_cpu_time'], dict)
+            assert state['previous_host_cpu_time_total'] == 0.
+            assert state['previous_host_cpu_time_busy'] == 0.
+            assert state['previous_overload'] == -1
             assert state['vir_connection'] == vir_connection
             assert state['hostname'] == hostname
             self.assertAlmostEqual(state['host_cpu_overload_threshold'], 
@@ -448,6 +450,38 @@ class Collector(TestCase):
             calculate_cpu_mhz(mhz, previous_time, current_time,
                               previous_cpu_time, current_cpu_time) == \
             int((mhz * cpu_time / (time_period * 1000000000)))
+
+    @qc(1)
+    def get_host_cpu_mhz(
+        cpu_mhz=int_(min=1, max=1000),
+        prev_total=float_(min=100, max=1000),
+        prev_busy=float_(min=1, max=100),
+        diff_total=float_(min=100, max=1000),
+        diff_busy=float_(min=1, max=100)
+    ):
+        with MockTransaction:
+            total = prev_total + diff_total
+            busy = prev_busy + diff_busy
+            expect(collector).get_host_cpu_time(). \
+                and_return((total, busy)).once()
+            assert collector.get_host_cpu_mhz(cpu_mhz, prev_total, prev_busy) == \
+                (total,
+                 busy,
+                 int(cpu_mhz * diff_busy / diff_total))
+
+    @qc(10)
+    def get_host_cpu_time(
+        x=list_(of=int_(min=1, max=1000), min_length=7, max_length=7)
+    ):
+        with MockTransaction:
+            context = mock('context')
+            f = mock('file')
+            expect(context).__enter__().and_return(f).once()
+            expect(collector).open('/proc/stat', 'r').and_return(context).once()
+            expect(f).readline().and_return(
+                '1 ' + ' '.join([str(v) for v in x]) + ' 2 3').once()
+            assert collector.get_host_cpu_time() == (float(sum(x)), 
+                                                     float(sum(x[0:3])))
 
     @qc(10)
     def get_host_characteristics(
