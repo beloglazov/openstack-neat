@@ -62,7 +62,8 @@ class Collector(TestCase):
                 and_return(physical_cpus).once()
             config = {'sql_connection': 'db',
                       'host_cpu_overload_threshold': '0.95',
-                      'host_cpu_usable_by_vms': '0.75'}
+                      'host_cpu_usable_by_vms': '0.75',
+                      'data_collector_data_length': '5'}
 
             hostname = 'host1'
             mhz = 13540
@@ -86,6 +87,7 @@ class Collector(TestCase):
             assert state['previous_overload'] == -1
             assert state['vir_connection'] == vir_connection
             assert state['hostname'] == hostname
+            assert deque_maxlen(state['host_cpu_mhz_history']) == 5
             self.assertAlmostEqual(state['host_cpu_overload_threshold'], 
                                    0.7125, 3)
             assert state['physical_cpus'] == physical_cpus
@@ -330,7 +332,9 @@ class Collector(TestCase):
                           list_(of=int_(min=1, max=3000),
                                 min_length=0, max_length=10)),
             min_length=0, max_length=5
-        )
+        ),
+        hostname=str_(of='abc123', min_length=5, max_length=10),
+        cpu_mhz=int_(min=0, max=3000)
     ):
         db = db_utils.init_db('sqlite:///:memory:')
         initial_data = []
@@ -348,10 +352,14 @@ class Collector(TestCase):
         if initial_data:
             db.vm_resource_usage.insert().execute(initial_data)
 
-        collector.append_data_remotely(db, data_to_submit)
+        db.update_host(hostname, 1, 1, 1)
+
+        collector.append_data_remotely(db, data_to_submit, hostname, cpu_mhz)
 
         for uuid, data in final_data.items():
             assert db.select_cpu_mhz_for_vm(uuid, 11) == data
+
+        assert db.select_cpu_mhz_for_host(hostname, 1) == [cpu_mhz]
 
     @qc
     def get_cpu_mhz(
@@ -525,3 +533,7 @@ class Collector(TestCase):
             expect(db).insert_host_overload.never()
             assert not collector.log_host_overload(db, 0.9, 'host', 0, 3000, 
                                                    [1000, 1000, 600])
+
+
+def deque_maxlen(coll):
+    return int(re.sub("\)$", "", re.sub(".*=", "", coll.__repr__())))

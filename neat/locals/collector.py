@@ -173,6 +173,8 @@ def init_state(config):
             'previous_overload': -1,
             'vir_connection': vir_connection,
             'hostname': hostname,
+            'host_cpu_mhz_history': 
+                deque([], int(config['data_collector_data_length'])),
             'host_cpu_overload_threshold': 
                 float(config['host_cpu_overload_threshold']) * \
                 host_cpu_usable_by_vms,
@@ -262,11 +264,22 @@ def execute(config, state):
                                       current_time,
                                       vms_current.keys(),
                                       added_vm_data)
+    host_cpu_time_total, 
+    host_cpu_time_busy, 
+    host_cpu_mhz = get_host_cpu_mhz(state['physical_cpu_mhz'],
+                                    state['previous_host_cpu_time_total'],
+                                    state['previous_host_cpu_time_busy'])
     if state['previous_time'] > 0:
         append_data_locally(path, cpu_mhz, data_length)
-        append_data_remotely(state['db'], cpu_mhz)
+        state['host_cpu_mhz_history'].append(host_cpu_mhz)
+
+        append_data_remotely(state['db'], 
+                             cpu_mhz, 
+                             state['hostname'],
+                             host_cpu_mhz)
         if log.isEnabledFor(logging.DEBUG):
             log.debug('Collected new data: %s', str(cpu_mhz))
+            log.debug('Collected host CPU MHz: %s', str(host_cpu_mhz))
 
         state['previous_overload'] = log_host_overload(
             state['db'],
@@ -278,6 +291,8 @@ def execute(config, state):
 
     state['previous_time'] = current_time
     state['previous_cpu_time'] = cpu_time
+    state['previous_host_cpu_time_total'] = host_cpu_time_total
+    state['previous_host_cpu_time_busy'] = host_cpu_time_busy
     return state
 
 
@@ -451,16 +466,23 @@ def append_data_locally(path, data, data_length):
 
 
 @contract
-def append_data_remotely(db, data):
-    """ Submit a CPU MHz values to the central database.
+def append_data_remotely(db, data, hostname, host_cpu_mhz):
+    """ Submit CPU MHz values to the central database.
 
     :param db: The database object.
      :type db: Database
 
     :param data: A map of VM UUIDs onto the corresponing CPU MHz values.
      :type data: dict(str : int)
+
+    :param hostname: The host name.
+     :type hostname: str
+
+    :param host_cpu_mhz: An average host CPU utilization in MHz.
+     :type host_cpu_mhz: int
     """
     db.insert_vm_cpu_mhz(data)
+    db.insert_host_cpu_mhz(hostname, host_cpu_mhz)
 
 
 @contract
