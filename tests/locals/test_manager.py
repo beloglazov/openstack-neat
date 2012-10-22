@@ -160,8 +160,17 @@ class LocalManager(TestCase):
 
     def test_vm_mhz_to_percentage(self):
         self.assertEqual(manager.vm_mhz_to_percentage(
-            {'a': [100, 200, 300],
-             'b': [100, 300, 200],
-             'c': [100, 100, 700]},
+            [[100, 200, 300],
+             [100, 300, 200],
+             [100, 100, 700]],
+            [300, 0, 300],
             3000),
-            [0.1, 0.2, 0.4])
+            [0.2, 0.2, 0.5])
+
+        self.assertEqual(manager.vm_mhz_to_percentage(
+            [[100, 200, 300],
+             [100, 300, 200],
+             [100, 100, 700]],
+            [0, 300],
+            3000),
+            [0.1, 0.2, 0.5])

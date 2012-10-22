@@ -220,6 +220,7 @@ def execute(config, state):
             log.info('The host is idle')
         return state
 
+    #TODO: update this with host CPU MHz
     host_cpu_utilization = vm_mhz_to_percentage(
         vm_cpu_mhz, 
         state['physical_cpu_mhz_total'])
@@ -394,11 +395,14 @@ def get_max_ram(vir_connection, uuid):
 
 
 @contract
-def vm_mhz_to_percentage(vms, physical_cpu_mhz):
+def vm_mhz_to_percentage(vm_mhz_history, host_mhz_history, physical_cpu_mhz):
     """ Convert VM CPU utilization to the host's CPU utilization.
 
-    :param vms: A map from VM UUIDs to their CPU utilization in MHz.
-     :type vms: dict(str: list(int))
+    :param vm_mhz_history: A list of CPU utilization histories of VMs in MHz.
+     :type vm_mhz_history: list(list(int))
+
+    :param host_mhz_history: A history if the CPU usage by the host in MHz.
+     :type host_mhz_history: list(int)
 
     :param physical_cpu_mhz: The total frequency of the physical CPU in MHz.
      :type physical_cpu_mhz: int
@@ -406,5 +410,8 @@ def vm_mhz_to_percentage(vms, physical_cpu_mhz):
     :return: The history of the host's CPU utilization in percentages.
      :rtype: list(float)
     """
-    data = itertools.izip_longest(*vms.values(), fillvalue=0)
+    host_mhz_history = [0] * (len(vm_mhz_history) - 
+                              len(host_mhz_history)) + host_mhz_history
+    data = itertools.izip_longest(*(vm_mhz_history + [host_mhz_history]), 
+                                  fillvalue=0)
     return [float(sum(x)) / physical_cpu_mhz for x in data]
