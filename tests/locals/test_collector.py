@@ -484,10 +484,10 @@ class Collector(TestCase):
         with MockTransaction:
             context = mock('context')
             f = mock('file')
-            expect(context).__enter__().and_return(f).once()
-            expect(collector).open('/proc/stat', 'r').and_return(context).once()
-            expect(f).readline().and_return(
-                '1 ' + ' '.join([str(v) for v in x]) + ' 2 3').once()
+            when(context).__enter__().and_return(f)#.once()
+            when(collector).open('/proc/stat', 'r').and_return(context)#.once()
+            when(f).readline().and_return(
+                '1 ' + ' '.join([str(v) for v in x]) + ' 2 3')#.once()
             assert collector.get_host_cpu_time() == (float(sum(x)), 
                                                      float(sum(x[0:3])))
 
