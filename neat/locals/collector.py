@@ -264,11 +264,11 @@ def execute(config, state):
                                       current_time,
                                       vms_current.keys(),
                                       added_vm_data)
-    host_cpu_time_total, 
-    host_cpu_time_busy, 
-    host_cpu_mhz = get_host_cpu_mhz(state['physical_cpu_mhz'],
-                                    state['previous_host_cpu_time_total'],
-                                    state['previous_host_cpu_time_busy'])
+    (host_cpu_time_total, 
+     host_cpu_time_busy, 
+     host_cpu_mhz) = get_host_cpu_mhz(state['physical_cpu_mhz'],
+                                      state['previous_host_cpu_time_total'],
+                                      state['previous_host_cpu_time_busy'])
     if state['previous_time'] > 0:
         append_data_locally(path, cpu_mhz, data_length)
         state['host_cpu_mhz_history'].append(host_cpu_mhz)
