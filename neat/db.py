@@ -296,6 +296,17 @@ class Database(object):
             self.vm_resource_usage.delete().where(
                 self.vm_resource_usage.c.timestamp < datetime_threshold))
 
+    @contract(datetime_threshold=datetime.datetime)
+    def cleanup_host_resource_usage(self, datetime_threshold):
+        """ Delete host resource usage data older than the threshold.
+
+        :param datetime_threshold: A datetime threshold.
+         :type datetime_threshold: datetime.datetime
+        """
+        self.connection.execute(
+            self.host_resource_usage.delete().where(
+                self.host_resource_usage.c.timestamp < datetime_threshold))
+
     @contract
     def insert_host_states(self, hosts):
         """ Insert host states for a set of hosts.

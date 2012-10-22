@@ -89,6 +89,7 @@ def execute(config, state):
     """
     datetime_threshold = today() - state['time_delta']
     state['db'].cleanup_vm_resource_usage(datetime_threshold)
+    state['db'].cleanup_host_resource_usage(datetime_threshold)
     if log.isEnabledFor(logging.INFO):
         log.info('Cleaned up data older than %s', 
                  datetime_threshold.strftime('%Y-%m-%d %H:%M:%S'))
