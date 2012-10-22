@@ -281,7 +281,6 @@ def execute(config, state):
         if log.isEnabledFor(logging.DEBUG):
             log.debug('Collected VM CPU MHz: %s', str(cpu_mhz))
             log.debug('Collected host CPU MHz: %s', str(host_cpu_mhz_hypervisor))
-            log.debug('Host CPU MHz history: %s', str(state['host_cpu_mhz_history']))
 
         state['previous_overload'] = log_host_overload(
             state['db'],
