@@ -270,20 +270,21 @@ def execute(config, state):
                                       state['previous_host_cpu_time_total'],
                                       state['previous_host_cpu_time_busy'])
     if state['previous_time'] > 0:
+        host_cpu_mhz_hypervisor = host_cpu_mhz - sum(cpu_mhz.values())
         append_data_locally(path, cpu_mhz, data_length)
-        state['host_cpu_mhz_history'].append(host_cpu_mhz)
+        state['host_cpu_mhz_history'].append(host_cpu_mhz_hypervisor)
 
         append_data_remotely(state['db'], 
                              cpu_mhz, 
                              state['hostname'],
-                             host_cpu_mhz)
+                             host_cpu_mhz_hypervisor)
         if log.isEnabledFor(logging.DEBUG):
             log.debug('Collected VM data: %s', str(cpu_mhz))
             log.debug('Overall host utilization: %s', 
-                      str(float(host_cpu_mhz) / state['physical_cpu_mhz']))
+                      str(float(host_cpu_mhz_hypervisor) / state['physical_cpu_mhz']))
             log.debug('Collected host CPU MHz: %s', str(host_cpu_mhz))
-            log.debug('Collected VM CPU MHz: %s', str(sum(cpu_mhz.values())))
             log.debug('Collected host - VMs CPU MHz: %s', str(host_cpu_mhz - sum(cpu_mhz.values())))
+            log.debug('Collected host CPU MHz: %s', str(host_cpu_mhz_hypervisor))
 
         state['previous_overload'] = log_host_overload(
             state['db'],
