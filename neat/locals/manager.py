@@ -410,8 +410,9 @@ def vm_mhz_to_percentage(vm_mhz_history, host_mhz_history, physical_cpu_mhz):
     :return: The history of the host's CPU utilization in percentages.
      :rtype: list(float)
     """
-    host_mhz_history = [0] * (len(vm_mhz_history) - 
-                              len(host_mhz_history)) + host_mhz_history
-    data = itertools.izip_longest(*(vm_mhz_history + [host_mhz_history]), 
-                                  fillvalue=0)
-    return [float(sum(x)) / physical_cpu_mhz for x in data]
+    max_len = max(len(x) for x in vm_mhz_history)
+    if len(host_mhz_history) > max_len:
+        host_mhz_history = host_mhz_history[-max_len:]
+    mhz_history = [[0] * (max_len - len(x)) + x
+                   for x in vm_mhz_history + [host_mhz_history]]
+    return [float(sum(x)) / physical_cpu_mhz for x in zip(*mhz_history)]
