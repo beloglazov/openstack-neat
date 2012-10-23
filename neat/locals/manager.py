@@ -210,8 +210,9 @@ def execute(config, state):
     :return: The updated state dictionary.
      :rtype: dict(str: *)
     """
-    path = common.build_local_vm_path(config['local_data_directory'])
-    vm_cpu_mhz = get_local_data(path)
+    vm_path = common.build_local_vm_path(config['local_data_directory'])
+    host_path = common.build_local_host_path(config['local_data_directory'])
+    vm_cpu_mhz = get_local_vm_data(vm_path)
     vm_ram = get_ram(state['vir_connection'], vm_cpu_mhz.keys())
     vm_cpu_mhz = cleanup_vm_data(vm_cpu_mhz, vm_ram.keys())
 
@@ -317,7 +318,7 @@ def execute(config, state):
 
 
 @contract
-def get_local_data(path):
+def get_local_vm_data(path):
     """ Read the data about VMs from the local storage.
 
     :param path: A path to read VM UUIDs from.
@@ -330,6 +331,21 @@ def get_local_data(path):
     for uuid in os.listdir(path):
         with open(os.path.join(path, uuid), 'r') as f:
             result[uuid] = [int(x) for x in f.read().strip().splitlines()]
+    return result
+
+
+@contract
+def get_local_host_data(path):
+    """ Read the data about the host from the local storage.
+
+    :param path: A path to read the host data from.
+     :type path: str
+
+    :return: A history of the host CPU usage in MHz.
+     :rtype: list(int)
+    """
+    with open(path, 'r') as f:
+        result = [int(x) for x in f.read().strip().splitlines()]
     return result
 
 

@@ -78,7 +78,7 @@ class LocalManager(TestCase):
             assert state['hashed_password'] == sha1('password').hexdigest()
 
     @qc(1)
-    def get_local_data(
+    def get_local_vm_data(
         data=dict_(
             keys=str_(of='abc123-', min_length=36, max_length=36),
             values=list_(of=int_(min=1, max=3000),
@@ -92,8 +92,21 @@ class LocalManager(TestCase):
         os.mkdir(path)
         collector.write_vm_data_locally(path, data, 10)
 
-        assert manager.get_local_data(path) == data
+        assert manager.get_local_vm_data(path) == data
         shutil.rmtree(path)
+
+    @qc(1)
+    def get_local_host_data(
+        data=list_(of=int_(min=1, max=3000),
+                     min_length=0, max_length=10)
+    ):
+        path = os.path.join(os.path.dirname(__file__),
+                            '..', 'resources', 'host')
+        with open(path, 'w') as f:
+            f.write('\n'.join([str(x)
+                               for x in data]) + '\n')
+        assert manager.get_local_host_data(path) == data
+        os.remove(path)
 
     @qc(10)
     def cleanup_vm_data(
