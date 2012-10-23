@@ -211,7 +211,6 @@ def execute(config, state):
      :rtype: dict(str: *)
     """
     vm_path = common.build_local_vm_path(config['local_data_directory'])
-    host_path = common.build_local_host_path(config['local_data_directory'])
     vm_cpu_mhz = get_local_vm_data(vm_path)
     vm_ram = get_ram(state['vir_connection'], vm_cpu_mhz.keys())
     vm_cpu_mhz = cleanup_vm_data(vm_cpu_mhz, vm_ram.keys())
@@ -221,9 +220,12 @@ def execute(config, state):
             log.info('The host is idle')
         return state
 
-    #TODO: update this with host CPU MHz
+    host_path = common.build_local_host_path(config['local_data_directory'])
+    host_cpu_mhz = get_local_host_data(host_path)
+
     host_cpu_utilization = vm_mhz_to_percentage(
         vm_cpu_mhz.values(), 
+        host_cpu_mhz,
         state['physical_cpu_mhz_total'])
     time_step = int(config['data_collector_interval'])
     migration_time = common.calculate_migration_time(
