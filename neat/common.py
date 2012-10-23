@@ -83,6 +83,19 @@ def build_local_vm_path(local_data_directory):
 
 
 @contract
+def build_local_host_path(local_data_directory):
+    """ Build the path to the local host data file.
+
+    :param local_data_directory: The base local data path.
+     :type local_data_directory: str
+
+    :return: The path to the local host data file.
+     :rtype: str
+    """
+    return os.path.join(local_data_directory, 'host')
+
+
+@contract
 def physical_cpu_count(vir_connection):
     """ Get the number of physical CPUs using libvirt.
 

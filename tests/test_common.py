@@ -42,11 +42,17 @@ class Common(TestCase):
                                 0,
                                 iterations) == state
 
-    @qc
+    @qc(10)
     def build_local_vm_path(
         x=str_(of='abc123_-/')
     ):
         assert common.build_local_vm_path(x) == os.path.join(x, 'vms')
+
+    @qc(10)
+    def build_local_host_path(
+        x=str_(of='abc123_-/')
+    ):
+        assert common.build_local_host_path(x) == os.path.join(x, 'host')
 
     @qc(10)
     def physical_cpu_count(x=int_(min=0, max=8)):
