@@ -174,8 +174,6 @@ def init_state(config):
             'previous_overload': -1,
             'vir_connection': vir_connection,
             'hostname': hostname,
-            'host_cpu_mhz_history': 
-                deque([], int(config['data_collector_data_length'])),
             'host_cpu_overload_threshold': 
                 float(config['host_cpu_overload_threshold']) * \
                 host_cpu_usable_by_vms,
@@ -224,9 +222,10 @@ def execute(config, state):
     :return: The updated state dictionary.
      :rtype: dict(str: *)
     """
-    path = common.build_local_vm_path(config['local_data_directory'])
+    vm_path = common.build_local_vm_path(config['local_data_directory'])
+    host_path = common.build_local_host_path(config['local_data_directory'])
     data_length = int(config['data_collector_data_length'])
-    vms_previous = get_previous_vms(path)
+    vms_previous = get_previous_vms(vm_path)
     vms_current = get_current_vms(state['vir_connection'])
 
     vms_added = get_added_vms(vms_previous, vms_current.keys())
@@ -247,13 +246,13 @@ def execute(config, state):
                                           vms_added)
         if log.isEnabledFor(logging.DEBUG):
             log.debug('Fetched remote data: %s', str(added_vm_data))
-        write_vm_data_locally(path, added_vm_data, data_length)
+        write_vm_data_locally(vm_path, added_vm_data, data_length)
 
     vms_removed = get_removed_vms(vms_previous, vms_current.keys())
     if vms_removed:
         if log.isEnabledFor(logging.DEBUG):
             log.debug('Removed VMs: %s', str(vms_removed))
-        cleanup_local_data(path, vms_removed)
+        cleanup_local_vm_data(vm_path, vms_removed)
         for vm in vms_removed:
             del state['previous_cpu_time'][vm]
 
@@ -271,14 +270,14 @@ def execute(config, state):
                                       state['previous_host_cpu_time_total'],
                                       state['previous_host_cpu_time_busy'])
     if state['previous_time'] > 0:
+        append_vm_data_locally(vm_path, cpu_mhz, data_length)
+        append_vm_data_remotely(state['db'], cpu_mhz)
+
         host_cpu_mhz_hypervisor = host_cpu_mhz - sum(cpu_mhz.values())
-        append_vm_data_locally(path, cpu_mhz, data_length)
-        # TODO: need to store this locally
-        state['host_cpu_mhz_history'].append(host_cpu_mhz_hypervisor)
-        append_vm_data_remotely(state['db'], 
-                             cpu_mhz, 
-                             state['hostname'],
-                             host_cpu_mhz_hypervisor)
+        append_host_data_locally(host_path, host_cpu_mhz_hypervisor, data_length)
+        append_host_data_remotely(state['db'], 
+                                  state['hostname'],
+                                  host_cpu_mhz_hypervisor)
 
         if log.isEnabledFor(logging.DEBUG):
             log.debug('Collected VM CPU MHz: %s', str(cpu_mhz))
@@ -381,7 +380,7 @@ def substract_lists(list1, list2):
 
 
 @contract
-def cleanup_local_data(path, vms):
+def cleanup_local_vm_data(path, vms):
     """ Delete the local data related to the removed VMs.
 
     :param path: A path to remove VM data from.
@@ -402,7 +401,7 @@ def cleanup_all_local_data(path):
      :type path: str
     """
     vm_path = common.build_local_vm_path(path)
-    cleanup_local_data(vm_path, os.listdir(vm_path))
+    cleanup_local_vm_data(vm_path, os.listdir(vm_path))
     host_path = common.build_local_host_path(path)
     if os.access(host_path, os.F_OK):
         os.remove(host_path)
@@ -473,7 +472,7 @@ def append_vm_data_locally(path, data, data_length):
 
 
 @contract
-def append_vm_data_remotely(db, data, hostname, host_cpu_mhz):
+def append_vm_data_remotely(db, data):
     """ Submit CPU MHz values to the central database.
 
     :param db: The database object.
@@ -481,15 +480,8 @@ def append_vm_data_remotely(db, data, hostname, host_cpu_mhz):
 
     :param data: A map of VM UUIDs onto the corresponing CPU MHz values.
      :type data: dict(str : int)
-
-    :param hostname: The host name.
-     :type hostname: str
-
-    :param host_cpu_mhz: An average host CPU utilization in MHz.
-     :type host_cpu_mhz: int
     """
     db.insert_vm_cpu_mhz(data)
-    db.insert_host_cpu_mhz(hostname, host_cpu_mhz)
 
 
 @contract
@@ -511,6 +503,22 @@ def append_host_data_locally(path, cpu_mhz, data_length):
         f.truncate(0)
         f.seek(0)
         f.write('\n'.join([str(x) for x in values]) + '\n')
+
+
+@contract
+def append_host_data_remotely(db, hostname, host_cpu_mhz):
+    """ Submit a host CPU MHz value to the central database.
+
+    :param db: The database object.
+     :type db: Database
+
+    :param hostname: The host name.
+     :type hostname: str
+
+    :param host_cpu_mhz: An average host CPU utilization in MHz.
+     :type host_cpu_mhz: int
+    """
+    db.insert_host_cpu_mhz(hostname, host_cpu_mhz)
 
 
 @contract

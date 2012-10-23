@@ -87,7 +87,6 @@ class Collector(TestCase):
             assert state['previous_overload'] == -1
             assert state['vir_connection'] == vir_connection
             assert state['hostname'] == hostname
-            assert deque_maxlen(state['host_cpu_mhz_history']) == 5
             self.assertAlmostEqual(state['host_cpu_overload_threshold'], 
                                    0.7125, 3)
             assert state['physical_cpus'] == physical_cpus
@@ -173,7 +172,7 @@ class Collector(TestCase):
             set([item for item in x if item not in y])
 
     @qc(1)
-    def cleanup_local_data():
+    def cleanup_local_vm_data():
         local_data_directory = os.path.join(
             os.path.dirname(__file__), '..', 'resources', 'vms')
         local_data_directory_tmp = os.path.join(
@@ -192,8 +191,8 @@ class Collector(TestCase):
                     local_data_directory_tmp)
 
         assert len(os.listdir(local_data_directory_tmp)) == 3
-        collector.cleanup_local_data(local_data_directory_tmp,
-                                     [vm1, vm2, vm3])
+        collector.cleanup_local_vm_data(local_data_directory_tmp,
+                                        [vm1, vm2, vm3])
         assert len(os.listdir(local_data_directory_tmp)) == 0
 
         os.rmdir(local_data_directory_tmp)
@@ -343,9 +342,7 @@ class Collector(TestCase):
                           list_(of=int_(min=1, max=3000),
                                 min_length=0, max_length=10)),
             min_length=0, max_length=5
-        ),
-        hostname=str_(of='abc123', min_length=5, max_length=10),
-        cpu_mhz=int_(min=0, max=3000)
+        )
     ):
         db = db_utils.init_db('sqlite:///:memory:')
         initial_data = []
@@ -363,14 +360,10 @@ class Collector(TestCase):
         if initial_data:
             db.vm_resource_usage.insert().execute(initial_data)
 
-        db.update_host(hostname, 1, 1, 1)
-
-        collector.append_vm_data_remotely(db, data_to_submit, hostname, cpu_mhz)
+        collector.append_vm_data_remotely(db, data_to_submit)
 
         for uuid, data in final_data.items():
             assert db.select_cpu_mhz_for_vm(uuid, 11) == data
-
-        assert db.select_cpu_mhz_for_host(hostname, 1) == [cpu_mhz]
 
     @qc
     def append_host_data_locally(
@@ -396,6 +389,16 @@ class Collector(TestCase):
                       for x in f.read().strip().splitlines()]
         os.remove(path)
         assert actual == expected
+
+    @qc(10)
+    def append_host_data_remotely(
+        hostname=str_(of='abc123', min_length=5, max_length=10),
+        cpu_mhz=int_(min=0, max=3000)
+    ):
+        db = db_utils.init_db('sqlite:///:memory:')
+        db.update_host(hostname, 1, 1, 1)
+        collector.append_host_data_remotely(db, hostname, cpu_mhz)
+        assert db.select_cpu_mhz_for_host(hostname, 1) == [cpu_mhz]
 
     @qc
     def get_cpu_mhz(
