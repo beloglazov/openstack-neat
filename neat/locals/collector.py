@@ -124,10 +124,11 @@ def start():
     vm_path = common.build_local_vm_path(config['local_data_directory'])
     if not os.access(vm_path, os.F_OK):
         os.makedirs(vm_path)
-        log.info('Created a local VM data directory: ' + vm_path)
+        log.info('Created a local VM data directory: %s', vm_path)
     else:
-        cleanup_all_local_data(vm_path)
-        log.info('Creaned up the local VM data directory: ' + vm_path)
+        cleanup_all_local_data(config['local_data_directory'])
+        log.info('Creaned up the local data directory: %s',
+                 config['local_data_directory'])
 
     interval = config['data_collector_interval']
     log.info('Starting the data collector, ' +
@@ -383,7 +384,7 @@ def substract_lists(list1, list2):
 def cleanup_local_data(path, vms):
     """ Delete the local data related to the removed VMs.
 
-    :param path: A path to removed VM data from.
+    :param path: A path to remove VM data from.
      :type path: str
 
     :param vms: A list of removed VM UUIDs.
@@ -397,10 +398,14 @@ def cleanup_local_data(path, vms):
 def cleanup_all_local_data(path):
     """ Delete all the local data about VMs.
 
-    :param path: A path to removed VM data from.
+    :param path: A path to the local data directory.
      :type path: str
     """
-    cleanup_local_data(path, os.listdir(path))
+    vm_path = common.build_local_vm_path(path)
+    cleanup_local_data(vm_path, os.listdir(vm_path))
+    host_path = common.build_local_host_path(path)
+    if os.access(host_path, os.F_OK):
+        os.remove(host_path)
 
 
 @contract
@@ -485,6 +490,27 @@ def append_vm_data_remotely(db, data, hostname, host_cpu_mhz):
     """
     db.insert_vm_cpu_mhz(data)
     db.insert_host_cpu_mhz(hostname, host_cpu_mhz)
+
+
+@contract
+def append_host_data_locally(path, cpu_mhz, data_length):
+    """ Write a CPU MHz value for the host.
+
+    :param path: A path to write the data to.
+     :type path: str
+
+    :param cpu_mhz: A CPU MHz value.
+     :type cpu_mhz: int
+
+    :param data_length: The maximum allowed length of the data.
+     :type data_length: int
+    """
+    with open(path, 'r+') as f:
+        values = deque(f.read().strip().splitlines(), data_length)
+        values.append(cpu_mhz)
+        f.truncate(0)
+        f.seek(0)
+        f.write('\n'.join([str(x) for x in values]) + '\n')
 
 
 @contract
