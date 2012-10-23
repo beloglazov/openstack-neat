@@ -246,7 +246,7 @@ class Collector(TestCase):
         assert collector.fetch_remote_data(db, data_length, x.keys()) == x
 
     @qc
-    def write_data_locally(
+    def write_vm_data_locally(
         x=dict_(
             keys=str_(of='abc123-', min_length=36, max_length=36),
             values=list_(of=int_(min=0, max=3000),
@@ -259,7 +259,7 @@ class Collector(TestCase):
                             '..', 'resources', 'vms', 'tmp')
         shutil.rmtree(path, True)
         os.mkdir(path)
-        collector.write_data_locally(path, x, data_length)
+        collector.write_vm_data_locally(path, x, data_length)
         files = os.listdir(path)
 
         result = {}
@@ -279,7 +279,7 @@ class Collector(TestCase):
                 assert result[uuid] == []
 
     @qc
-    def append_data_locally(
+    def append_vm_data_locally(
         x=dict_(
             keys=str_(of='abc123-', min_length=36, max_length=36),
             values=tuple_(list_(of=int_(min=0, max=3000),
@@ -306,8 +306,8 @@ class Collector(TestCase):
             else:
                 after_appending[uuid] = []
 
-        collector.write_data_locally(path, original_data, data_length)
-        collector.append_data_locally(path, to_append, data_length)
+        collector.write_vm_data_locally(path, original_data, data_length)
+        collector.append_vm_data_locally(path, to_append, data_length)
 
         files = os.listdir(path)
 
@@ -325,7 +325,7 @@ class Collector(TestCase):
             assert result[uuid] == after_appending[uuid]
 
     @qc(10)
-    def append_data_remotely(
+    def append_vm_data_remotely(
         vms=dict_(
             keys=str_(of='abc123-', min_length=36, max_length=36),
             values=tuple_(int_(min=1, max=3000),
@@ -354,7 +354,7 @@ class Collector(TestCase):
 
         db.update_host(hostname, 1, 1, 1)
 
-        collector.append_data_remotely(db, data_to_submit, hostname, cpu_mhz)
+        collector.append_vm_data_remotely(db, data_to_submit, hostname, cpu_mhz)
 
         for uuid, data in final_data.items():
             assert db.select_cpu_mhz_for_vm(uuid, 11) == data

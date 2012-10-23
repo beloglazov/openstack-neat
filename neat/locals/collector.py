@@ -246,7 +246,7 @@ def execute(config, state):
                                           vms_added)
         if log.isEnabledFor(logging.DEBUG):
             log.debug('Fetched remote data: %s', str(added_vm_data))
-        write_data_locally(path, added_vm_data, data_length)
+        write_vm_data_locally(path, added_vm_data, data_length)
 
     vms_removed = get_removed_vms(vms_previous, vms_current.keys())
     if vms_removed:
@@ -271,10 +271,10 @@ def execute(config, state):
                                       state['previous_host_cpu_time_busy'])
     if state['previous_time'] > 0:
         host_cpu_mhz_hypervisor = host_cpu_mhz - sum(cpu_mhz.values())
-        append_data_locally(path, cpu_mhz, data_length)
+        append_vm_data_locally(path, cpu_mhz, data_length)
         # TODO: need to store this locally
         state['host_cpu_mhz_history'].append(host_cpu_mhz_hypervisor)
-        append_data_remotely(state['db'], 
+        append_vm_data_remotely(state['db'], 
                              cpu_mhz, 
                              state['hostname'],
                              host_cpu_mhz_hypervisor)
@@ -426,7 +426,7 @@ def fetch_remote_data(db, data_length, uuids):
 
 
 @contract
-def write_data_locally(path, data, data_length):
+def write_vm_data_locally(path, data, data_length):
     """ Write a set of CPU MHz values for a set of VMs.
 
     :param path: A path to write the data to.
@@ -446,7 +446,7 @@ def write_data_locally(path, data, data_length):
 
 
 @contract
-def append_data_locally(path, data, data_length):
+def append_vm_data_locally(path, data, data_length):
     """ Write a CPU MHz value for each out of a set of VMs.
 
     :param path: A path to write the data to.
@@ -468,7 +468,7 @@ def append_data_locally(path, data, data_length):
 
 
 @contract
-def append_data_remotely(db, data, hostname, host_cpu_mhz):
+def append_vm_data_remotely(db, data, hostname, host_cpu_mhz):
     """ Submit CPU MHz values to the central database.
 
     :param db: The database object.
