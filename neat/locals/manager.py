@@ -222,7 +222,7 @@ def execute(config, state):
 
     #TODO: update this with host CPU MHz
     host_cpu_utilization = vm_mhz_to_percentage(
-        vm_cpu_mhz, 
+        vm_cpu_mhz.values(), 
         state['physical_cpu_mhz_total'])
     time_step = int(config['data_collector_interval'])
     migration_time = common.calculate_migration_time(
