@@ -90,7 +90,7 @@ class LocalManager(TestCase):
                             '..', 'resources', 'vms', 'tmp')
         shutil.rmtree(path, True)
         os.mkdir(path)
-        collector.write_data_locally(path, data, 10)
+        collector.write_vm_data_locally(path, data, 10)
 
         assert manager.get_local_data(path) == data
         shutil.rmtree(path)
