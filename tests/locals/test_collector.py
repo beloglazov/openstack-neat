@@ -43,13 +43,13 @@ class Collector(TestCase):
                 'data_collector_interval': str(time_interval)}
             paths = [collector.DEFAILT_CONFIG_PATH, collector.CONFIG_PATH]
             fields = collector.REQUIRED_FIELDS
-            when(collector).read_and_validate_config(paths, fields). \
-                and_return(config)#.once()
-            when(common).init_logging('dir', 'data-collector.log', 2)#.once()
-            when(common).start(collector.init_state,
+            expect(collector).read_and_validate_config(paths, fields). \
+                and_return(config).once()
+            expect(common).init_logging('dir', 'data-collector.log', 2).once()
+            expect(common).start(collector.init_state,
                                  collector.execute,
                                  config,
-                                 time_interval).and_return(state)#.once()
+                                 time_interval).and_return(state).once()
             assert collector.start() == state
 
     def test_init_state(self):
