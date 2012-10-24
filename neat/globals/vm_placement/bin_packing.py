@@ -42,13 +42,20 @@ def best_fit_decreasing_factory(time_step, migration_time, params):
                   hosts_ram_usage, hosts_ram_total, \
                   inactive_hosts_cpu, inactive_hosts_ram, \
                   vms_cpu, vms_ram, state=None: \
-        (best_fit_decreasing(get_available_resources(
-            params['cpu_threshold'],
-            hosts_cpu_usage, hosts_cpu_total),
-            get_available_resources(params['ram_threshold'],
-                                    hosts_ram_usage, hosts_ram_total),
-                                    inactive_hosts_cpu, inactive_hosts_ram,
-                                    vms_cpu, vms_ram), {})
+        (best_fit_decreasing(
+            get_available_resources(
+                    params['cpu_threshold'],
+                    hosts_cpu_usage, 
+                    hosts_cpu_total),
+            get_available_resources(
+                    params['ram_threshold'],
+                    hosts_ram_usage, 
+                    hosts_ram_total),
+            inactive_hosts_cpu, 
+            inactive_hosts_ram,
+            vms_cpu, 
+            vms_ram), 
+         {})
 
 
 @contract
