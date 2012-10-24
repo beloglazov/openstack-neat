@@ -273,6 +273,7 @@ def execute(config, state):
         append_vm_data_locally(vm_path, cpu_mhz, data_length)
         append_vm_data_remotely(state['db'], cpu_mhz)
 
+        # todo: check for negative
         host_cpu_mhz_hypervisor = host_cpu_mhz - sum(cpu_mhz.values())
         append_host_data_locally(host_path, host_cpu_mhz_hypervisor, data_length)
         append_host_data_remotely(state['db'], 
@@ -651,13 +652,10 @@ def get_host_cpu_mhz(cpu_mhz, previous_cpu_time_total, previous_cpu_time_busy):
      :rtype: tuple(float, float, int)
     """
     cpu_time_total, cpu_time_busy = get_host_cpu_time()
-    cpu_usage = int(cpu_mhz * (cpu_time_busy - previous_cpu_time_busy) / \
-                              (cpu_time_total - previous_cpu_time_total))
-    if cpu_usage < 0:
-        cpu_usage = 0
     return cpu_time_total, \
            cpu_time_busy, \
-           cpu_usage
+           int(cpu_mhz * (cpu_time_busy - previous_cpu_time_busy) / \
+                         (cpu_time_total - previous_cpu_time_total))
 
 
 @contract()
