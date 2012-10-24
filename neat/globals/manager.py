@@ -318,8 +318,14 @@ def execute_underload(config, state, host):
             host_cpu_mhz = hosts_last_cpu[host]
             for vm in vms:
                 if vm not in vms_last_cpu:
-                    log.info('No data yet for VM: %s - dropping the request', vm)
-                    return state
+                    log.info('No data yet for VM: %s - skipping host %s', vm, host)
+                    del hosts_cpu_total[host]
+                    del hosts_ram_total[host]        
+                    if host in hosts_cpu_usage:
+                        del hosts_cpu_usage[host]
+                    if host in hosts_ram_usage:
+                        del hosts_ram_usage[host]    
+                    continue
                 host_cpu_mhz += vms_last_cpu[vm]
             hosts_cpu_usage[host] = host_cpu_mhz
             hosts_ram_usage[host] = host_used_ram(state['nova'], host)
