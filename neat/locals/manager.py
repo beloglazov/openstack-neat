@@ -230,6 +230,10 @@ def execute(config, state):
     if log.isEnabledFor(logging.DEBUG):
         log.debug('CPU utilization: %s', str(host_cpu_utilization))
 
+    if not host_cpu_utilization:
+        log.info('Not enough data yet - skipping to the next iteration')
+        return state
+
     time_step = int(config['data_collector_interval'])
     migration_time = common.calculate_migration_time(
         vm_ram, float(config['network_migration_bandwidth']))
