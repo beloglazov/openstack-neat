@@ -325,7 +325,8 @@ def execute_underload(config, state, host):
             del hosts_ram_total[host]
 
     if log.isEnabledFor(logging.DEBUG):
-        log.debug('Host CPU usage: %s', str(hosts_cpu_usage))
+        log.debug('Host CPU usage: %s', str(hosts_last_cpu))
+        log.debug('Host total CPU usage: %s', str(hosts_cpu_usage))
 
     # Exclude the underloaded host
     del hosts_cpu_usage[underloaded_host]
