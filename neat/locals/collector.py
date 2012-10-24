@@ -463,13 +463,18 @@ def append_vm_data_locally(path, data, data_length):
      :type data_length: int
     """
     for uuid, value in data.items():
-        with open(os.path.join(path, uuid), 'r+') as f:
-            values = deque(f.read().strip().splitlines(), data_length)
-            values.append(value)
-            f.truncate(0)
-            f.seek(0)
-            f.write('\n'.join([str(x) for x in values]) + '\n')
-
+        vm_path = os.path.join(path, uuid)
+        if not os.access(vm_path, os.F_OK):
+            with open(vm_path, 'w') as f:
+                f.write(str(value) + '\n')
+        else:
+            with open(vm_path, 'r+') as f:
+                values = deque(f.read().strip().splitlines(), data_length)
+                values.append(value)
+                f.truncate(0)
+                f.seek(0)
+                f.write('\n'.join([str(x) for x in values]) + '\n')
+            
 
 @contract
 def append_vm_data_remotely(db, data):
@@ -497,12 +502,16 @@ def append_host_data_locally(path, cpu_mhz, data_length):
     :param data_length: The maximum allowed length of the data.
      :type data_length: int
     """
-    with open(path, 'r+') as f:
-        values = deque(f.read().strip().splitlines(), data_length)
-        values.append(cpu_mhz)
-        f.truncate(0)
-        f.seek(0)
-        f.write('\n'.join([str(x) for x in values]) + '\n')
+    if not os.access(path, os.F_OK):
+        with open(path, 'w') as f:
+            f.write(str(cpu_mhz) + '\n')
+    else:
+        with open(path, 'r+') as f:
+            values = deque(f.read().strip().splitlines(), data_length)
+            values.append(cpu_mhz)
+            f.truncate(0)
+            f.seek(0)
+            f.write('\n'.join([str(x) for x in values]) + '\n')
 
 
 @contract
