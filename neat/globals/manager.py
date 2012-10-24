@@ -318,7 +318,7 @@ def execute_underload(config, state, host):
             host_cpu_mhz = hosts_last_cpu[host]
             for vm in vms:
                 if vm not in vms_last_cpu:
-                    log.info('There is no data yet for VM: %s - dropping the request')
+                    log.info('No data yet for VM: %s - dropping the request', vm)
                     return state
                 host_cpu_mhz += vms_last_cpu[vm]
             hosts_cpu_usage[host] = host_cpu_mhz
@@ -339,7 +339,12 @@ def execute_underload(config, state, host):
     del hosts_ram_total[underloaded_host]
 
     vms_to_migrate = vms_by_host(state['nova'], underloaded_host)
-    vms_cpu = dict((x, vms_last_cpu[x]) for x in vms_to_migrate)
+    vms_cpu = {}
+    for vm in vms_to_migrate:
+        if vm not in vms_last_cpu:
+            log.info('No data yet for VM: %s - dropping the request', vm)
+            return state
+        vms_cpu[vm] = vms_last_cpu[vm]
     vms_ram = vms_ram_limit(state['nova'], vms_to_migrate)
 
     # Remove VMs that are not in vms_ram 
@@ -452,7 +457,7 @@ def execute_overload(config, state, vm_uuids):
             host_cpu_mhz = hosts_last_cpu[host]
             for vm in vms:
                 if vm not in vms_last_cpu:
-                    log.info('There is no data yet for VM: %s - dropping the request')
+                    log.info('No data yet for VM: %s - dropping the request', vm)
                     return state
                 host_cpu_mhz += vms_last_cpu[vm]
             hosts_cpu_usage[host] = host_cpu_mhz
@@ -464,7 +469,12 @@ def execute_overload(config, state, vm_uuids):
             del hosts_ram_total[host]
 
     vms_to_migrate = vm_uuids
-    vms_cpu = dict((x, vms_last_cpu[x]) for x in vms_to_migrate)
+    vms_cpu = {}
+    for vm in vms_to_migrate:
+        if vm not in vms_last_cpu:
+            log.info('No data yet for VM: %s - dropping the request', vm)
+            return state
+        vms_cpu[vm] = vms_last_cpu[vm]
     vms_ram = vms_ram_limit(state['nova'], vms_to_migrate)
 
     # Remove VMs that are not in vms_ram 
