@@ -317,8 +317,10 @@ def execute_underload(config, state, host):
         if vms:
             host_cpu_mhz = hosts_last_cpu[host]
             for vm in vms:
-                if vm in vms_last_cpu:
-                    host_cpu_mhz += vms_last_cpu[vm]
+                if vm not in vms_last_cpu:
+                    log.info('There is no data yet for VM: %s - dropping the request')
+                    return state
+                host_cpu_mhz += vms_last_cpu[vm]
             hosts_cpu_usage[host] = host_cpu_mhz
             hosts_ram_usage[host] = host_used_ram(state['nova'], host)
         else:
@@ -432,6 +434,7 @@ def execute_overload(config, state, vm_uuids):
     hosts_cpu_total, _, hosts_ram_total = state['db'].select_host_characteristics()
     hosts_to_vms = vms_by_hosts(state['nova'], state['compute_hosts'])
     vms_last_cpu = state['db'].select_last_cpu_mhz_for_vms()
+    hosts_last_cpu = state['db'].select_last_cpu_mhz_for_hosts()
 
     # Remove VMs from hosts_to_vms that are not in vms_last_cpu
     # These VMs are new and no data have been collected from them
@@ -445,8 +448,13 @@ def execute_overload(config, state, vm_uuids):
     inactive_hosts_cpu = {}
     inactive_hosts_ram = {}
     for host, vms in hosts_to_vms.items():
-        host_cpu_mhz = sum(vms_last_cpu[x] for x in vms)
-        if host_cpu_mhz > 0:
+        if vms:
+            host_cpu_mhz = hosts_last_cpu[host]
+            for vm in vms:
+                if vm not in vms_last_cpu:
+                    log.info('There is no data yet for VM: %s - dropping the request')
+                    return state
+                host_cpu_mhz += vms_last_cpu[vm]
             hosts_cpu_usage[host] = host_cpu_mhz
             hosts_ram_usage[host] = host_used_ram(state['nova'], host)
         else:
