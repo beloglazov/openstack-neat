@@ -273,8 +273,9 @@ def execute(config, state):
         append_vm_data_locally(vm_path, cpu_mhz, data_length)
         append_vm_data_remotely(state['db'], cpu_mhz)
 
-        # todo: check for negative
         host_cpu_mhz_hypervisor = host_cpu_mhz - sum(cpu_mhz.values())
+        if host_cpu_mhz_hypervisor < 0:
+            host_cpu_mhz_hypervisor = 0
         append_host_data_locally(host_path, host_cpu_mhz_hypervisor, data_length)
         append_host_data_remotely(state['db'], 
                                   state['hostname'],
