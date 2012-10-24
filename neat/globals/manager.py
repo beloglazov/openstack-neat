@@ -327,8 +327,9 @@ def execute_underload(config, state, host):
                         del hosts_ram_usage[host]    
                     break
                 host_cpu_mhz += vms_last_cpu[vm]
-            hosts_cpu_usage[host] = host_cpu_mhz
-            hosts_ram_usage[host] = host_used_ram(state['nova'], host)
+            else:
+                hosts_cpu_usage[host] = host_cpu_mhz
+                hosts_ram_usage[host] = host_used_ram(state['nova'], host)
         else:
             # Exclude inactive hosts
             del hosts_cpu_total[host]
@@ -472,8 +473,9 @@ def execute_overload(config, state, vm_uuids):
                         del hosts_ram_usage[host]
                     break
                 host_cpu_mhz += vms_last_cpu[vm]
-            hosts_cpu_usage[host] = host_cpu_mhz
-            hosts_ram_usage[host] = host_used_ram(state['nova'], host)
+            else:
+                hosts_cpu_usage[host] = host_cpu_mhz
+                hosts_ram_usage[host] = host_used_ram(state['nova'], host)
         else:
             inactive_hosts_cpu[host] = hosts_cpu_total[host]
             inactive_hosts_ram[host] = hosts_ram_total[host]
