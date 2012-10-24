@@ -325,7 +325,7 @@ def execute_underload(config, state, host):
                         del hosts_cpu_usage[host]
                     if host in hosts_ram_usage:
                         del hosts_ram_usage[host]    
-                    continue
+                    break
                 host_cpu_mhz += vms_last_cpu[vm]
             hosts_cpu_usage[host] = host_cpu_mhz
             hosts_ram_usage[host] = host_used_ram(state['nova'], host)
