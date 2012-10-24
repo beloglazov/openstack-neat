@@ -73,8 +73,8 @@ def optimize(step, limit, otf, migration_time, ls, p, state_vector,
     :param otf: The OTF parameter.
      :type otf: number,>=0,<=1
 
-    :param migration_time: The VM migration time in seconds.
-     :type migration_time: int,>=0
+    :param migration_time: The VM migration time in time steps.
+     :type migration_time: float,>=0
 
     :param ls: L functions.
      :type ls: list(function)

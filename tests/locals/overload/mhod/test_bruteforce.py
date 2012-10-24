@@ -60,7 +60,7 @@ class Bruteforce(TestCase):
             step = 0.1
             limit = 1
             otf = 0.3
-            migration_time = 20
+            migration_time = 20.
             ls = [lambda x: x, lambda x: x]
             p = [[0, 1]]
             state_vector = [0, 1]
