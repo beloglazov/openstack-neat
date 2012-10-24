@@ -102,6 +102,8 @@ class LocalManager(TestCase):
     ):
         path = os.path.join(os.path.dirname(__file__),
                             '..', 'resources', 'host')
+        assert manager.get_local_host_data(path) == []
+
         with open(path, 'w') as f:
             f.write('\n'.join([str(x)
                                for x in data]) + '\n')

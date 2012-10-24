@@ -349,6 +349,8 @@ def get_local_host_data(path):
     :return: A history of the host CPU usage in MHz.
      :rtype: list(int)
     """
+    if not os.access(path, os.F_OK):
+        return []
     with open(path, 'r') as f:
         result = [int(x) for x in f.read().strip().splitlines()]
     return result
