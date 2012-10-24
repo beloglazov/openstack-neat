@@ -651,10 +651,13 @@ def get_host_cpu_mhz(cpu_mhz, previous_cpu_time_total, previous_cpu_time_busy):
      :rtype: tuple(float, float, int)
     """
     cpu_time_total, cpu_time_busy = get_host_cpu_time()
+    cpu_usage = int(cpu_mhz * (cpu_time_busy - previous_cpu_time_busy) / \
+                              (cpu_time_total - previous_cpu_time_total))
+    if cpu_usage < 0:
+        cpu_usage = 0
     return cpu_time_total, \
            cpu_time_busy, \
-           int(cpu_mhz * (cpu_time_busy - previous_cpu_time_busy) / \
-                         (cpu_time_total - previous_cpu_time_total))
+           cpu_usage
 
 
 @contract()
