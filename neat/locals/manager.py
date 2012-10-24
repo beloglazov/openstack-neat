@@ -227,6 +227,9 @@ def execute(config, state):
         vm_cpu_mhz.values(), 
         host_cpu_mhz,
         state['physical_cpu_mhz_total'])
+    if log.isEnabledFor(logging.DEBUG):
+        log.debug('CPU utilization: %s', str(host_cpu_utilization))
+
     time_step = int(config['data_collector_interval'])
     migration_time = common.calculate_migration_time(
         vm_ram, float(config['network_migration_bandwidth']))
