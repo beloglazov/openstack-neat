@@ -215,7 +215,6 @@ def execute(config, state):
     vm_ram = get_ram(state['vir_connection'], vm_cpu_mhz.keys())
     vm_cpu_mhz = cleanup_vm_data(vm_cpu_mhz, vm_ram.keys())
 
-    log.debug('vm_cpu_mhz: ' + str(vm_cpu_mhz))
     if not vm_cpu_mhz:
         if log.isEnabledFor(logging.INFO):
             log.info('The host is idle')
