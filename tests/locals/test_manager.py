@@ -195,10 +195,3 @@ class LocalManager(TestCase):
             [300, 0, 300, 0, 300],
             3000),
             [0.1, 0.2, 0.2, 0.5])
-
-        self.assertEqual(manager.vm_mhz_to_percentage(
-            [],
-            [300, 0, 300, 0, 300],
-            3000),
-            [0.])
-
