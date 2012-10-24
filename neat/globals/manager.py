@@ -314,9 +314,9 @@ def execute_underload(config, state, host):
     hosts_cpu_usage = {}
     hosts_ram_usage = {}
     for host, vms in hosts_to_vms.items():
-        host_cpu_mhz = sum(vms_last_cpu[x] for x in vms) + \
-            hosts_last_cpu[host]            
-        if host_cpu_mhz > 0:
+        if vms:
+            host_cpu_mhz = sum(vms_last_cpu[x] for x in vms) + \
+                hosts_last_cpu[host]            
             hosts_cpu_usage[host] = host_cpu_mhz
             hosts_ram_usage[host] = host_used_ram(state['nova'], host)
         else:
