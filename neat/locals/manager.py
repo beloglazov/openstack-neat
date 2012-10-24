@@ -431,6 +431,9 @@ def vm_mhz_to_percentage(vm_mhz_history, host_mhz_history, physical_cpu_mhz):
     :return: The history of the host's CPU utilization in percentages.
      :rtype: list(float)
     """
+    if not vm_mhz_history:
+        return [0.]
+
     max_len = max(len(x) for x in vm_mhz_history)
     if len(host_mhz_history) > max_len:
         host_mhz_history = host_mhz_history[-max_len:]
