@@ -75,10 +75,11 @@ def build_constraint(otf, migration_time, ls, state_vector,
      :rtype: tuple(function, function, number)
     """
     def constraint(*m):
+        m_list = list(m)
         return float(migration_time +
                      time_in_state_n +
-                     ls[-1](state_vector, p, m)) / \
+                     ls[-1](state_vector, p, m_list)) / \
                (migration_time +
                 time_in_states +
-                sum(l(state_vector, p, m) for l in ls))
+                sum(l(state_vector, p, m_list) for l in ls))
     return (constraint, operator.le, otf)
