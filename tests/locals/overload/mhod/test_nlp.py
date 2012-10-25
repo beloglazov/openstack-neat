@@ -46,7 +46,7 @@ class Nlp(TestCase):
     def test_build_constraint(self):
         with MockTransaction:
             otf = 0.05
-            migration_time = 20
+            migration_time = 20.
             state_vector = [1, 0]
             p = [[-0.1, 0.1],
                  [0.3, -0.3]]
@@ -54,9 +54,9 @@ class Nlp(TestCase):
             m2 = mock('m2')
             m = (m1, m2)
             container = mock('function container')
-            when(container).l0(state_vector, p, m).and_return(2)#.once()
-            when(container).l1(state_vector, p, m). \
-                and_return(3)#.exactly(2).times()
+            expect(container).l0(state_vector, p, m).and_return(2).once()
+            expect(container).l1(state_vector, p, m). \
+                and_return(3).exactly(2).times()
             ls = [container.l0, container.l1]
 
             constraint = nlp.build_constraint(otf, migration_time,

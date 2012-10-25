@@ -53,8 +53,8 @@ def build_constraint(otf, migration_time, ls, state_vector,
     :param otf: The OTF parameter.
      :type otf: float
 
-    :param migration_time: The VM migration time in seconds.
-     :type migration_time: int
+    :param migration_time: The VM migration time in time steps.
+     :type migration_time: float,>=0
 
     :param ls: A list of L functions.
      :type ls: list(function)
@@ -65,11 +65,11 @@ def build_constraint(otf, migration_time, ls, state_vector,
     :param p: A matrix of transition probabilities.
      :type p: list(list(number))
 
-    :param time_in_states: The total time on all the states in seconds.
-     :type time_in_states: int
+    :param time_in_states: The total time in all the states in time steps.
+     :type time_in_states: number,>=0
 
-    :param time_in_state_n: The total time in the state N in seconds.
-     :type time_in_state_n: int
+    :param time_in_state_n: The total time in the state N in time steps.
+     :type time_in_state_n: number,>=0
 
     :return: The created constraint.
      :rtype: tuple(function, function, number)

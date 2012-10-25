@@ -85,10 +85,10 @@ def optimize(step, limit, otf, migration_time, ls, p, state_vector,
     :param state_vector: A state vector.
      :type state_vector: list(int)
 
-    :param time_in_states: The total time in all the states so far.
+    :param time_in_states: The total time in all the states in time steps.
      :type time_in_states: number,>=0
 
-    :param time_in_state_n: The total time in the state N so far.
+    :param time_in_state_n: The total time in the state N in time steps.
      :type time_in_state_n: number,>=0
 
     :return: The solution of the problem.
