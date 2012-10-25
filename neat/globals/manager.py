@@ -511,8 +511,8 @@ def execute_overload(config, state, vm_uuids):
         float(config['network_migration_bandwidth']))
 
     if 'vm_placement' not in state:
-        vm_placement_params = json.loads(
-            config['algorithm_vm_placement_params'])
+        vm_placement_params = common.parse_parameters(
+            config['algorithm_vm_placement_parameters'])
         vm_placement_state = None
         vm_placement = common.call_function_by_name(
             config['algorithm_vm_placement_factory'],
@@ -520,6 +520,7 @@ def execute_overload(config, state, vm_uuids):
              migration_time,
              vm_placement_params])
         state['vm_placement'] = vm_placement
+        state['vm_placement_state'] = {}
     else:
         vm_placement = state['vm_placement']
         vm_placement_state = state['vm_placement_state']
