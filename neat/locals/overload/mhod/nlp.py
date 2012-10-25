@@ -41,7 +41,7 @@ def build_objective(ls, state_vector, p):
      :rtype: function
     """
     def objective(*m):
-        return sum(l(state_vector, p, m) for l in ls)
+        return sum(l(state_vector, p, list(m)) for l in ls)
     return objective
 
 

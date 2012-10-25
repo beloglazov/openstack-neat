@@ -32,7 +32,7 @@ class Nlp(TestCase):
                  [0.3, -0.3]]
             m1 = mock('m1')
             m2 = mock('m2')
-            m = (m1, m2)
+            m = [m1, m2]
             container = mock('function container')
             expect(container).l0(state_vector, p, m).and_return(2).once()
             expect(container).l1(state_vector, p, m).and_return(3).once()
