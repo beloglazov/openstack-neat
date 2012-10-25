@@ -222,6 +222,7 @@ def execute(config, state):
     :return: The updated state dictionary.
      :rtype: dict(str: *)
     """
+    # TODO: add logging of the start and end to measure the execution time
     vm_path = common.build_local_vm_path(config['local_data_directory'])
     host_path = common.build_local_host_path(config['local_data_directory'])
     data_length = int(config['data_collector_data_length'])
