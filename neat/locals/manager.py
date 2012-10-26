@@ -210,6 +210,7 @@ def execute(config, state):
     :return: The updated state dictionary.
      :rtype: dict(str: *)
     """
+    log.info('Started an iteration')
     vm_path = common.build_local_vm_path(config['local_data_directory'])
     vm_cpu_mhz = get_local_vm_data(vm_path)
     vm_ram = get_ram(state['vir_connection'], vm_cpu_mhz.keys())
@@ -276,8 +277,10 @@ def execute(config, state):
         overload_detection = state['overload_detection']
         vm_selection = state['vm_selection']
 
+    log.info('Started underload detection')
     underload, state['underload_detection_state'] = underload_detection(
         host_cpu_utilization, state['underload_detection_state'])
+    log.info('Completed underload detection')
 
     if underload:
         if log.isEnabledFor(logging.INFO):
@@ -297,13 +300,20 @@ def execute(config, state):
             log.exception('Exception at underload request:')
 
     else:
+        log.info('Started overload detection')
         overload, state['overload_detection_state'] = overload_detection(
             host_cpu_utilization, state['overload_detection_state'])
+        log.info('Completed overload detection')
+
         if overload:
             if log.isEnabledFor(logging.INFO):
                 log.info('Overload detected')
+
+            log.info('Started VM selection')
             vm_uuids, state['vm_selection_state'] = vm_selection(
                 host_cpu_utilization, vm_ram, state['vm_selection_state'])
+            log.info('Completed VM selection')
+
             if log.isEnabledFor(logging.INFO):
                 log.info('Selected VMs to migrate: %s', str(vm_uuids))
             try:
@@ -323,6 +333,7 @@ def execute(config, state):
             if log.isEnabledFor(logging.INFO):
                 log.info('No underload or overload detected')
 
+    log.info('Completed an iteration')
     return state
 
 

@@ -222,7 +222,7 @@ def execute(config, state):
     :return: The updated state dictionary.
      :rtype: dict(str: *)
     """
-    # TODO: add logging of the start and end to measure the execution time
+    log.info('Started an iteration')
     vm_path = common.build_local_vm_path(config['local_data_directory'])
     host_path = common.build_local_host_path(config['local_data_directory'])
     data_length = int(config['data_collector_data_length'])
@@ -298,6 +298,8 @@ def execute(config, state):
     state['previous_cpu_time'] = cpu_time
     state['previous_host_cpu_time_total'] = host_cpu_time_total
     state['previous_host_cpu_time_busy'] = host_cpu_time_busy
+    
+    log.info('Completed an iteration')
     return state
 
 
