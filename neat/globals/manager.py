@@ -388,14 +388,14 @@ def execute_underload(config, state, host):
         vm_placement = state['vm_placement']
         vm_placement_state = state['vm_placement_state']
 
-    log.info('Started VM placement')
+    log.info('Started underload VM placement')
     placement, vm_placement_state = vm_placement(
         hosts_cpu_usage, hosts_cpu_total,
         hosts_ram_usage, hosts_ram_total,
         {}, {},
         vms_cpu, vms_ram,
         vm_placement_state)
-    log.info('Completed VM placement')
+    log.info('Completed underload VM placement')
     state['vm_placement_state'] = vm_placement_state
 
     if log.isEnabledFor(logging.INFO):
@@ -547,14 +547,14 @@ def execute_overload(config, state, host, vm_uuids):
         vm_placement = state['vm_placement']
         vm_placement_state = state['vm_placement_state']
 
-    log.info('Started VM placement')
+    log.info('Started overload VM placement')
     placement, vm_placement_state = vm_placement(
         hosts_cpu_usage, hosts_cpu_total,
         hosts_ram_usage, hosts_ram_total,
         inactive_hosts_cpu, inactive_hosts_ram,
         vms_cpu, vms_ram,
         vm_placement_state)
-    log.info('Completed VM placement')
+    log.info('Completed overload VM placement')
     state['vm_placement_state'] = vm_placement_state
 
     if log.isEnabledFor(logging.INFO):
