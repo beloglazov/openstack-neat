@@ -234,6 +234,7 @@ def service():
             execute_overload(
                 state['config'],
                 state['state'],
+                params['host'],
                 params['vm_uuids'])
     except:
         log.exception('Exception during request processing:')
@@ -337,15 +338,15 @@ def execute_underload(config, state, host):
             del hosts_cpu_total[host]
             del hosts_ram_total[host]
 
-    if log.isEnabledFor(logging.DEBUG):
-        log.debug('Host CPU usage: %s', str(hosts_last_cpu))
-        log.debug('Host total CPU usage: %s', str(hosts_cpu_usage))
-
     # Exclude the underloaded host
     del hosts_cpu_usage[underloaded_host]
     del hosts_cpu_total[underloaded_host]
     del hosts_ram_usage[underloaded_host]
     del hosts_ram_total[underloaded_host]
+
+    if log.isEnabledFor(logging.DEBUG):
+        log.debug('Host CPU usage: %s', str(hosts_last_cpu))
+        log.debug('Host total CPU usage: %s', str(hosts_cpu_usage))
 
     vms_to_migrate = vms_by_host(state['nova'], underloaded_host)
     vms_cpu = {}
@@ -422,7 +423,7 @@ def execute_underload(config, state, host):
 
 
 @contract
-def execute_overload(config, state, vm_uuids):
+def execute_overload(config, state, host, vm_uuids):
     """ Process an overloaded host: migrate the selected VMs from it.
 
 1. Prepare the data about the current states of the hosts and VMs.
@@ -441,6 +442,9 @@ def execute_overload(config, state, vm_uuids):
     :param state: A state dictionary.
      :type state: dict(str: *)
 
+    :param host: A host name.
+     :type host: str
+
     :param vm_uuids: A list of VM UUIDs to migrate from the host.
      :type vm_uuids: list(str)
 
@@ -448,6 +452,7 @@ def execute_overload(config, state, vm_uuids):
      :rtype: dict(str: *)
     """
     log.info('Started processing an overload request')
+    overloaded_host = host
     hosts_cpu_total, _, hosts_ram_total = state['db'].select_host_characteristics()
     hosts_to_vms = vms_by_hosts(state['nova'], state['compute_hosts'])
     vms_last_cpu = state['db'].select_last_cpu_mhz_for_vms()
@@ -486,6 +491,12 @@ def execute_overload(config, state, vm_uuids):
             inactive_hosts_ram[host] = hosts_ram_total[host]
             del hosts_cpu_total[host]
             del hosts_ram_total[host]
+
+    # Exclude the overloaded host
+    del hosts_cpu_usage[overloaded_host]
+    del hosts_cpu_total[overloaded_host]
+    del hosts_ram_usage[overloaded_host]
+    del hosts_ram_total[overloaded_host]
 
     if log.isEnabledFor(logging.DEBUG):
         log.debug('Host CPU usage: %s', str(hosts_last_cpu))

@@ -230,13 +230,14 @@ class GlobalManager(TestCase):
 
         with MockTransaction:
             params = {'reason': 1,
+                      'host': 'host',
                       'vm_uuids': 'vm_uuids'}
             expect(manager).get_params(Any).and_return(params).once()
             expect(manager).get_remote_addr(Any).and_return('addr').once()
             expect(bottle).app().and_return(app).once()
             expect(manager).validate_params('user', 'password', params). \
                 and_return(True).once()
-            expect(manager).execute_overload(config, state, 'vm_uuids'). \
+            expect(manager).execute_overload(config, state, 'host', 'vm_uuids'). \
                 once()
             manager.service()
 
