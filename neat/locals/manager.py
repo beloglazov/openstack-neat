@@ -313,7 +313,7 @@ def execute(config, state):
 
             log.info('Started VM selection')
             vm_uuids, state['vm_selection_state'] = vm_selection(
-                host_cpu_utilization, vm_ram, state['vm_selection_state'])
+                vm_cpu_mhz, vm_ram, state['vm_selection_state'])
             log.info('Completed VM selection')
 
             if log.isEnabledFor(logging.INFO):
