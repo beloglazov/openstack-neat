@@ -139,9 +139,10 @@ def validate_params(user, password, params):
         raise_error(403)
         return False
     if 'reason' not in params or \
-       params['reason'] == 1 and 'vm_uuids' not in params or \
-       params['reason'] == 0 and 'host' not in params or \
-       'time' not in params:
+       'host' not in params or \
+       'time' not in params or \
+       params['reason'] not in [0, 1] or \
+       params['reason'] == 1 and 'vm_uuids' not in params:
         raise_error(400)
         return False
     if params['time'] + 5 < time.time():
