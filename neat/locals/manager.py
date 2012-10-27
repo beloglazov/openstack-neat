@@ -291,8 +291,8 @@ def execute(config, state):
                              {'username': state['hashed_username'], 
                               'password': state['hashed_password'], 
                               'time': time.time(),
-                              'reason': 0, 
-                              'host': state['hostname']})
+                              'host': state['hostname'],
+                              'reason': 0})
             if log.isEnabledFor(logging.INFO):
                 log.info('Received response: [%s] %s', 
                          r.status_code, r.content)
@@ -322,6 +322,7 @@ def execute(config, state):
                                  {'username': state['hashed_username'], 
                                   'password': state['hashed_password'], 
                                   'time': time.time(),
+                                  'host': state['hostname'],
                                   'reason': 1, 
                                   'vm_uuids': ','.join(vm_uuids)})
                 if log.isEnabledFor(logging.INFO):
