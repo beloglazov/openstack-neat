@@ -219,6 +219,7 @@ def execute(config, state):
     if not vm_cpu_mhz:
         if log.isEnabledFor(logging.INFO):
             log.info('The host is idle')
+        log.info('Skipped an iteration')
         return state
 
     host_path = common.build_local_host_path(config['local_data_directory'])
@@ -233,6 +234,7 @@ def execute(config, state):
 
     if not host_cpu_utilization:
         log.info('Not enough data yet - skipping to the next iteration')
+        log.info('Skipped an iteration')
         return state
 
     time_step = int(config['data_collector_interval'])

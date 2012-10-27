@@ -257,6 +257,7 @@ def execute(config, state):
         for vm in vms_removed:
             del state['previous_cpu_time'][vm]
 
+    log.info('Started VM data collection')
     current_time = time.time()
     (cpu_time, cpu_mhz) = get_cpu_mhz(state['vir_connection'],
                                       state['physical_core_mhz'],
@@ -265,15 +266,20 @@ def execute(config, state):
                                       current_time,
                                       vms_current.keys(),
                                       added_vm_data)
+    log.info('Completed VM data collection')
+
+    log.info('Started host data collection')
     (host_cpu_time_total, 
      host_cpu_time_busy, 
      host_cpu_mhz) = get_host_cpu_mhz(state['physical_cpu_mhz'],
                                       state['previous_host_cpu_time_total'],
                                       state['previous_host_cpu_time_busy'])
+    log.info('Completed host data collection')
+    
     if state['previous_time'] > 0:
         append_vm_data_locally(vm_path, cpu_mhz, data_length)
         append_vm_data_remotely(state['db'], cpu_mhz)
-
+        
         host_cpu_mhz_hypervisor = host_cpu_mhz - sum(cpu_mhz.values())
         if host_cpu_mhz_hypervisor < 0:
             host_cpu_mhz_hypervisor = 0

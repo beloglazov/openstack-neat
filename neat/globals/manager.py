@@ -353,6 +353,7 @@ def execute_underload(config, state, host):
     for vm in vms_to_migrate:
         if vm not in vms_last_cpu:
             log.info('No data yet for VM: %s - dropping the request', vm)
+            log.info('Skipped an underload request')
             return state
         vms_cpu[vm] = vms_last_cpu[vm]
     vms_ram = vms_ram_limit(state['nova'], vms_to_migrate)
@@ -387,12 +388,14 @@ def execute_underload(config, state, host):
         vm_placement = state['vm_placement']
         vm_placement_state = state['vm_placement_state']
 
+    log.info('Started VM placement')
     placement, vm_placement_state = vm_placement(
         hosts_cpu_usage, hosts_cpu_total,
         hosts_ram_usage, hosts_ram_total,
         {}, {},
         vms_cpu, vms_ram,
         vm_placement_state)
+    log.info('Completed VM placement')
     state['vm_placement_state'] = vm_placement_state
 
     if log.isEnabledFor(logging.INFO):
@@ -408,10 +411,12 @@ def execute_underload(config, state, host):
         if underloaded_host in hosts_to_deactivate:
             hosts_to_deactivate.remove(underloaded_host)
     else:
+        log.info('Started underload VM migrations')
         migrate_vms(state['db'],
                     state['nova'], 
                     config['vm_instance_directory'], 
                     placement)
+        log.info('Completed underload VM migrations')
 
     if hosts_to_deactivate:
         switch_hosts_off(state['db'], 
@@ -507,6 +512,7 @@ def execute_overload(config, state, host, vm_uuids):
     for vm in vms_to_migrate:
         if vm not in vms_last_cpu:
             log.info('No data yet for VM: %s - dropping the request', vm)
+            log.info('Skipped an underload request')
             return state
         vms_cpu[vm] = vms_last_cpu[vm]
     vms_ram = vms_ram_limit(state['nova'], vms_to_migrate)
@@ -541,12 +547,14 @@ def execute_overload(config, state, host, vm_uuids):
         vm_placement = state['vm_placement']
         vm_placement_state = state['vm_placement_state']
 
+    log.info('Started VM placement')
     placement, vm_placement_state = vm_placement(
         hosts_cpu_usage, hosts_cpu_total,
         hosts_ram_usage, hosts_ram_total,
         inactive_hosts_cpu, inactive_hosts_ram,
         vms_cpu, vms_ram,
         vm_placement_state)
+    log.info('Completed VM placement')
     state['vm_placement_state'] = vm_placement_state
 
     if log.isEnabledFor(logging.INFO):
@@ -562,10 +570,12 @@ def execute_overload(config, state, host, vm_uuids):
             switch_hosts_on(state['db'], 
                             state['host_macs'], 
                             hosts_to_activate)
+        log.info('Started overload VM migrations')
         migrate_vms(state['db'],
                     state['nova'], 
                     config['vm_instance_directory'], 
                     placement)
+        log.info('Completed overload VM migrations')
     log.info('Completed processing an overload request')
     return state
 
