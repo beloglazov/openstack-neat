@@ -42,6 +42,28 @@ def threshold_factory(time_step, migration_time, params):
                                                       utilization),
                                             {})
 
+@contract
+def last_n_average_threshold_factory(time_step, migration_time, params):
+    """ Creates the averaging threshold underload detection algorithm.
+
+    :param time_step: The length of the simulation time step in seconds.
+     :type time_step: int,>=0
+
+    :param migration_time: The VM migration time in time seconds.
+     :type migration_time: float,>=0
+
+    :param params: A dictionary containing the algorithm's parameters.
+     :type params: dict(str: *)
+
+    :return: A function implementing the OTF algorithm.
+     :rtype: function
+    """
+    return lambda utilization, state=None: (
+        last_n_average_threshold(params['threshold'],
+                                 params['n'],
+                                 utilization),
+        {})
+
 
 @contract
 def threshold(threshold, utilization):
@@ -61,4 +83,29 @@ def threshold(threshold, utilization):
     """
     if utilization:
         return utilization[-1] <= threshold
+    return False
+
+
+@contract
+def last_n_average_threshold(threshold, n, utilization):
+    """ Averaging static threshold-based underload detection algorithm.
+
+    The algorithm returns True, if the average of the last n values of 
+    the host's CPU utilization is lower than the specified threshold.
+
+    :param threshold: The static underload CPU utilization threshold.
+     :type threshold: float,>=0,<=1
+
+    :param n: The number of last values to average.
+     :type n: int,>0
+
+    :param utilization: The history of the host's CPU utilization.
+     :type utilization: list(float)
+
+    :return: A decision of whether the host is underloaded.
+     :rtype: bool
+    """
+    if utilization:
+        utilization = utilization[-n:]
+        return sum(utilization) / len(utilization) <= threshold
     return False

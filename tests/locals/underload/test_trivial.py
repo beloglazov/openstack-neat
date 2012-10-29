@@ -32,6 +32,27 @@ class Trivial(TestCase):
         self.assertEqual(alg([0.0, 0.6]), (False, {}))
         self.assertEqual(alg([0.0, 1.0]), (False, {}))
 
+
+    def test_last_n_average_threshold_factory(self):
+        alg = trivial.last_n_average_threshold_factory(
+            300, 20., {'threshold': 0.5,
+                       'n': 2})
+        self.assertEqual(alg([]), (False, {}))
+        self.assertEqual(alg([0.0, 0.0]), (True, {}))
+        self.assertEqual(alg([0.0, 0.4]), (True, {}))
+        self.assertEqual(alg([0.0, 0.5]), (True, {}))
+        self.assertEqual(alg([0.0, 0.6]), (True, {}))
+        self.assertEqual(alg([0.0, 1.0]), (True, {}))
+        self.assertEqual(alg([0.2, 1.0]), (False, {}))
+        self.assertEqual(alg([0.0, 0.2, 1.0]), (False, {}))
+        self.assertEqual(alg([0.0, 1.0, 1.0]), (False, {}))
+        self.assertEqual(alg([0.0, 0.6, 0.6]), (False, {}))
+        
+        alg = trivial.last_n_average_threshold_factory(
+            300, 20., {'threshold': 0.5,
+                       'n': 3})
+        self.assertEqual(alg([0.0, 0.6, 0.6]), (True, {}))
+
     def test_threshold(self):
         self.assertEqual(trivial.threshold(0.5, []), False)
         self.assertEqual(trivial.threshold(0.5, [0.0, 0.0]), True)
@@ -39,3 +60,27 @@ class Trivial(TestCase):
         self.assertEqual(trivial.threshold(0.5, [0.0, 0.5]), True)
         self.assertEqual(trivial.threshold(0.5, [0.0, 0.6]), False)
         self.assertEqual(trivial.threshold(0.5, [0.0, 1.0]), False)
+
+    def test_last_n_average_threshold(self):
+        self.assertEqual(trivial.last_n_average_threshold(
+                0.5, 2, []), False)
+        self.assertEqual(trivial.last_n_average_threshold(
+                0.5, 2, [0.0, 0.0]), True)
+        self.assertEqual(trivial.last_n_average_threshold(
+                0.5, 2, [0.0, 0.4]), True)
+        self.assertEqual(trivial.last_n_average_threshold(
+                0.5, 2, [0.0, 0.5]), True)
+        self.assertEqual(trivial.last_n_average_threshold(
+                0.5, 2, [0.0, 0.6]), True)
+        self.assertEqual(trivial.last_n_average_threshold(
+                0.5, 2, [0.0, 1.0]), True)
+        self.assertEqual(trivial.last_n_average_threshold(
+                0.5, 2, [0.2, 1.0]), False)
+        self.assertEqual(trivial.last_n_average_threshold(
+                0.5, 2, [0.0, 0.2, 1.0]), False)
+        self.assertEqual(trivial.last_n_average_threshold(
+                0.5, 2, [0.0, 1.0, 1.0]), False)
+        self.assertEqual(trivial.last_n_average_threshold(
+                0.5, 2, [0.0, 0.6, 0.6]), False)
+        self.assertEqual(trivial.last_n_average_threshold(
+                0.5, 3, [0.0, 0.6, 0.6]), True)
