@@ -45,7 +45,7 @@ def loess_factory(time_step, migration_time, params):
     migration_time_normalized = float(migration_time) / time_step
     return lambda utilization, state=None: \
         (loess(params['param'],
-               params['limit'],
+               params['length'],
                migration_time_normalized,
                utilization),
          {})
@@ -70,7 +70,7 @@ def loess_robust_factory(time_step, migration_time, params):
     migration_time_normalized = float(migration_time) / time_step
     return lambda utilization, state=None: \
         (loess_robust(params['param'],
-                      params['limit'],
+                      params['length'],
                       migration_time_normalized,
                       utilization),
          {})
@@ -123,14 +123,14 @@ def iqr_threshold_factory(time_step, migration_time, params):
 
 
 @contract
-def loess(param, limit, migration_time, utilization):
+def loess(param, length, migration_time, utilization):
     """ The Loess based overload detection algorithm.
 
     :param param: The safety parameter.
      :type param: float
 
-    :param limit: The minimum allowed length of the utilization history.
-     :type limit: int
+    :param length: The required length of the utilization history.
+     :type length: int
 
     :param migration_time: The VM migration time in time steps.
      :type migration_time: float
@@ -143,20 +143,20 @@ def loess(param, limit, migration_time, utilization):
     """
     return loess_abstract(loess_parameter_estimates,
                           param,
-                          limit,
+                          length,
                           migration_time,
                           utilization)
 
 
 @contract
-def loess_robust(param, limit, migration_time, utilization):
+def loess_robust(param, length, migration_time, utilization):
     """ The robust Loess based overload detection algorithm.
 
     :param param: The safety parameter.
      :type param: float
 
-    :param limit: The minimum allowed length of the utilization history.
-     :type limit: int
+    :param length: The required length of the utilization history.
+     :type length: int
 
     :param migration_time: The VM migration time in time steps.
      :type migration_time: float
@@ -169,13 +169,13 @@ def loess_robust(param, limit, migration_time, utilization):
     """
     return loess_abstract(loess_robust_parameter_estimates,
                           param,
-                          limit,
+                          length,
                           migration_time,
                           utilization)
 
 
 @contract
-def loess_abstract(estimator, param, limit, migration_time, utilization):
+def loess_abstract(estimator, param, length, migration_time, utilization):
     """ The abstract Loess algorithm.
 
     :param estimator: A parameter estimation function.
@@ -184,8 +184,8 @@ def loess_abstract(estimator, param, limit, migration_time, utilization):
     :param param: The safety parameter.
      :type param: float
 
-    :param limit: The minimum allowed length of the utilization history.
-     :type limit: int
+    :param length: The required length of the utilization history.
+     :type length: int
 
     :param migration_time: The VM migration time in time steps.
      :type migration_time: float
@@ -196,10 +196,9 @@ def loess_abstract(estimator, param, limit, migration_time, utilization):
     :return: A decision of whether the host is overloaded.
      :rtype: bool
     """
-    length = len(utilization)
-    if length < limit:
+    if len(utilization) < length:
         return False
-    estimates = estimator(utilization)
+    estimates = estimator(utilization[-length:])
     prediction = (estimates[0] + estimates[1] * (length + migration_time))
     return param * prediction >= 1.
 

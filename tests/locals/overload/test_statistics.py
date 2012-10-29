@@ -25,7 +25,7 @@ class Statistics(TestCase):
 
     def test_loess_factory(self):
         alg = stats.loess_factory(
-            300, 20., {'param': 1.2, 'limit': 3})
+            300, 20., {'param': 1.2, 'length': 3})
         self.assertEqual(alg([]), (False, {}))
 
         data = [1.05, 1.09, 1.07, 1.12, 1.02, 1.18,
@@ -39,7 +39,7 @@ class Statistics(TestCase):
 
     def test_loess_robust_factory(self):
         alg = stats.loess_robust_factory(
-            300, 20., {'param': 1.2, 'limit': 3})
+            300, 20., {'param': 1.2, 'length': 3})
         self.assertEqual(alg([]), (False, {}))
 
         data = [1.05, 1.09, 1.07, 1.12, 1.02, 1.18,
