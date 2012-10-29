@@ -70,6 +70,53 @@ class Selection(TestCase):
             assert alg(x, dict()) == ([vm], {})
 
     @qc(10)
+    def minimum_migration_time_max_cpu_factory(
+        x=dict_(
+            keys=str_(of='abc123-', min_length=36, max_length=36),
+            values=tuple_(list_(of=int_(min=0, max=3000),
+                                min_length=1, max_length=10),
+                          int_(min=0, max=3000)),
+            min_length=1, max_length=5
+        ),
+        last_n=int_(min=1, max=10)
+    ):
+        alg = selection.minimum_migration_time_max_cpu_factory(
+            300, 20., {'last_n': last_n})
+        vms_cpu = dict((k, v[0]) for k, v in x.items())
+        vms_ram = dict((k, v[1]) for k, v in x.items())
+        min_ram = min(vms_ram.values())
+        min_ram_vms_cpu = dict((k, sum(v[-last_n:]) / len(v[-last_n:])) 
+                               for k, v in vms_cpu.items()
+                               if vms_ram[k] == min_ram and len(v[-last_n:]) > 0)
+        values = min_ram_vms_cpu.values()
+        vm_index = values.index(max(values))
+        vm = min_ram_vms_cpu.keys()[vm_index]
+        assert alg(vms_cpu, vms_ram) == ([vm], {})
+
+    @qc(10)
+    def minimum_migration_time_max_cpu_factory_equal_ram(
+        vms_cpu=dict_(
+            keys=str_(of='abc123-', min_length=36, max_length=36),
+            values=list_(of=int_(min=0, max=3000),
+                                min_length=1, max_length=10),
+            min_length=1, max_length=5
+        ),
+        ram=int_(min=1000, max=3000),
+        last_n=int_(min=1, max=10)
+    ):
+        alg = selection.minimum_migration_time_max_cpu_factory(
+            300, 20., {'last_n': last_n})
+        vms_ram = dict((k, ram) for k, _ in vms_cpu.items())
+        min_ram = min(vms_ram.values())
+        min_ram_vms_cpu = dict((k, sum(v[-last_n:]) / len(v[-last_n:])) 
+                               for k, v in vms_cpu.items()
+                               if vms_ram[k] == min_ram and len(v[-last_n:]) > 0)
+        values = min_ram_vms_cpu.values()
+        vm_index = values.index(max(values))
+        vm = min_ram_vms_cpu.keys()[vm_index]
+        assert alg(vms_cpu, vms_ram) == ([vm], {})
+
+    @qc(10)
     def minimum_migration_time(
         x=dict_(
             keys=str_(of='abc123-', min_length=36, max_length=36),
@@ -111,3 +158,48 @@ class Selection(TestCase):
             vm = x.keys()[random.randrange(len(x))]
             expect(selection).choice(x.keys()).and_return(vm).once()
             assert selection.random(x) == vm
+
+    @qc
+    def minimum_migration_time_max_cpu(
+        x=dict_(
+            keys=str_(of='abc123-', min_length=36, max_length=36),
+            values=tuple_(list_(of=int_(min=0, max=3000),
+                                min_length=1, max_length=10),
+                          int_(min=0, max=3000)),
+            min_length=1, max_length=5
+        ),
+        last_n=int_(min=1, max=10)
+    ):
+        vms_cpu = dict((k, v[0]) for k, v in x.items())
+        vms_ram = dict((k, v[1]) for k, v in x.items())
+        min_ram = min(vms_ram.values())
+        min_ram_vms_cpu = dict((k, sum(v[-last_n:]) / len(v[-last_n:])) 
+                               for k, v in vms_cpu.items()
+                               if vms_ram[k] == min_ram and len(v[-last_n:]) > 0)
+        values = min_ram_vms_cpu.values()
+        vm_index = values.index(max(values))
+        vm = min_ram_vms_cpu.keys()[vm_index]
+        assert selection.minimum_migration_time_max_cpu(
+            last_n, vms_cpu, vms_ram) == vm
+
+    @qc(1)
+    def minimum_migration_time_max_cpu_equal_ram(
+        vms_cpu=dict_(
+            keys=str_(of='abc123-', min_length=36, max_length=36),
+            values=list_(of=int_(min=0, max=3000),
+                                min_length=1, max_length=10),
+            min_length=1, max_length=5
+        ),
+        ram=int_(min=1000, max=3000),
+        last_n=int_(min=1, max=10)
+    ):
+        vms_ram = dict((k, ram) for k, _ in vms_cpu.items())
+        min_ram = min(vms_ram.values())
+        min_ram_vms_cpu = dict((k, sum(v[-last_n:]) / len(v[-last_n:])) 
+                               for k, v in vms_cpu.items()
+                               if vms_ram[k] == min_ram and len(v[-last_n:]) > 0)
+        values = min_ram_vms_cpu.values()
+        vm_index = values.index(max(values))
+        vm = min_ram_vms_cpu.keys()[vm_index]
+        assert selection.minimum_migration_time_max_cpu(
+            last_n, vms_cpu, vms_ram) == vm
