@@ -55,7 +55,7 @@ def last_n_average_threshold_factory(time_step, migration_time, params):
     :param params: A dictionary containing the algorithm's parameters.
      :type params: dict(str: *)
 
-    :return: A function implementing the OTF algorithm.
+    :return: A function implementing the averaging underload detection.
      :rtype: function
     """
     return lambda utilization, state=None: (
