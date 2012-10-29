@@ -15,4 +15,4 @@
 # limitations under the License.
 
 sudo pip2 install --upgrade pyqcy mocktest PyContracts SQLAlchemy bottle requests Sphinx python-novaclient
-sudo yum install -y numpy scipy
+sudo pacman -S python2-numpy python2-scipy
