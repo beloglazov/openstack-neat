@@ -43,6 +43,7 @@ def best_fit_decreasing_factory(time_step, migration_time, params):
                   inactive_hosts_cpu, inactive_hosts_ram, \
                   vms_cpu, vms_ram, state=None: \
         (best_fit_decreasing(
+            params['last_n_vm_cpu'],
             get_available_resources(
                     params['cpu_threshold'],
                     hosts_cpu_usage, 
@@ -79,10 +80,13 @@ def get_available_resources(threshold, usage, total):
 
 
 @contract
-def best_fit_decreasing(hosts_cpu, hosts_ram,
+def best_fit_decreasing(last_n_vm_cpu, hosts_cpu, hosts_ram,
                         inactive_hosts_cpu, inactive_hosts_ram,
                         vms_cpu, vms_ram):
     """ The Best Fit Decreasing (BFD) heuristic for placing VMs on hosts.
+
+    :param last_n_vm_cpu: The last n VM CPU usage values to average.
+     :type last_n_vm_cpu: int
 
     :param hosts_cpu: A map of host names and their available CPU in MHz.
      :type hosts_cpu: dict(str: int)
@@ -97,7 +101,7 @@ def best_fit_decreasing(hosts_cpu, hosts_ram,
      :type inactive_hosts_ram: dict(str: int)
 
     :param vms_cpu: A map of VM UUID and their CPU utilization in MHz.
-     :type vms_cpu: dict(str: int)
+     :type vms_cpu: dict(str: list(int))
 
     :param vms_ram: A map of VM UUID and their RAM usage in MB.
      :type vms_ram: dict(str: int)
@@ -105,8 +109,13 @@ def best_fit_decreasing(hosts_cpu, hosts_ram,
     :return: A map of VM UUIDs to host names, or {} if cannot be solved.
      :rtype: dict(str: str)
     """
-    vms = sorted(((v, vms_ram[k], k)
-                  for k, v in vms_cpu.items()), reverse=True)
+    vms_tmp = []
+    for vm, cpu in vms_cpu.items():
+        last_n_cpu = cpu[-last_n_vm_cpu:]
+        vms_tmp.append((sum(last_n_cpu) / len(last_n_cpu), 
+                        vms_ram[vm], 
+                        vm))
+    vms = sorted(vms_tmp, reverse=True)
     hosts = sorted(((v, hosts_ram[k], k)
                     for k, v in hosts_cpu.items()))
     inactive_hosts = sorted(((v, inactive_hosts_ram[k], k)
