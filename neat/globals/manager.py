@@ -355,7 +355,9 @@ def execute_underload(config, state, host):
             log.info('No data yet for VM: %s - dropping the request', vm)
             log.info('Skipped an underload request')
             return state
-        vms_cpu[vm] = vms_last_cpu[vm]
+        vms_cpu[vm] = state['db'].select_cpu_mhz_for_vm(
+            vm,
+            int(config['data_collector_data_length']))
     vms_ram = vms_ram_limit(state['nova'], vms_to_migrate)
 
     # Remove VMs that are not in vms_ram 
@@ -514,7 +516,9 @@ def execute_overload(config, state, host, vm_uuids):
             log.info('No data yet for VM: %s - dropping the request', vm)
             log.info('Skipped an underload request')
             return state
-        vms_cpu[vm] = vms_last_cpu[vm]
+        vms_cpu[vm] = state['db'].select_cpu_mhz_for_vm(
+            vm,
+            int(config['data_collector_data_length']))
     vms_ram = vms_ram_limit(state['nova'], vms_to_migrate)
 
     # Remove VMs that are not in vms_ram 
