@@ -63,6 +63,29 @@ def threshold_factory(time_step, migration_time, params):
 
 
 @contract
+def last_n_average_threshold_factory(time_step, migration_time, params):
+    """ Creates the averaging CPU utilization threshold algorithm.
+
+    :param time_step: The length of the simulation time step in seconds.
+     :type time_step: int,>=0
+
+    :param migration_time: The VM migration time in time seconds.
+     :type migration_time: float,>=0
+
+    :param params: A dictionary containing the algorithm's parameters.
+     :type params: dict(str: *)
+
+    :return: A function implementing the averaging threshold algorithm.
+     :rtype: function
+    """
+    return lambda utilization, state=None: (
+        last_n_average_threshold(params['threshold'],
+                                 params['n'],
+                                 utilization),
+        {})
+
+
+@contract
 def threshold(threshold, utilization):
     """ The static CPU utilization threshold algorithm.
 
@@ -77,4 +100,26 @@ def threshold(threshold, utilization):
     """
     if utilization:
         return utilization[-1] > threshold
+    return False
+
+
+@contract
+def last_n_average_threshold(threshold, n, utilization):
+    """ The averaging CPU utilization threshold algorithm.
+
+    :param threshold: The threshold on the CPU utilization.
+     :type threshold: float,>=0
+
+    :param n: The number of last CPU utilization values to average.
+     :type n: int,>0
+
+    :param utilization: The history of the host's CPU utilization.
+     :type utilization: list(float)
+
+    :return: The decision of the algorithm.
+     :rtype: bool
+    """
+    if utilization:
+        utilization = utilization[-n:]
+        return sum(utilization) / len(utilization) > threshold
     return False
