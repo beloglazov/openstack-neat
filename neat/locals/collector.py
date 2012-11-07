@@ -508,7 +508,7 @@ def append_host_data_locally(path, cpu_mhz, data_length):
      :type path: str
 
     :param cpu_mhz: A CPU MHz value.
-     :type cpu_mhz: int
+     :type cpu_mhz: int,>=0
 
     :param data_length: The maximum allowed length of the data.
      :type data_length: int
@@ -536,7 +536,7 @@ def append_host_data_remotely(db, hostname, host_cpu_mhz):
      :type hostname: str
 
     :param host_cpu_mhz: An average host CPU utilization in MHz.
-     :type host_cpu_mhz: int
+     :type host_cpu_mhz: int,>=0
     """
     db.insert_host_cpu_mhz(hostname, host_cpu_mhz)
 
@@ -575,8 +575,14 @@ def get_cpu_mhz(vir_connection, physical_core_mhz, previous_cpu_time,
     removed_vms = get_removed_vms(previous_vms, current_vms)
     cpu_mhz = {}
 
+    for uuid in removed_vms:
+        del previous_cpu_time[uuid]
+
     for uuid, cpu_time in previous_cpu_time.items():
         current_cpu_time = get_cpu_time(vir_connection, uuid)
+        if current_cpu_time == 0:
+            # libvirt error workaround
+            current_cpu_time = cpu_time
         cpu_mhz[uuid] = calculate_cpu_mhz(physical_core_mhz, previous_time,
                                           current_time, cpu_time,
                                           current_cpu_time)
@@ -590,10 +596,6 @@ def get_cpu_mhz(vir_connection, physical_core_mhz, previous_cpu_time,
         if added_vm_data[uuid]:
             cpu_mhz[uuid] = added_vm_data[uuid][-1]
         previous_cpu_time[uuid] = get_cpu_time(vir_connection, uuid)
-
-    for uuid in removed_vms:
-        del previous_cpu_time[uuid]
-        del cpu_mhz[uuid]
 
     return previous_cpu_time, cpu_mhz
 
@@ -609,7 +611,7 @@ def get_cpu_time(vir_connection, uuid):
      :type uuid: str[36]
 
     :return: The CPU time of the VM.
-     :rtype: number
+     :rtype: number,>=0
     """
     try:
         domain = vir_connection.lookupByUUIDString(uuid)
@@ -639,7 +641,7 @@ def calculate_cpu_mhz(cpu_mhz, previous_time, current_time,
      :type current_cpu_time: number
 
     :return: The average CPU utilization in MHz.
-     :rtype: int
+     :rtype: int,>=0
     """
     return int(cpu_mhz * float(current_cpu_time - previous_cpu_time) / \
                ((current_time - previous_time) * 1000000000))
@@ -662,10 +664,18 @@ def get_host_cpu_mhz(cpu_mhz, previous_cpu_time_total, previous_cpu_time_busy):
      :rtype: tuple(float, float, int)
     """
     cpu_time_total, cpu_time_busy = get_host_cpu_time()
+    cpu_usage = int(cpu_mhz * (cpu_time_busy - previous_cpu_time_busy) / \
+                    (cpu_time_total - previous_cpu_time_total))
+    if cpu_usage < 0:
+        raise ValueError('The host CPU usage in MHz must be >=0, but it is: ' + str(cpu_usage) +
+                         '; cpu_mhz=' + str(cpu_mhz) +
+                         '; previous_cpu_time_total=' + str(previous_cpu_time_total) +
+                         '; cpu_time_total=' + str(cpu_time_total) +
+                         '; previous_cpu_time_busy=' + str(previous_cpu_time_busy) +
+                         '; cpu_time_busy=' + str(cpu_time_busy))
     return cpu_time_total, \
            cpu_time_busy, \
-           int(cpu_mhz * (cpu_time_busy - previous_cpu_time_busy) / \
-                         (cpu_time_total - previous_cpu_time_total))
+           cpu_usage
 
 
 @contract()

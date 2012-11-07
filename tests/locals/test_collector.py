@@ -74,9 +74,9 @@ class Collector(TestCase):
 
             db = mock('db')
             expect(collector).init_db('db').and_return(db).once()
-            expect(db).update_host(hostname, 
-                                   int(mhz * 0.75), 
-                                   physical_cpus, 
+            expect(db).update_host(hostname,
+                                   int(mhz * 0.75),
+                                   physical_cpus,
                                    ram).once()
 
             state = collector.init_state(config)
@@ -87,7 +87,7 @@ class Collector(TestCase):
             assert state['previous_overload'] == -1
             assert state['vir_connection'] == vir_connection
             assert state['hostname'] == hostname
-            self.assertAlmostEqual(state['host_cpu_overload_threshold'], 
+            self.assertAlmostEqual(state['host_cpu_overload_threshold'],
                                    0.7125, 3)
             assert state['physical_cpus'] == physical_cpus
             assert state['physical_cpu_mhz'] == mhz
@@ -498,7 +498,7 @@ class Collector(TestCase):
                               previous_cpu_time, current_cpu_time) == \
             int((mhz * cpu_time / (time_period * 1000000000)))
 
-    @qc(1)
+    @qc
     def get_host_cpu_mhz(
         cpu_mhz=int_(min=1, max=1000),
         prev_total=float_(min=100, max=1000),
@@ -516,6 +516,22 @@ class Collector(TestCase):
                  busy,
                  int(cpu_mhz * diff_busy / diff_total))
 
+    @qc(1)
+    def get_host_cpu_mhz_exception():
+        cpu_mhz = 1
+        total = 1.
+        prev_total = 0.
+        busy = 1.
+        prev_busy = 2.
+        with MockTransaction:
+            expect(collector).get_host_cpu_time(). \
+                and_return((total, busy)).once()
+            try:
+                collector.get_host_cpu_mhz(cpu_mhz, prev_total, prev_busy)
+                assert False
+            except ValueError:
+                assert True
+
     @qc(10)
     def get_host_cpu_time(
         x=list_(of=int_(min=1, max=1000), min_length=7, max_length=7)
@@ -528,7 +544,7 @@ class Collector(TestCase):
             expect(collector).open('/proc/stat', 'r').and_return(context).once()
             expect(f).readline().and_return(
                 '1 ' + ' '.join([str(v) for v in x]) + ' 2 3').once()
-            assert collector.get_host_cpu_time() == (float(sum(x)), 
+            assert collector.get_host_cpu_time() == (float(sum(x)),
                                                      float(sum(x[0:3])))
 
     @qc(10)
@@ -549,29 +565,29 @@ class Collector(TestCase):
         db = db_utils.init_db('sqlite:///:memory:')
         with MockTransaction:
             expect(db).insert_host_overload('host', 1).once()
-            assert collector.log_host_overload(db, 0.9, 'host', -1, 3000, 
+            assert collector.log_host_overload(db, 0.9, 'host', -1, 3000,
                                                [1000, 1000, 800])
         with MockTransaction:
             expect(db).insert_host_overload('host', 0).once()
-            assert not collector.log_host_overload(db, 0.9, 'host', -1, 3000, 
+            assert not collector.log_host_overload(db, 0.9, 'host', -1, 3000,
                                                    [1000, 1000, 600])
 
         with MockTransaction:
             expect(db).insert_host_overload('host', 1).once()
-            assert collector.log_host_overload(db, 0.9, 'host', 0, 3000, 
+            assert collector.log_host_overload(db, 0.9, 'host', 0, 3000,
                                                [1000, 1000, 800])
         with MockTransaction:
             expect(db).insert_host_overload('host', 0).once()
-            assert not collector.log_host_overload(db, 0.9, 'host', 1, 3000, 
+            assert not collector.log_host_overload(db, 0.9, 'host', 1, 3000,
                                                    [1000, 1000, 600])
 
         with MockTransaction:
             expect(db).insert_host_overload.never()
-            assert collector.log_host_overload(db, 0.9, 'host', 1, 3000, 
+            assert collector.log_host_overload(db, 0.9, 'host', 1, 3000,
                                                [1000, 1000, 800])
         with MockTransaction:
             expect(db).insert_host_overload.never()
-            assert not collector.log_host_overload(db, 0.9, 'host', 0, 3000, 
+            assert not collector.log_host_overload(db, 0.9, 'host', 0, 3000,
                                                    [1000, 1000, 600])
 
 
