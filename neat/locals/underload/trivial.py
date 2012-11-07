@@ -90,7 +90,7 @@ def threshold(threshold, utilization):
 def last_n_average_threshold(threshold, n, utilization):
     """ Averaging static threshold-based underload detection algorithm.
 
-    The algorithm returns True, if the average of the last n values of 
+    The algorithm returns True, if the average of the last n values of
     the host's CPU utilization is lower than the specified threshold.
 
     :param threshold: The static underload CPU utilization threshold.

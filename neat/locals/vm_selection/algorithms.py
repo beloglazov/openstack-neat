@@ -102,7 +102,7 @@ def minimum_migration_time_max_cpu_factory(time_step, migration_time, params):
     """
     return lambda vms_cpu, vms_ram, state=None: \
         ([minimum_migration_time_max_cpu(params['last_n'],
-                                         vms_cpu, 
+                                         vms_cpu,
                                          vms_ram)], {})
 
 

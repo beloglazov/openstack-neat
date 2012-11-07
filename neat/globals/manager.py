@@ -71,7 +71,6 @@ from contracts import contract
 from neat.contracts_extra import *
 
 import bottle
-import json
 from hashlib import sha1
 import novaclient
 from novaclient.v1_1 import client
@@ -164,8 +163,8 @@ def start():
         int(config['log_level']))
 
     state = init_state(config)
-    switch_hosts_on(state['db'], 
-                    state['host_macs'], 
+    switch_hosts_on(state['db'],
+                    state['host_macs'],
                     state['compute_hosts'])
 
     bottle.debug(True)
@@ -216,13 +215,13 @@ def get_remote_addr(request):
 def service():
     params = get_params(bottle.request)
     state = bottle.app().state
-    validate_params(state['state']['hashed_username'], 
-                    state['state']['hashed_password'], 
+    validate_params(state['state']['hashed_username'],
+                    state['state']['hashed_password'],
                     params)
-    log.info('Received a request from %s: %s', 
+    log.info('Received a request from %s: %s',
              get_remote_addr(bottle.request),
              str(params))
-    try: 
+    try:
         if params['reason'] == 0:
             log.info('Processing an underload of a host %s', params['host'])
             execute_underload(
@@ -323,11 +322,11 @@ def execute_underload(config, state, host):
                 if vm not in vms_last_cpu:
                     log.info('No data yet for VM: %s - skipping host %s', vm, host)
                     del hosts_cpu_total[host]
-                    del hosts_ram_total[host]        
+                    del hosts_ram_total[host]
                     if host in hosts_cpu_usage:
                         del hosts_cpu_usage[host]
                     if host in hosts_ram_usage:
-                        del hosts_ram_usage[host]    
+                        del hosts_ram_usage[host]
                     break
                 host_cpu_mhz += vms_last_cpu[vm]
             else:
@@ -360,7 +359,7 @@ def execute_underload(config, state, host):
             int(config['data_collector_data_length']))
     vms_ram = vms_ram_limit(state['nova'], vms_to_migrate)
 
-    # Remove VMs that are not in vms_ram 
+    # Remove VMs that are not in vms_ram
     # These instances might have been deleted
     for i, vm in enumerate(vms_to_migrate):
         if not vm in vms_ram:
@@ -415,14 +414,14 @@ def execute_underload(config, state, host):
     else:
         log.info('Started underload VM migrations')
         migrate_vms(state['db'],
-                    state['nova'], 
-                    config['vm_instance_directory'], 
+                    state['nova'],
+                    config['vm_instance_directory'],
                     placement)
         log.info('Completed underload VM migrations')
 
     if hosts_to_deactivate:
-        switch_hosts_off(state['db'], 
-                         config['sleep_command'], 
+        switch_hosts_off(state['db'],
+                         config['sleep_command'],
                          hosts_to_deactivate)
 
     log.info('Completed processing an underload request')
@@ -521,7 +520,7 @@ def execute_overload(config, state, host, vm_uuids):
             int(config['data_collector_data_length']))
     vms_ram = vms_ram_limit(state['nova'], vms_to_migrate)
 
-    # Remove VMs that are not in vms_ram 
+    # Remove VMs that are not in vms_ram
     # These instances might have been deleted
     for i, vm in enumerate(vms_to_migrate):
         if not vm in vms_ram:
@@ -571,13 +570,13 @@ def execute_overload(config, state, host, vm_uuids):
             set(inactive_hosts_cpu.keys()).intersection(
                 set(placement.values())))
         if hosts_to_activate:
-            switch_hosts_on(state['db'], 
-                            state['host_macs'], 
+            switch_hosts_on(state['db'],
+                            state['host_macs'],
                             hosts_to_activate)
         log.info('Started overload VM migrations')
         migrate_vms(state['db'],
-                    state['nova'], 
-                    config['vm_instance_directory'], 
+                    state['nova'],
+                    config['vm_instance_directory'],
                     placement)
         log.info('Completed overload VM migrations')
     log.info('Completed processing an overload request')
@@ -651,8 +650,8 @@ def host_mac(host):
      :rtype: str
     """
     mac = subprocess.Popen(
-        ("ping -c 1 {0} > /dev/null;" + 
-         "arp -a {0} | awk '{{print $4}}'").format(host), 
+        ("ping -c 1 {0} > /dev/null;" +
+         "arp -a {0} | awk '{{print $4}}'").format(host),
         stdout=subprocess.PIPE,
         shell=True).communicate()[0].strip()
     if len(mac) != 17:
@@ -732,23 +731,23 @@ def migrate_vms(db, nova, vm_instance_directory, placement):
     vm_pairs = [vms[x:x + 2] for x in xrange(0, len(vms), 2)]
     for vm_pair in vm_pairs:
         # To avoid problems with migration, need the following:
-        subprocess.call('chown -R nova:nova ' + vm_instance_directory, 
+        subprocess.call('chown -R nova:nova ' + vm_instance_directory,
                         shell=True)
         for vm in vm_pair:
             host = placement[vm]
             nova.servers.live_migrate(vm, host, False, False)
             if log.isEnabledFor(logging.INFO):
-                log.info('Started migration of VM %s to %s', vm, host)            
-                
+                log.info('Started migration of VM %s to %s', vm, host)
+
         time.sleep(10)
 
         while True:
             for vm_uuid in list(vm_pair):
                 vm = nova.servers.get(vm_uuid)
                 if log.isEnabledFor(logging.DEBUG):
-                    log.debug('VM %s: %s, %s', 
-                              vm_uuid, 
-                              vm_hostname(vm), 
+                    log.debug('VM %s: %s, %s',
+                              vm_uuid,
+                              vm_hostname(vm),
                               vm.status)
                 if vm_hostname(vm) != placement[vm_uuid] or \
                         vm.status != u'ACTIVE':
@@ -757,7 +756,7 @@ def migrate_vms(db, nova, vm_instance_directory, placement):
                     vm_pair.remove(vm_uuid)
                     db.insert_vm_migration(vm_uuid, placement[vm_uuid])
                     if log.isEnabledFor(logging.INFO):
-                        log.info('Completed migration of VM %s to %s', 
+                        log.info('Completed migration of VM %s to %s',
                                  vm_uuid, placement[vm_uuid])
             else:
                 break
@@ -782,10 +781,10 @@ def switch_hosts_off(db, sleep_command, hosts):
             command = 'ssh {0} "{1}"'. \
                 format(host, sleep_command)
             if log.isEnabledFor(logging.DEBUG):
-                log.debug('Calling: %s', command)   
+                log.debug('Calling: %s', command)
             subprocess.call(command, shell=True)
     if log.isEnabledFor(logging.INFO):
-        log.info('Switched off hosts: %s', str(hosts))   
+        log.info('Switched off hosts: %s', str(hosts))
     db.insert_host_states(dict((x, 0) for x in hosts))
 
 
@@ -807,8 +806,8 @@ def switch_hosts_on(db, host_macs, hosts):
             host_macs[host] = host_mac(host)
         command = 'ether-wake {0}'.format(host_macs[host])
         if log.isEnabledFor(logging.DEBUG):
-            log.debug('Calling: %s', command)   
-        subprocess.call(command, shell=True)        
+            log.debug('Calling: %s', command)
+        subprocess.call(command, shell=True)
     if log.isEnabledFor(logging.INFO):
         log.info('Switched on hosts: %s', str(hosts))
     db.insert_host_states(dict((x, 1) for x in hosts))

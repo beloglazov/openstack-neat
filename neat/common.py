@@ -235,7 +235,7 @@ def parse_parameters(params):
     :return: A dict of parameters.
      :rtype: dict(str: *)
     """
-    return dict((str(k), v) 
+    return dict((str(k), v)
                 for k, v in json.loads(params).items())
 
 
@@ -251,7 +251,7 @@ def parse_compute_hosts(compute_hosts):
     """
     return filter(None, re.split('\W+', compute_hosts))
 
-    
+
 @contract
 def calculate_migration_time(vms, bandwidth):
     """ Calculate the mean migration time from VM RAM usage data.
@@ -286,7 +286,7 @@ def execute_on_hosts(hosts, commands):
     for host in hosts:
         print 'Host: ' + host
         print subprocess.Popen(
-            'ssh ' + host + ' "' + commands_merged + '"', 
+            'ssh ' + host + ' "' + commands_merged + '"',
             stdout=subprocess.PIPE,
             stderr=subprocess.STDOUT,
             shell=True).communicate()[0]

@@ -103,7 +103,6 @@ local manager performs the following steps:
 from contracts import contract
 from neat.contracts_extra import *
 
-import itertools
 import requests
 from hashlib import sha1
 import time
@@ -159,7 +158,7 @@ def init_state(config):
         raise OSError(message)
 
     physical_cpu_mhz_total = int(
-        common.physical_cpu_mhz_total(vir_connection) * 
+        common.physical_cpu_mhz_total(vir_connection) *
         float(config['host_cpu_usable_by_vms']))
     return {'previous_time': 0.,
             'vir_connection': vir_connection,
@@ -226,7 +225,7 @@ def execute(config, state):
     host_cpu_mhz = get_local_host_data(host_path)
 
     host_cpu_utilization = vm_mhz_to_percentage(
-        vm_cpu_mhz.values(), 
+        vm_cpu_mhz.values(),
         host_cpu_mhz,
         state['physical_cpu_mhz_total'])
     if log.isEnabledFor(logging.DEBUG):
@@ -244,7 +243,6 @@ def execute(config, state):
     if 'underload_detection' not in state:
         underload_detection_params = common.parse_parameters(
             config['algorithm_underload_detection_parameters'])
-        underload_detection_state = None
         underload_detection = common.call_function_by_name(
             config['algorithm_underload_detection_factory'],
             [time_step,
@@ -255,7 +253,6 @@ def execute(config, state):
 
         overload_detection_params = common.parse_parameters(
             config['algorithm_overload_detection_parameters'])
-        overload_detection_state = None
         overload_detection = common.call_function_by_name(
             config['algorithm_overload_detection_factory'],
             [time_step,
@@ -266,7 +263,6 @@ def execute(config, state):
 
         vm_selection_params = common.parse_parameters(
             config['algorithm_vm_selection_parameters'])
-        vm_selection_state = None
         vm_selection = common.call_function_by_name(
             config['algorithm_vm_selection_factory'],
             [time_step,
@@ -289,14 +285,14 @@ def execute(config, state):
             log.info('Underload detected')
         try:
             r = requests.put('http://' + config['global_manager_host'] + \
-                                 ':' + config['global_manager_port'], 
-                             {'username': state['hashed_username'], 
-                              'password': state['hashed_password'], 
+                                 ':' + config['global_manager_port'],
+                             {'username': state['hashed_username'],
+                              'password': state['hashed_password'],
                               'time': time.time(),
                               'host': state['hostname'],
                               'reason': 0})
             if log.isEnabledFor(logging.INFO):
-                log.info('Received response: [%s] %s', 
+                log.info('Received response: [%s] %s',
                          r.status_code, r.content)
         except requests.exceptions.ConnectionError:
             log.exception('Exception at underload request:')
@@ -320,15 +316,15 @@ def execute(config, state):
                 log.info('Selected VMs to migrate: %s', str(vm_uuids))
             try:
                 r = requests.put('http://' + config['global_manager_host'] + \
-                                     ':' + config['global_manager_port'], 
-                                 {'username': state['hashed_username'], 
-                                  'password': state['hashed_password'], 
+                                     ':' + config['global_manager_port'],
+                                 {'username': state['hashed_username'],
+                                  'password': state['hashed_password'],
                                   'time': time.time(),
                                   'host': state['hostname'],
-                                  'reason': 1, 
+                                  'reason': 1,
                                   'vm_uuids': ','.join(vm_uuids)})
                 if log.isEnabledFor(logging.INFO):
-                    log.info('Received response: [%s] %s', 
+                    log.info('Received response: [%s] %s',
                              r.status_code, r.content)
             except requests.exceptions.ConnectionError:
                 log.exception('Exception at overload request:')
@@ -428,7 +424,7 @@ def get_max_ram(vir_connection, uuid):
     :return: The maximum RAM of the VM in MB.
      :rtype: int|None
     """
-    try: 
+    try:
         domain = vir_connection.lookupByUUIDString(uuid)
         return domain.maxMemory() / 1024
     except libvirt.libvirtError:
@@ -446,7 +442,7 @@ def vm_mhz_to_percentage(vm_mhz_history, host_mhz_history, physical_cpu_mhz):
      :type host_mhz_history: list(int)
 
     :param physical_cpu_mhz: The total frequency of the physical CPU in MHz.
-     :type physical_cpu_mhz: int
+     :type physical_cpu_mhz: int,>0
 
     :return: The history of the host's CPU utilization in percentages.
      :rtype: list(float)

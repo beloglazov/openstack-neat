@@ -35,7 +35,7 @@ class Database(object):
               vm_migrations=Table,
               host_states=Table,
               host_overload=Table)
-    def __init__(self, connection, hosts, host_resource_usage, vms, 
+    def __init__(self, connection, hosts, host_resource_usage, vms,
                  vm_resource_usage, vm_migrations, host_states, host_overload):
         """ Initialize the database.
 
@@ -282,7 +282,7 @@ class Database(object):
         :return: A dict of host names to IDs.
          :rtype: dict(str: int)
         """
-        return dict((str(x[1]), int(x[0])) 
+        return dict((str(x[1]), int(x[0]))
                     for x in self.hosts.select().execute().fetchall())
 
     @contract(datetime_threshold=datetime.datetime)
@@ -316,8 +316,8 @@ class Database(object):
         """
         host_ids = self.select_host_ids()
         to_insert = [{'host_id': host_ids[k],
-                      'state': v} 
-                     for k, v in hosts.items()]        
+                      'state': v}
+                     for k, v in hosts.items()]
         self.connection.execute(
             self.host_states.insert(), to_insert)
 
@@ -352,8 +352,8 @@ class Database(object):
         :return: A list of host names.
          :rtype: list(str)
         """
-        return [host 
-                for host, state in self.select_host_states().items() 
+        return [host
+                for host, state in self.select_host_states().items()
                 if state == 1]
 
     @contract
@@ -363,8 +363,8 @@ class Database(object):
         :return: A list of host names.
          :rtype: list(str)
         """
-        return [host 
-                for host, state in self.select_host_states().items() 
+        return [host
+                for host, state in self.select_host_states().items()
                 if state == 0]
 
     @contract
@@ -394,4 +394,3 @@ class Database(object):
         self.vm_migrations.insert().execute(
             vm_id=self.select_vm_id(vm),
             host_id=self.select_host_id(hostname))
-        

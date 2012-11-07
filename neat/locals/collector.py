@@ -162,9 +162,9 @@ def init_state(config):
     host_cpu_usable_by_vms = float(config['host_cpu_usable_by_vms'])
 
     db = init_db(config['sql_connection'])
-    db.update_host(hostname, 
-                   int(host_cpu_mhz * host_cpu_usable_by_vms), 
-                   physical_cpus, 
+    db.update_host(hostname,
+                   int(host_cpu_mhz * host_cpu_usable_by_vms),
+                   physical_cpus,
                    host_ram)
 
     return {'previous_time': 0.,
@@ -174,7 +174,7 @@ def init_state(config):
             'previous_overload': -1,
             'vir_connection': vir_connection,
             'hostname': hostname,
-            'host_cpu_overload_threshold': 
+            'host_cpu_overload_threshold':
                 float(config['host_cpu_overload_threshold']) * \
                 host_cpu_usable_by_vms,
             'physical_cpus': physical_cpus,
@@ -269,22 +269,22 @@ def execute(config, state):
     log.info('Completed VM data collection')
 
     log.info('Started host data collection')
-    (host_cpu_time_total, 
-     host_cpu_time_busy, 
+    (host_cpu_time_total,
+     host_cpu_time_busy,
      host_cpu_mhz) = get_host_cpu_mhz(state['physical_cpu_mhz'],
                                       state['previous_host_cpu_time_total'],
                                       state['previous_host_cpu_time_busy'])
     log.info('Completed host data collection')
-    
+
     if state['previous_time'] > 0:
         append_vm_data_locally(vm_path, cpu_mhz, data_length)
         append_vm_data_remotely(state['db'], cpu_mhz)
-        
+
         host_cpu_mhz_hypervisor = host_cpu_mhz - sum(cpu_mhz.values())
         if host_cpu_mhz_hypervisor < 0:
             host_cpu_mhz_hypervisor = 0
         append_host_data_locally(host_path, host_cpu_mhz_hypervisor, data_length)
-        append_host_data_remotely(state['db'], 
+        append_host_data_remotely(state['db'],
                                   state['hostname'],
                                   host_cpu_mhz_hypervisor)
 
@@ -304,7 +304,7 @@ def execute(config, state):
     state['previous_cpu_time'] = cpu_time
     state['previous_host_cpu_time_total'] = host_cpu_time_total
     state['previous_host_cpu_time_busy'] = host_cpu_time_busy
-    
+
     log.info('Completed an iteration')
     return state
 
@@ -485,7 +485,7 @@ def append_vm_data_locally(path, data, data_length):
                 f.truncate(0)
                 f.seek(0)
                 f.write('\n'.join([str(x) for x in values]) + '\n')
-            
+
 
 @contract
 def append_vm_data_remotely(db, data):
@@ -695,7 +695,7 @@ def get_host_characteristics(vir_connection):
 
 
 @contract()
-def log_host_overload(db, overload_threshold, hostname, 
+def log_host_overload(db, overload_threshold, hostname,
                       previous_overload, host_mhz, vms_mhz):
     """ Log to the DB whether the host is overloaded.
 

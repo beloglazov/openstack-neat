@@ -86,7 +86,7 @@ def init_db(sql_connection):
 
     metadata.create_all()
     connection = engine.connect()
-    db = Database(connection, hosts, host_resource_usage, vms, 
+    db = Database(connection, hosts, host_resource_usage, vms,
                   vm_resource_usage, vm_migrations, host_states, host_overload)
 
     log.debug('Initialized a DB connection to %s', sql_connection)
