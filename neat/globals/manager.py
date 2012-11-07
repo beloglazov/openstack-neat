@@ -164,6 +164,7 @@ def start():
 
     state = init_state(config)
     switch_hosts_on(state['db'],
+                    config['ether_wake_interface'],
                     state['host_macs'],
                     state['compute_hosts'])
 
@@ -571,6 +572,7 @@ def execute_overload(config, state, host, vm_uuids):
                 set(placement.values())))
         if hosts_to_activate:
             switch_hosts_on(state['db'],
+                            config['ether_wake_interface'],
                             state['host_macs'],
                             hosts_to_activate)
         log.info('Started overload VM migrations')
@@ -789,11 +791,14 @@ def switch_hosts_off(db, sleep_command, hosts):
 
 
 @contract
-def switch_hosts_on(db, host_macs, hosts):
+def switch_hosts_on(db, ether_wake_interface, host_macs, hosts):
     """ Switch hosts to the active mode.
 
     :param db: The database object.
      :type db: Database
+
+    :param ether_wake_interface: An interface to send a magic packet.
+     :type ether_wake_interface: str
 
     :param host_macs: A dict of host names to mac addresses.
      :type host_macs: dict(str: str)
@@ -804,7 +809,9 @@ def switch_hosts_on(db, host_macs, hosts):
     for host in hosts:
         if host not in host_macs:
             host_macs[host] = host_mac(host)
-        command = 'ether-wake {0}'.format(host_macs[host])
+        command = 'ether-wake -i {0} {1}'.format(
+            ether_wake_interface,
+            host_macs[host])
         if log.isEnabledFor(logging.DEBUG):
             log.debug('Calling: %s', command)
         subprocess.call(command, shell=True)

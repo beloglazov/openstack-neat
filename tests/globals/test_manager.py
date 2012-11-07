@@ -168,7 +168,8 @@ class GlobalManager(TestCase):
                 'log_directory': 'dir',
                 'log_level': 2,
                 'global_manager_host': 'localhost',
-                'global_manager_port': 8080}
+                'global_manager_port': 8080,
+                'ether_wake_interface': 'eth0'}
             paths = [manager.DEFAILT_CONFIG_PATH, manager.CONFIG_PATH]
             fields = manager.REQUIRED_FIELDS
             expect(manager).read_and_validate_config(paths, fields). \
@@ -176,7 +177,7 @@ class GlobalManager(TestCase):
             expect(common).init_logging('dir', 'global-manager.log', 2).once()
             expect(manager).init_state(config). \
                 and_return(state).once()
-            expect(manager).switch_hosts_on(db, {}, hosts).once()
+            expect(manager).switch_hosts_on(db, 'eth0', {}, hosts).once()
             expect(bottle).app().and_return(app).once()
             expect(bottle).run(host='localhost', port=8080).once()
             manager.start()
@@ -380,20 +381,20 @@ class GlobalManager(TestCase):
         db = db_utils.init_db('sqlite:///:memory:')          
 
         with MockTransaction:
-            expect(subprocess).call('ether-wake mac1', shell=True).once()
-            expect(subprocess).call('ether-wake mac2', shell=True).once()
+            expect(subprocess).call('ether-wake -i eth0 mac1', shell=True).once()
+            expect(subprocess).call('ether-wake -i eth0 mac2', shell=True).once()
             expect(manager).host_mac('h1').and_return('mac1').once()
             expect(db).insert_host_states({
                     'h1': 1,
                     'h2': 1}).once()
-            manager.switch_hosts_on(db, {'h2': 'mac2'}, ['h1', 'h2'])
+            manager.switch_hosts_on(db, 'eth0', {'h2': 'mac2'}, ['h1', 'h2'])
 
         with MockTransaction:
-            expect(subprocess).call('ether-wake mac1', shell=True).once()
-            expect(subprocess).call('ether-wake mac2', shell=True).once()
+            expect(subprocess).call('ether-wake -i eth0 mac1', shell=True).once()
+            expect(subprocess).call('ether-wake -i eth0 mac2', shell=True).once()
             expect(manager).host_mac('h1').and_return('mac1').once()
             expect(manager).host_mac('h2').and_return('mac2').once()
             expect(db).insert_host_states({
                     'h1': 1,
                     'h2': 1}).once()
-            manager.switch_hosts_on(db, {}, ['h1', 'h2'])
+            manager.switch_hosts_on(db, 'eth0', {}, ['h1', 'h2'])
