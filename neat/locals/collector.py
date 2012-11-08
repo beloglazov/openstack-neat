@@ -581,16 +581,24 @@ def get_cpu_mhz(vir_connection, physical_core_mhz, previous_cpu_time,
     for uuid, cpu_time in previous_cpu_time.items():
         current_cpu_time = get_cpu_time(vir_connection, uuid)
         if current_cpu_time == 0:
-            # libvirt error workaround
+            if log.isEnabledFor(logging.DEBUG):
+                log.debug('VM %s: received a 0 current CPU time, ' + 
+                          'resetting to the previous value: %.15f',
+                          uuid, cpu_time)
             current_cpu_time = cpu_time
+        if log.isEnabledFor(logging.DEBUG):
+            log.debug('VM %s: previous CPU time %d, ' +
+                      'current CPU time %d, ' +
+                      'previous time %.10f, ' +
+                      'current time %.10f',
+                      uuid, cpu_time, current_cpu_time, 
+                      previous_time, current_time)
         cpu_mhz[uuid] = calculate_cpu_mhz(physical_core_mhz, previous_time,
                                           current_time, cpu_time,
                                           current_cpu_time)
         previous_cpu_time[uuid] = current_cpu_time
         if log.isEnabledFor(logging.DEBUG):
-            log.debug('VM %s: previous CPU time %d, ' +
-                      'current CPU time %d, CPU MHz %d',
-                      uuid, cpu_time, current_cpu_time, cpu_mhz[uuid])
+            log.debug('VM %s: CPU MHz %d', uuid, cpu_mhz[uuid])
 
     for uuid in added_vms:
         if added_vm_data[uuid]:
