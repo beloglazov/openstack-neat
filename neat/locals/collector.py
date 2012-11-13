@@ -169,6 +169,7 @@ def init_state(config):
 
     return {'previous_time': 0.,
             'previous_cpu_time': dict(),
+            'previous_cpu_mhz': dict(),
             'previous_host_cpu_time_total': 0.,
             'previous_host_cpu_time_busy': 0.,
             'previous_overload': -1,
@@ -256,6 +257,7 @@ def execute(config, state):
         cleanup_local_vm_data(vm_path, vms_removed)
         for vm in vms_removed:
             del state['previous_cpu_time'][vm]
+            del state['previous_cpu_mhz'][vm]
 
     log.info('Started VM data collection')
     current_time = time.time()
@@ -265,6 +267,7 @@ def execute(config, state):
                                       state['previous_time'],
                                       current_time,
                                       vms_current.keys(),
+                                      state['previous_cpu_mhz'],
                                       added_vm_data)
     log.info('Completed VM data collection')
 
@@ -302,6 +305,7 @@ def execute(config, state):
 
     state['previous_time'] = current_time
     state['previous_cpu_time'] = cpu_time
+    state['previous_cpu_mhz'] = cpu_mhz
     state['previous_host_cpu_time_total'] = host_cpu_time_total
     state['previous_host_cpu_time_busy'] = host_cpu_time_busy
 
@@ -543,7 +547,8 @@ def append_host_data_remotely(db, hostname, host_cpu_mhz):
 
 @contract
 def get_cpu_mhz(vir_connection, physical_core_mhz, previous_cpu_time,
-                previous_time, current_time, current_vms, added_vm_data):
+                previous_time, current_time, current_vms, 
+                previous_cpu_mhz, added_vm_data):
     """ Get the average CPU utilization in MHz for a set of VMs.
 
     :param vir_connection: A libvirt connection object.
@@ -564,6 +569,9 @@ def get_cpu_mhz(vir_connection, physical_core_mhz, previous_cpu_time,
     :param current_vms: A list of VM UUIDs.
      :type current_vms: list(str)
 
+    :param previous_cpu_mhz: A dict of VM UUIDs and previous CPU MHz.
+     :type previous_cpu_mhz: dict(str : int)
+
     :param added_vm_data: A dict of VM UUIDs and the corresponding data.
      :type added_vm_data: dict(str : list(int))
 
@@ -580,22 +588,26 @@ def get_cpu_mhz(vir_connection, physical_core_mhz, previous_cpu_time,
 
     for uuid, cpu_time in previous_cpu_time.items():
         current_cpu_time = get_cpu_time(vir_connection, uuid)
-        if current_cpu_time == 0:
+        if current_cpu_time < cpu_time:
             if log.isEnabledFor(logging.DEBUG):
-                log.debug('VM %s: received a 0 current CPU time, ' + 
-                          'resetting to the previous value: %.15f',
-                          uuid, cpu_time)
-            current_cpu_time = cpu_time
-        if log.isEnabledFor(logging.DEBUG):
-            log.debug('VM %s: previous CPU time %d, ' +
-                      'current CPU time %d, ' +
-                      'previous time %.10f, ' +
-                      'current time %.10f',
-                      uuid, cpu_time, current_cpu_time, 
-                      previous_time, current_time)
-        cpu_mhz[uuid] = calculate_cpu_mhz(physical_core_mhz, previous_time,
-                                          current_time, cpu_time,
-                                          current_cpu_time)
+                log.debug('VM %s: current_cpu_time < cpu_time: ' + 
+                          'previous CPU time %d, ' +
+                          'current CPU time %d, ' +
+                          uuid, cpu_time, current_cpu_time)
+                log.debug('VM %s: using previous CPU MHz %d, ' +
+                          uuid, previous_cpu_mhz[uuid])
+            cpu_mhz[uuid] = previous_cpu_mhz[uuid]
+        else:
+            if log.isEnabledFor(logging.DEBUG):
+                log.debug('VM %s: previous CPU time %d, ' +
+                          'current CPU time %d, ' +
+                          'previous time %.10f, ' +
+                          'current time %.10f',
+                          uuid, cpu_time, current_cpu_time, 
+                          previous_time, current_time)
+            cpu_mhz[uuid] = calculate_cpu_mhz(physical_core_mhz, previous_time,
+                                              current_time, cpu_time,
+                                              current_cpu_time)
         previous_cpu_time[uuid] = current_cpu_time
         if log.isEnabledFor(logging.DEBUG):
             log.debug('VM %s: CPU MHz %d', uuid, cpu_mhz[uuid])

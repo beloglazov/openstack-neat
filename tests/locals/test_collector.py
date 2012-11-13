@@ -464,7 +464,7 @@ class Collector(TestCase):
             result = collector.get_cpu_mhz(
                 connection, cpus, previous_cpu_time,
                 previous_time, current_time, vms,
-                added_vm_data)
+                {}, added_vm_data)
 
             assert result[0] == current_cpu_time
             assert result[1] == cpu_mhz
