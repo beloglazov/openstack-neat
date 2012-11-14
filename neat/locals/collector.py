@@ -592,7 +592,7 @@ def get_cpu_mhz(vir_connection, physical_core_mhz, previous_cpu_time,
             if log.isEnabledFor(logging.DEBUG):
                 log.debug('VM %s: current_cpu_time < cpu_time: ' + 
                           'previous CPU time %d, ' +
-                          'current CPU time %d, ' +
+                          'current CPU time %d, ',
                           uuid, cpu_time, current_cpu_time)
                 log.debug('VM %s: using previous CPU MHz %d, ' +
                           uuid, previous_cpu_mhz[uuid])
