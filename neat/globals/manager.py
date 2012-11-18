@@ -747,23 +747,23 @@ def migrate_vms(db, nova, vm_instance_directory, placement):
                               vm_uuid,
                               vm_hostname(vm),
                               vm.status)
-                time_out = (time.time() - start_time > 120)
-                if not time_out and \
-                        (vm_hostname(vm) != placement[vm_uuid] or \
-                             vm.status != u'ACTIVE'):
-                    break
-                else:
+                if vm_hostname(vm) == placement[vm_uuid] and \
+                    vm.status == u'ACTIVE':
                     vm_pair.remove(vm_uuid)
-                    if time_out:
-                        retry_placement[vm_uuid] = placement[vm_uuid]
-                        if log.isEnabledFor(logging.WARNING):
-                            log.warning('Time-out for migration of VM %s to %s, ' + 
-                                        'will retry', vm_uuid, placement[vm_uuid])
-                    else:
-                        db.insert_vm_migration(vm_uuid, placement[vm_uuid])
-                        if log.isEnabledFor(logging.INFO):
-                            log.info('Completed migration of VM %s to %s',
-                                     vm_uuid, placement[vm_uuid])
+                    db.insert_vm_migration(vm_uuid, placement[vm_uuid])
+                    if log.isEnabledFor(logging.INFO):
+                        log.info('Completed migration of VM %s to %s',
+                                 vm_uuid, placement[vm_uuid])
+                elif time.time() - start_time > 300 and \
+                    vm_hostname(vm) != placement[vm_uuid] and \
+                    vm.status == u'ACTIVE':
+                    vm_pair.remove(vm_uuid)
+                    retry_placement[vm_uuid] = placement[vm_uuid]
+                    if log.isEnabledFor(logging.WARNING):
+                        log.warning('Time-out for migration of VM %s to %s, ' +
+                                    'will retry', vm_uuid, placement[vm_uuid])
+                else:
+                    break
             else:
                 break
             time.sleep(3)
