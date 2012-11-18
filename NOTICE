@@ -34,6 +34,10 @@ This software uses Requests, a Python HTTP client library developed by
 Kenneth Reitz, released under the ISC License, and available from
 http://python-requests.org.
 
+This software uses libvirt, a virtualization toolkit with Python
+bindings developed by Red Hat, released under the LGPL licensem and
+available from http://libvirt.org/
+
 This software uses python-novaclient, a Python Nova API client
 implementation developed by Jacob Kaplan-Moss and Rackspace -
 OpenStack extensions, released under the Apache 2.0 License, and
