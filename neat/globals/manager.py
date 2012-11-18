@@ -728,18 +728,14 @@ def migrate_vms(db, nova, vm_instance_directory, placement):
     :param placement: A dict of VM UUIDs to host names.
      :type placement: dict(str: str)
     """
+    retry_placement = {}
     vms = placement.keys()
     # Migrate only 2 VMs at a time, as otherwise migrations may fail
     vm_pairs = [vms[x:x + 2] for x in xrange(0, len(vms), 2)]
     for vm_pair in vm_pairs:
-        # To avoid problems with migration, need the following:
-        subprocess.call('chown -R nova:nova ' + vm_instance_directory,
-                        shell=True)
-        for vm in vm_pair:
-            host = placement[vm]
-            nova.servers.live_migrate(vm, host, False, False)
-            if log.isEnabledFor(logging.INFO):
-                log.info('Started migration of VM %s to %s', vm, host)
+        start_time = time.time()
+        for vm_uuid in vm_pair:
+            migrate_vm(nova, vm_instance_directory, vm_uuid, placement[vm_uuid])
 
         time.sleep(10)
 
@@ -751,18 +747,56 @@ def migrate_vms(db, nova, vm_instance_directory, placement):
                               vm_uuid,
                               vm_hostname(vm),
                               vm.status)
-                if vm_hostname(vm) != placement[vm_uuid] or \
-                        vm.status != u'ACTIVE':
+                time_out = (time.time() - start_time > 120)
+                if not time_out and \
+                        (vm_hostname(vm) != placement[vm_uuid] or \
+                             vm.status != u'ACTIVE'):
                     break
                 else:
                     vm_pair.remove(vm_uuid)
-                    db.insert_vm_migration(vm_uuid, placement[vm_uuid])
-                    if log.isEnabledFor(logging.INFO):
-                        log.info('Completed migration of VM %s to %s',
-                                 vm_uuid, placement[vm_uuid])
+                    if time_out:
+                        retry_placement[vm_uuid] = placement[vm_uuid]
+                        if log.isEnabledFor(logging.WARNING):
+                            log.warning('Time-out for migration of VM %s to %s, ' + 
+                                        'will retry', vm_uuid, placement[vm_uuid])
+                    else:
+                        db.insert_vm_migration(vm_uuid, placement[vm_uuid])
+                        if log.isEnabledFor(logging.INFO):
+                            log.info('Completed migration of VM %s to %s',
+                                     vm_uuid, placement[vm_uuid])
             else:
                 break
             time.sleep(3)
+
+    if retry_placement:
+        if log.isEnabledFor(logging.INFO):
+            log.info('Retrying the following migrations: %s',
+                     str(retry_placement))
+        migrate_vms(db, nova, vm_instance_directory, retry_placement)
+
+
+@contract
+def migrate_vm(nova, vm_instance_directory, vm, host):
+    """ Live migrate a VM.
+
+    :param nova: A Nova client.
+     :type nova: *
+
+    :param vm_instance_directory: The VM instance directory.
+     :type vm_instance_directory: str
+
+    :param vm: The UUID of a VM to migrate.
+     :type vm: str
+
+    :param host: The name of the destination host.
+     :type host: str
+    """
+    # To avoid problems with migration, need the following:
+    subprocess.call('chown -R nova:nova ' + vm_instance_directory,
+                    shell=True)
+    nova.servers.live_migrate(vm, host, False, False)
+    if log.isEnabledFor(logging.INFO):
+        log.info('Started migration of VM %s to %s', vm, host)
 
 
 @contract
