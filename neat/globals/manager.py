@@ -731,7 +731,9 @@ def migrate_vms(db, nova, vm_instance_directory, placement):
     retry_placement = {}
     vms = placement.keys()
     # Migrate only 2 VMs at a time, as otherwise migrations may fail
-    vm_pairs = [vms[x:x + 2] for x in xrange(0, len(vms), 2)]
+    #vm_pairs = [vms[x:x + 2] for x in xrange(0, len(vms), 2)]
+    # Temporary migrates VMs one by one
+    vm_pairs = [vms[x:x + 1] for x in xrange(0, len(vms), 1)]
     for vm_pair in vm_pairs:
         start_time = time.time()
         for vm_uuid in vm_pair:
