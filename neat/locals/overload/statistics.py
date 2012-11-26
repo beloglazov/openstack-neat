@@ -44,7 +44,8 @@ def loess_factory(time_step, migration_time, params):
     """
     migration_time_normalized = float(migration_time) / time_step
     return lambda utilization, state=None: \
-        (loess(params['param'],
+        (loess(params['threshold'],
+               params['param'],
                params['length'],
                migration_time_normalized,
                utilization),
@@ -69,7 +70,8 @@ def loess_robust_factory(time_step, migration_time, params):
     """
     migration_time_normalized = float(migration_time) / time_step
     return lambda utilization, state=None: \
-        (loess_robust(params['param'],
+        (loess_robust(params['threshold'],
+                      params['param'],
                       params['length'],
                       migration_time_normalized,
                       utilization),
@@ -123,8 +125,11 @@ def iqr_threshold_factory(time_step, migration_time, params):
 
 
 @contract
-def loess(param, length, migration_time, utilization):
+def loess(threshold, param, length, migration_time, utilization):
     """ The Loess based overload detection algorithm.
+
+    :param threshold: The CPU utilization threshold.
+     :type threshold: float
 
     :param param: The safety parameter.
      :type param: float
@@ -142,6 +147,7 @@ def loess(param, length, migration_time, utilization):
      :rtype: bool
     """
     return loess_abstract(loess_parameter_estimates,
+                          threshold,
                           param,
                           length,
                           migration_time,
@@ -149,8 +155,11 @@ def loess(param, length, migration_time, utilization):
 
 
 @contract
-def loess_robust(param, length, migration_time, utilization):
+def loess_robust(threshold, param, length, migration_time, utilization):
     """ The robust Loess based overload detection algorithm.
+
+    :param threshold: The CPU utilization threshold.
+     :type threshold: float
 
     :param param: The safety parameter.
      :type param: float
@@ -168,6 +177,7 @@ def loess_robust(param, length, migration_time, utilization):
      :rtype: bool
     """
     return loess_abstract(loess_robust_parameter_estimates,
+                          threshold,
                           param,
                           length,
                           migration_time,
@@ -175,11 +185,14 @@ def loess_robust(param, length, migration_time, utilization):
 
 
 @contract
-def loess_abstract(estimator, param, length, migration_time, utilization):
+def loess_abstract(estimator, threshold, param, length, migration_time, utilization):
     """ The abstract Loess algorithm.
 
     :param estimator: A parameter estimation function.
      :type estimator: function
+
+    :param threshold: The CPU utilization threshold.
+     :type threshold: float
 
     :param param: The safety parameter.
      :type param: float
@@ -200,7 +213,7 @@ def loess_abstract(estimator, param, length, migration_time, utilization):
         return False
     estimates = estimator(utilization[-length:])
     prediction = (estimates[0] + estimates[1] * (length + migration_time))
-    return param * prediction >= 1.
+    return param * prediction >= threshold
 
 
 @contract
