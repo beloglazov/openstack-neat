@@ -268,7 +268,8 @@ def init_request_windows(number_of_states, max_window_size):
     :return: The initialized request windows data structure.
      :rtype: list(deque)
     """
-    return number_of_states * [deque([], max_window_size)]
+    return [deque([], max_window_size)
+            for _ in range(number_of_states)]
 
 
 @contract
@@ -284,12 +285,12 @@ def init_variances(window_sizes, number_of_states):
     :return: The initialized variances data structure.
      :rtype: list(list(dict))
     """
-    data = dict(zip(window_sizes, len(window_sizes) * [1.0]))
     variances = []
     for i in range(number_of_states):
         variances.append([])
         for j in range(number_of_states):
-            variances[i].append(dict(data))
+            variances[i].append(dict(zip(window_sizes,
+                                         len(window_sizes) * [1.0])))
     return variances
 
 
@@ -306,12 +307,12 @@ def init_deque_structure(window_sizes, number_of_states):
     :return: The initialized 3 level deque data structure.
      :rtype: list(list(dict))
     """
-    data = dict((size, deque([], size)) for size in window_sizes)
     structure = []
     for i in range(number_of_states):
         structure.append([])
         for j in range(number_of_states):
-            structure[i].append(dict(data))
+            structure[i].append(dict((size, deque([], size))
+                                     for size in window_sizes))
     return structure
 
 

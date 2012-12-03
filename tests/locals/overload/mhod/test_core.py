@@ -110,3 +110,19 @@ class Core(TestCase):
     def test_issue_command_deterministic(self):
         self.assertEqual(c.issue_command_deterministic([1]), False)
         self.assertEqual(c.issue_command_deterministic([]), True)
+
+    def test_mhod(self):
+        from pprint import pprint
+        state_config = [0.99]
+        otf = 0.2
+        window_sizes = [30, 40, 50, 60, 70, 80, 90, 100]
+        bruteforce_step = 0.2
+        learning_steps = 30
+        time_step = 300
+        migration_time = 20.
+        state = c.init_state(window_sizes, 2)
+        utilization = [0.859]
+
+        pprint(state)
+        pprint(c.mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
+                     time_step, migration_time, utilization, state))
