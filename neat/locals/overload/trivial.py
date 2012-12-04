@@ -23,8 +23,8 @@ log = logging.getLogger(__name__)
 
 
 @contract
-def no_migrations_factory(time_step, migration_time, params):
-    """ Creates an algorithm that never migrates a VM.
+def never_overloaded_factory(time_step, migration_time, params):
+    """ Creates an algorithm that never considers the host overloaded.
 
     :param time_step: The length of the simulation time step in seconds.
      :type time_step: int,>=0

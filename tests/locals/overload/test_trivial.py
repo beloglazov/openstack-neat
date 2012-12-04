@@ -24,13 +24,13 @@ logging.disable(logging.CRITICAL)
 class Trivial(TestCase):
 
     @qc(10)
-    def overloading_steps(
+    def never_overloaded_factory(
         time_step=int_(min=0, max=10),
         migration_time=float_(min=0, max=10),
         utilization=list_(of=float)
     ):
-        alg = trivial.no_migrations_factory(time_step, migration_time,
-                                            {'threshold': 0.5})
+        alg = trivial.never_overloaded_factory(time_step, migration_time,
+                                               {'threshold': 0.5})
         assert alg(utilization) == (False, {})
 
     def test_threshold_factory(self):
