@@ -18,6 +18,8 @@
 from contracts import contract
 from neat.contracts_extra import *
 
+from collections import deque
+
 import neat.locals.overload.mhod.multisize_estimation as estimation
 import neat.locals.overload.mhod.bruteforce as bruteforce
 from neat.locals.overload.mhod.l_2_states import ls
@@ -44,7 +46,8 @@ def mhod_factory(time_step, migration_time, params):
     """
     def mhod_wrapper(utilization, state=None):
         if not state:
-            state = init_state(params['window_sizes'],
+            state = init_state(params['history_size'],
+                               params['window_sizes'],
                                len(params['state_config']) + 1)
         return mhod(params['state_config'],
                     params['otf'],
@@ -59,8 +62,11 @@ def mhod_factory(time_step, migration_time, params):
 
 
 @contract
-def init_state(window_sizes, number_of_states):
+def init_state(history_size, window_sizes, number_of_states):
     """ Initialize the state dictionary of the MHOD algorithm.
+
+    :param history_size: The number of last system states to store.
+     :type history_size: int,>0
 
     :param window_sizes: The required window sizes.
      :type window_sizes: list(int)
@@ -73,6 +79,7 @@ def init_state(window_sizes, number_of_states):
     """
     return {
         'previous_state': 0,
+        'state_history': deque([], history_size),
         'request_windows': estimation.init_request_windows(
             number_of_states, max(window_sizes)),
         'estimate_windows': estimation.init_deque_structure(
@@ -151,14 +158,15 @@ def mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
 
     log.debug('MHOD utilization:' + str(utilization))
     if len(utilization) >= learning_steps:
-        state_history = utilization_to_states(state_config, utilization)
+        #state_history = utilization_to_states(state_config, utilization)
+        state['state_history'].append(current_state)
         time_in_states = total_time
-        time_in_state_n = get_time_in_state_n(state_config, state_history)
+        time_in_state_n = get_time_in_state_n(state_config, state['state_history'])
         # These two are saved for testing purposes
         state['time_in_states'] = time_in_states
         state['time_in_state_n'] = time_in_state_n
 
-        log.debug('MHOD state_history:' + str(state_history))
+        log.debug('MHOD state_history:' + str(state['state_history']))
         log.debug('MHOD time_in_states:' + str(time_in_states))
         log.debug('MHOD time_in_state_n:' + str(time_in_state_n))
         log.debug('MHOD p:' + str(p))
@@ -258,7 +266,7 @@ def get_time_in_state_n(state_config, state_history):
      :type state_config: list(float)
 
     :param state_history: The state history.
-     :type state_history: list(int)
+     :type state_history: deque
 
     :return: The total time the system has been in the state N.
      :rtype: int

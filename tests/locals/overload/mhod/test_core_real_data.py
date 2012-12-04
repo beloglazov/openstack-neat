@@ -16,7 +16,7 @@ from mocktest import *
 from pyqcy import *
 
 import neat.locals.overload.mhod.core as c
-import collections
+from collections import deque
 
 import logging
 logging.disable(logging.CRITICAL)
@@ -74,7 +74,7 @@ def cut_insignificant_digits_recursively(obj, places):
         return dict((cut_insignificant_digits_recursively(key, places),
                      cut_insignificant_digits_recursively(val, places))
                     for key, val in obj.items())
-    if t == collections.deque:
+    if t == deque:
         return list(cut_insignificant_digits_lazy(obj, places))
     return obj
 
@@ -99,7 +99,7 @@ class CoreRealData(TestCase):
         learning_steps = 29
         time_step = 300
         migration_time = 20.
-        state = c.init_state(window_sizes, 2)
+        state = c.init_state(500, window_sizes, 2)
 
         utilization = [0.859]
         request_windows = [[0], []]

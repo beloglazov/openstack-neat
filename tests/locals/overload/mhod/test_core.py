@@ -15,6 +15,7 @@
 from mocktest import *
 from pyqcy import *
 
+from collections import deque
 import neat.locals.overload.mhod.core as c
 
 import logging
@@ -24,8 +25,9 @@ logging.disable(logging.CRITICAL)
 class Core(TestCase):
 
     def test_init_state(self):
-        state = c.init_state([20, 40], 2)
+        state = c.init_state(100, [20, 40], 2)
         self.assertEquals(state['previous_state'], 0)
+        self.assertEquals(deque_maxlen(state['state_history']), 100)
         self.assertTrue('request_windows' in state)
         self.assertTrue('estimate_windows' in state)
         self.assertTrue('variances' in state)
@@ -103,10 +105,14 @@ class Core(TestCase):
 
     def test_get_time_in_state_n(self):
         state_config = [0.4, 0.7]
-        states = [0, 0, 0, 1, 1, 1, 2, 2, 2, 2, 1,
-                  1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 2]
+        states = deque([0, 0, 0, 1, 1, 1, 2, 2, 2, 2, 1,
+                        1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 2])
         self.assertEqual(c.get_time_in_state_n(state_config, states), 5)
 
     def test_issue_command_deterministic(self):
         self.assertEqual(c.issue_command_deterministic([1]), False)
         self.assertEqual(c.issue_command_deterministic([]), True)
+
+
+def deque_maxlen(coll):
+    return int(re.sub("\)$", "", re.sub(".*=", "", coll.__repr__())))
