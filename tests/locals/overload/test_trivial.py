@@ -29,8 +29,7 @@ class Trivial(TestCase):
         migration_time=float_(min=0, max=10),
         utilization=list_(of=float)
     ):
-        alg = trivial.never_overloaded_factory(time_step, migration_time,
-                                               {'threshold': 0.5})
+        alg = trivial.never_overloaded_factory(time_step, migration_time, {})
         assert alg(utilization) == (False, {})
 
     def test_threshold_factory(self):
