@@ -91,15 +91,16 @@ def reverse_est(data):
 class CoreRealData(TestCase):
 
     def test_mhod(self):
-        #from pprint import pprint
         state_config = [0.99]
         otf = 0.2
         window_sizes = [30, 40, 50, 60, 70, 80, 90, 100]
-        bruteforce_step = 0.2
-        learning_steps = 29
+        bruteforce_step = 0.5
+        learning_steps = 30
         time_step = 300
         migration_time = 20.
         state = c.init_state(500, window_sizes, 2)
+
+        command = False
 
         utilization = [0.859]
         request_windows = [[0], []]
@@ -107,12 +108,12 @@ class CoreRealData(TestCase):
         variances = [[{30: 1.0, 40: 1.0, 50: 1.0, 60: 1.0, 70: 1.0, 80: 1.0, 90: 1.0, 100: 1.0}, {30: 1.0, 40: 1.0, 50: 1.0, 60: 1.0, 70: 1.0, 80: 1.0, 90: 1.0, 100: 1.0}], [{100: 1.0, 90: 1.0, 80: 1.0, 70: 1.0, 60: 1.0, 50: 1.0, 40: 1.0, 30: 1.0}, {100: 1.0, 90: 1.0, 80: 1.0, 70: 1.0, 60: 1.0, 50: 1.0, 40: 1.0, 30: 1.0}]]
         acceptable_variances = [[{30: 0.001074074074074074, 40: 6.09375E-4, 50: 3.92E-4, 60: 2.731481481481482E-4, 70: 2.0116618075801757E-4, 80: 1.54296875E-4, 90: 1.220850480109739E-4, 100: 9.900000000000001E-5}, {30: 0.0, 40: 0.0, 50: 0.0, 60: 0.0, 70: 0.0, 80: 0.0, 90: 0.0, 100: 0.0}], [{100: 1.0, 90: 1.0, 80: 1.0, 70: 1.0, 60: 1.0, 50: 1.0, 40: 1.0, 30: 1.0}, {100: 1.0, 90: 1.0, 80: 1.0, 70: 1.0, 60: 1.0, 50: 1.0, 40: 1.0, 30: 1.0}]]
         previous_state = 0
-        selected_windows = [[30, 30], [100, 100]]
-        p = [[0.03333333333333333, 0.0], [0.0, 0.0]]
+        selected_windows = [[100, 100], [100, 100]]
+        p = [[0.0, 0.0], [0.0, 0.0]]
 
         decision, state = c.mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
                                  time_step, migration_time, utilization, state)
-        self.assertEqual(decision, False)
+        self.assertEqual(decision, command)
         self.assertEqual(state['previous_state'], previous_state)
         assert is_almost_equal(reverse_req(state['request_windows']), request_windows)
         assert is_almost_equal(reverse_est(state['estimate_windows']), estimate_windows)
@@ -128,11 +129,11 @@ class CoreRealData(TestCase):
         acceptable_variances = [[{100: 1.96E-4, 90: 2.4142661179698212E-4, 80: 3.046875E-4, 70: 3.9650145772594754E-4, 60: 5.37037037037037E-4, 50: 7.679999999999999E-4, 40: 0.0011875, 30: 0.002074074074074074}, {100: 0.0, 90: 0.0, 80: 0.0, 70: 0.0, 60: 0.0, 50: 0.0, 40: 0.0, 30: 0.0}], [{100: 1.0, 90: 1.0, 80: 1.0, 70: 1.0, 60: 1.0, 50: 1.0, 40: 1.0, 30: 1.0}, {100: 1.0, 90: 1.0, 80: 1.0, 70: 1.0, 60: 1.0, 50: 1.0, 40: 1.0, 30: 1.0}]]
         previous_state = 0
         selected_windows = [[30, 30], [100, 100]]
-        p = [[0.06666666666666667, 0.0], [0.0, 0.0]]
+        p = [[0.03333333333333333, 0.0], [0.0, 0.0]]
 
         decision, state = c.mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
                                  time_step, migration_time, utilization, state)
-        self.assertEqual(decision, False)
+        self.assertEqual(decision, command)
         self.assertEqual(state['previous_state'], previous_state)
         assert is_almost_equal(reverse_req(state['request_windows']), request_windows)
         assert is_almost_equal(reverse_est(state['estimate_windows']), estimate_windows)
@@ -148,11 +149,11 @@ class CoreRealData(TestCase):
         acceptable_variances = [[{30: 0.0030000000000000005, 40: 0.0017343750000000002, 50: 0.0011279999999999999, 60: 7.916666666666666E-4, 70: 5.860058309037901E-4, 80: 4.51171875E-4, 90: 3.580246913580247E-4, 100: 2.9099999999999997E-4}, {30: 0.0, 40: 0.0, 50: 0.0, 60: 0.0, 70: 0.0, 80: 0.0, 90: 0.0, 100: 0.0}], [{100: 1.0, 90: 1.0, 80: 1.0, 70: 1.0, 60: 1.0, 50: 1.0, 40: 1.0, 30: 1.0}, {100: 1.0, 90: 1.0, 80: 1.0, 70: 1.0, 60: 1.0, 50: 1.0, 40: 1.0, 30: 1.0}]]
         previous_state = 0
         selected_windows = [[30, 30], [100, 100]]
-        p = [[0.1, 0.0], [0.0, 0.0]]
+        p = [[0.06666666666666667, 0.0], [0.0, 0.0]]
 
         decision, state = c.mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
                                  time_step, migration_time, utilization, state)
-        self.assertEqual(decision, False)
+        self.assertEqual(decision, command)
         self.assertEqual(state['previous_state'], previous_state)
         assert is_almost_equal(reverse_req(state['request_windows']), request_windows)
         assert is_almost_equal(reverse_est(state['estimate_windows']), estimate_windows)
@@ -168,11 +169,11 @@ class CoreRealData(TestCase):
         acceptable_variances = [[{100: 3.8399999999999996E-4, 90: 4.7187928669410143E-4, 80: 5.9375E-4, 70: 7.696793002915452E-4, 60: 0.001037037037037037, 50: 0.001472, 40: 0.0022500000000000003, 30: 0.003851851851851851}, {100: 0.0, 90: 0.0, 80: 0.0, 70: 0.0, 60: 0.0, 50: 0.0, 40: 0.0, 30: 0.0}], [{100: 1.0, 90: 1.0, 80: 1.0, 70: 1.0, 60: 1.0, 50: 1.0, 40: 1.0, 30: 1.0}, {100: 1.0, 90: 1.0, 80: 1.0, 70: 1.0, 60: 1.0, 50: 1.0, 40: 1.0, 30: 1.0}]]
         previous_state = 0
         selected_windows = [[30, 30], [100, 100]]
-        p = [[0.1333333333333333, 0.0], [0.0, 0.0]]
+        p = [[0.1, 0.0], [0.0, 0.0]]
 
         decision, state = c.mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
                                  time_step, migration_time, utilization, state)
-        self.assertEqual(decision, False)
+        self.assertEqual(decision, command)
         self.assertEqual(state['previous_state'], previous_state)
         assert is_almost_equal(reverse_req(state['request_windows']), request_windows)
         assert is_almost_equal(reverse_est(state['estimate_windows']), estimate_windows)
@@ -188,11 +189,11 @@ class CoreRealData(TestCase):
         acceptable_variances = [[{30: 0.004629629629629631, 40: 0.002734375, 50: 0.0018000000000000002, 60: 0.001273148148148148, 70: 9.475218658892129E-4, 80: 7.32421875E-4, 90: 5.829903978052126E-4, 100: 4.75E-4}, {30: 0.0, 40: 0.0, 50: 0.0, 60: 0.0, 70: 0.0, 80: 0.0, 90: 0.0, 100: 0.0}], [{100: 1.0, 90: 1.0, 80: 1.0, 70: 1.0, 60: 1.0, 50: 1.0, 40: 1.0, 30: 1.0}, {100: 1.0, 90: 1.0, 80: 1.0, 70: 1.0, 60: 1.0, 50: 1.0, 40: 1.0, 30: 1.0}]]
         previous_state = 0
         selected_windows = [[30, 30], [100, 100]]
-        p = [[0.1666666666666667, 0.0], [0.0, 0.0]]
+        p = [[0.1333333333333333, 0.0], [0.0, 0.0]]
 
         decision, state = c.mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
                                  time_step, migration_time, utilization, state)
-        self.assertEqual(decision, False)
+        self.assertEqual(decision, command)
         self.assertEqual(state['previous_state'], previous_state)
         assert is_almost_equal(reverse_req(state['request_windows']), request_windows)
         assert is_almost_equal(reverse_est(state['estimate_windows']), estimate_windows)
@@ -208,11 +209,11 @@ class CoreRealData(TestCase):
         acceptable_variances = [[{100: 5.639999999999999E-4, 90: 6.91358024691358E-4, 80: 8.671875000000001E-4, 70: 0.001119533527696793, 60: 0.0015000000000000002, 50: 0.002112, 40: 0.0031875000000000002, 30: 0.005333333333333334}, {100: 0.0, 90: 0.0, 80: 0.0, 70: 0.0, 60: 0.0, 50: 0.0, 40: 0.0, 30: 0.0}], [{100: 1.0, 90: 1.0, 80: 1.0, 70: 1.0, 60: 1.0, 50: 1.0, 40: 1.0, 30: 1.0}, {100: 1.0, 90: 1.0, 80: 1.0, 70: 1.0, 60: 1.0, 50: 1.0, 40: 1.0, 30: 1.0}]]
         previous_state = 0
         selected_windows = [[30, 30], [100, 100]]
-        p = [[0.2, 0.0], [0.0, 0.0]]
+        p = [[0.1666666666666667, 0.0], [0.0, 0.0]]
 
         decision, state = c.mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
                                  time_step, migration_time, utilization, state)
-        self.assertEqual(decision, False)
+        self.assertEqual(decision, command)
         self.assertEqual(state['previous_state'], previous_state)
         assert is_almost_equal(reverse_req(state['request_windows']), request_windows)
         assert is_almost_equal(reverse_est(state['estimate_windows']), estimate_windows)
@@ -228,31 +229,11 @@ class CoreRealData(TestCase):
         acceptable_variances = [[{30: 0.0059629629629629624, 40: 0.0036093749999999993, 50: 0.002408, 60: 0.001717592592592593, 70: 0.0012857142857142859, 80: 9.980468749999998E-4, 90: 7.969821673525378E-4, 100: 6.510000000000001E-4}, {30: 0.0, 40: 0.0, 50: 0.0, 60: 0.0, 70: 0.0, 80: 0.0, 90: 0.0, 100: 0.0}], [{100: 1.0, 90: 1.0, 80: 1.0, 70: 1.0, 60: 1.0, 50: 1.0, 40: 1.0, 30: 1.0}, {100: 1.0, 90: 1.0, 80: 1.0, 70: 1.0, 60: 1.0, 50: 1.0, 40: 1.0, 30: 1.0}]]
         previous_state = 0
         selected_windows = [[30, 30], [100, 100]]
-        p = [[0.2333333333333333, 0.0], [0.0, 0.0]]
+        p = [[0.2, 0.0], [0.0, 0.0]]
 
         decision, state = c.mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
                                  time_step, migration_time, utilization, state)
-        self.assertEqual(decision, False)
-        self.assertEqual(state['previous_state'], previous_state)
-        assert is_almost_equal(reverse_req(state['request_windows']), request_windows)
-        assert is_almost_equal(reverse_est(state['estimate_windows']), estimate_windows)
-        assert is_almost_equal(state['variances'], variances)
-        assert is_almost_equal(state['acceptable_variances'], acceptable_variances)
-        assert is_almost_equal(state['selected_windows'], selected_windows)
-        assert is_almost_equal(state['p'], p)
-
-        utilization = [0.859, 0.6988333333333333, 0.811, 0.7685833333333333, 0.88, 0.79475, 0.7965, 0.7471666666666666, 0.92675]
-        request_windows = [[0, 0, 0, 0, 0, 0, 0, 0], []]
-        estimate_windows = [[{100: [0.08, 0.07, 0.06, 0.05, 0.04, 0.03, 0.02, 0.01], 90: [0.08888888888888889, 0.07777777777777778, 0.06666666666666667, 0.05555555555555556, 0.04444444444444444, 0.03333333333333333, 0.02222222222222222, 0.01111111111111111], 80: [0.1, 0.0875, 0.075, 0.0625, 0.05, 0.0375, 0.025, 0.0125], 70: [0.1142857142857143, 0.1, 0.08571428571428572, 0.07142857142857142, 0.05714285714285714, 0.04285714285714286, 0.02857142857142857, 0.01428571428571429], 60: [0.1333333333333333, 0.1166666666666667, 0.1, 0.08333333333333333, 0.06666666666666667, 0.05, 0.03333333333333333, 0.01666666666666667], 50: [0.16, 0.14, 0.12, 0.1, 0.08, 0.06, 0.04, 0.02], 40: [0.2, 0.175, 0.15, 0.125, 0.1, 0.075, 0.05, 0.025], 30: [0.2666666666666667, 0.2333333333333333, 0.2, 0.1666666666666667, 0.1333333333333333, 0.1, 0.06666666666666667, 0.03333333333333333]}, {100: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 90: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 80: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 70: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 60: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 50: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 40: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 30: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}], [{100: [], 90: [], 80: [], 70: [], 60: [], 50: [], 40: [], 30: []}, {100: [], 90: [], 80: [], 70: [], 60: [], 50: [], 40: [], 30: []}]]
-        variances = [[{100: 1.0, 90: 1.0, 80: 1.0, 70: 1.0, 60: 1.0, 50: 1.0, 40: 1.0, 30: 1.0}, {100: 1.0, 90: 1.0, 80: 1.0, 70: 1.0, 60: 1.0, 50: 1.0, 40: 1.0, 30: 1.0}], [{100: 1.0, 90: 1.0, 80: 1.0, 70: 1.0, 60: 1.0, 50: 1.0, 40: 1.0, 30: 1.0}, {100: 1.0, 90: 1.0, 80: 1.0, 70: 1.0, 60: 1.0, 50: 1.0, 40: 1.0, 30: 1.0}]]
-        acceptable_variances = [[{100: 7.36E-4, 90: 8.998628257887518E-4, 80: 0.0011250000000000001, 70: 0.001446064139941691, 60: 0.0019259259259259255, 50: 0.002688, 40: 0.004000000000000001, 30: 0.00651851851851852}, {100: 0.0, 90: 0.0, 80: 0.0, 70: 0.0, 60: 0.0, 50: 0.0, 40: 0.0, 30: 0.0}], [{100: 1.0, 90: 1.0, 80: 1.0, 70: 1.0, 60: 1.0, 50: 1.0, 40: 1.0, 30: 1.0}, {100: 1.0, 90: 1.0, 80: 1.0, 70: 1.0, 60: 1.0, 50: 1.0, 40: 1.0, 30: 1.0}]]
-        previous_state = 0
-        selected_windows = [[30, 30], [100, 100]]
-        p = [[0.2666666666666667, 0.0], [0.0, 0.0]]
-
-        decision, state = c.mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
-                                 time_step, migration_time, utilization, state)
-        self.assertEqual(decision, False)
+        self.assertEqual(decision, command)
         self.assertEqual(state['previous_state'], previous_state)
         assert is_almost_equal(reverse_req(state['request_windows']), request_windows)
         assert is_almost_equal(reverse_est(state['estimate_windows']), estimate_windows)
@@ -262,17 +243,37 @@ class CoreRealData(TestCase):
         assert is_almost_equal(state['p'], p)
 
         utilization = [0.859, 0.6988333333333333, 0.811, 0.7685833333333333, 0.88, 0.79475, 0.7965, 0.7471666666666666]
+        request_windows = [[0, 0, 0, 0, 0, 0, 0, 0], []]
+        estimate_windows = [[{100: [0.08, 0.07, 0.06, 0.05, 0.04, 0.03, 0.02, 0.01], 90: [0.08888888888888889, 0.07777777777777778, 0.06666666666666667, 0.05555555555555556, 0.04444444444444444, 0.03333333333333333, 0.02222222222222222, 0.01111111111111111], 80: [0.1, 0.0875, 0.075, 0.0625, 0.05, 0.0375, 0.025, 0.0125], 70: [0.1142857142857143, 0.1, 0.08571428571428572, 0.07142857142857142, 0.05714285714285714, 0.04285714285714286, 0.02857142857142857, 0.01428571428571429], 60: [0.1333333333333333, 0.1166666666666667, 0.1, 0.08333333333333333, 0.06666666666666667, 0.05, 0.03333333333333333, 0.01666666666666667], 50: [0.16, 0.14, 0.12, 0.1, 0.08, 0.06, 0.04, 0.02], 40: [0.2, 0.175, 0.15, 0.125, 0.1, 0.075, 0.05, 0.025], 30: [0.2666666666666667, 0.2333333333333333, 0.2, 0.1666666666666667, 0.1333333333333333, 0.1, 0.06666666666666667, 0.03333333333333333]}, {100: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 90: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 80: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 70: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 60: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 50: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 40: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 30: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}], [{100: [], 90: [], 80: [], 70: [], 60: [], 50: [], 40: [], 30: []}, {100: [], 90: [], 80: [], 70: [], 60: [], 50: [], 40: [], 30: []}]]
+        variances = [[{100: 1.0, 90: 1.0, 80: 1.0, 70: 1.0, 60: 1.0, 50: 1.0, 40: 1.0, 30: 1.0}, {100: 1.0, 90: 1.0, 80: 1.0, 70: 1.0, 60: 1.0, 50: 1.0, 40: 1.0, 30: 1.0}], [{100: 1.0, 90: 1.0, 80: 1.0, 70: 1.0, 60: 1.0, 50: 1.0, 40: 1.0, 30: 1.0}, {100: 1.0, 90: 1.0, 80: 1.0, 70: 1.0, 60: 1.0, 50: 1.0, 40: 1.0, 30: 1.0}]]
+        acceptable_variances = [[{100: 7.36E-4, 90: 8.998628257887518E-4, 80: 0.0011250000000000001, 70: 0.001446064139941691, 60: 0.0019259259259259255, 50: 0.002688, 40: 0.004000000000000001, 30: 0.00651851851851852}, {100: 0.0, 90: 0.0, 80: 0.0, 70: 0.0, 60: 0.0, 50: 0.0, 40: 0.0, 30: 0.0}], [{100: 1.0, 90: 1.0, 80: 1.0, 70: 1.0, 60: 1.0, 50: 1.0, 40: 1.0, 30: 1.0}, {100: 1.0, 90: 1.0, 80: 1.0, 70: 1.0, 60: 1.0, 50: 1.0, 40: 1.0, 30: 1.0}]]
+        previous_state = 0
+        selected_windows = [[30, 30], [100, 100]]
+        p = [[0.2333333333333333, 0.0], [0.0, 0.0]]
+
+        decision, state = c.mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
+                                 time_step, migration_time, utilization, state)
+        self.assertEqual(decision, command)
+        self.assertEqual(state['previous_state'], previous_state)
+        assert is_almost_equal(reverse_req(state['request_windows']), request_windows)
+        assert is_almost_equal(reverse_est(state['estimate_windows']), estimate_windows)
+        assert is_almost_equal(state['variances'], variances)
+        assert is_almost_equal(state['acceptable_variances'], acceptable_variances)
+        assert is_almost_equal(state['selected_windows'], selected_windows)
+        assert is_almost_equal(state['p'], p)
+
+        utilization = [0.859, 0.6988333333333333, 0.811, 0.7685833333333333, 0.88, 0.79475, 0.7965, 0.7471666666666666, 0.92675]
         request_windows = [[0, 0, 0, 0, 0, 0, 0, 0, 0], []]
         estimate_windows = [[{30: [0.3, 0.2666666666666667, 0.2333333333333333, 0.2, 0.1666666666666667, 0.1333333333333333, 0.1, 0.06666666666666667, 0.03333333333333333], 40: [0.225, 0.2, 0.175, 0.15, 0.125, 0.1, 0.075, 0.05, 0.025], 50: [0.18, 0.16, 0.14, 0.12, 0.1, 0.08, 0.06, 0.04, 0.02], 60: [0.15, 0.1333333333333333, 0.1166666666666667, 0.1, 0.08333333333333333, 0.06666666666666667, 0.05, 0.03333333333333333, 0.01666666666666667], 70: [0.1285714285714286, 0.1142857142857143, 0.1, 0.08571428571428572, 0.07142857142857142, 0.05714285714285714, 0.04285714285714286, 0.02857142857142857, 0.01428571428571429], 80: [0.1125, 0.1, 0.0875, 0.075, 0.0625, 0.05, 0.0375, 0.025, 0.0125], 90: [0.1, 0.08888888888888889, 0.07777777777777778, 0.06666666666666667, 0.05555555555555556, 0.04444444444444444, 0.03333333333333333, 0.02222222222222222, 0.01111111111111111], 100: [0.09, 0.08, 0.07, 0.06, 0.05, 0.04, 0.03, 0.02, 0.01]}, {30: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 40: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 50: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 60: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 70: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 80: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 90: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 100: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}], [{100: [], 90: [], 80: [], 70: [], 60: [], 50: [], 40: [], 30: []}, {100: [], 90: [], 80: [], 70: [], 60: [], 50: [], 40: [], 30: []}]]
         variances = [[{30: 1.0, 40: 1.0, 50: 1.0, 60: 1.0, 70: 1.0, 80: 1.0, 90: 1.0, 100: 1.0}, {30: 1.0, 40: 1.0, 50: 1.0, 60: 1.0, 70: 1.0, 80: 1.0, 90: 1.0, 100: 1.0}], [{100: 1.0, 90: 1.0, 80: 1.0, 70: 1.0, 60: 1.0, 50: 1.0, 40: 1.0, 30: 1.0}, {100: 1.0, 90: 1.0, 80: 1.0, 70: 1.0, 60: 1.0, 50: 1.0, 40: 1.0, 30: 1.0}]]
         acceptable_variances = [[{30: 0.007, 40: 0.004359375, 50: 0.002952, 60: 0.002125, 70: 0.001600583090379009, 80: 0.001248046875, 90: 0.001, 100: 8.19E-4}, {30: 0.0, 40: 0.0, 50: 0.0, 60: 0.0, 70: 0.0, 80: 0.0, 90: 0.0, 100: 0.0}], [{100: 1.0, 90: 1.0, 80: 1.0, 70: 1.0, 60: 1.0, 50: 1.0, 40: 1.0, 30: 1.0}, {100: 1.0, 90: 1.0, 80: 1.0, 70: 1.0, 60: 1.0, 50: 1.0, 40: 1.0, 30: 1.0}]]
         previous_state = 0
         selected_windows = [[30, 30], [100, 100]]
-        p = [[0.3, 0.0], [0.0, 0.0]]
+        p = [[0.2666666666666667, 0.0], [0.0, 0.0]]
 
         decision, state = c.mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
                                  time_step, migration_time, utilization, state)
-        self.assertEqual(decision, False)
+        self.assertEqual(decision, command)
         self.assertEqual(state['previous_state'], previous_state)
         assert is_almost_equal(reverse_req(state['request_windows']), request_windows)
         assert is_almost_equal(reverse_est(state['estimate_windows']), estimate_windows)
@@ -288,11 +289,11 @@ class CoreRealData(TestCase):
         acceptable_variances = [[{100: 9.000000000000001E-4, 90: 0.0010973936899862824, 80: 0.0013671875, 70: 0.0017492711370262397, 60: 0.0023148148148148156, 50: 0.0032000000000000006, 40: 0.0046875, 30: 0.007407407407407408}, {100: 0.0, 90: 0.0, 80: 0.0, 70: 0.0, 60: 0.0, 50: 0.0, 40: 0.0, 30: 0.0}], [{100: 1.0, 90: 1.0, 80: 1.0, 70: 1.0, 60: 1.0, 50: 1.0, 40: 1.0, 30: 1.0}, {100: 1.0, 90: 1.0, 80: 1.0, 70: 1.0, 60: 1.0, 50: 1.0, 40: 1.0, 30: 1.0}]]
         previous_state = 0
         selected_windows = [[30, 30], [100, 100]]
-        p = [[0.3333333333333333, 0.0], [0.0, 0.0]]
+        p = [[0.3, 0.0], [0.0, 0.0]]
 
         decision, state = c.mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
                                  time_step, migration_time, utilization, state)
-        self.assertEqual(decision, False)
+        self.assertEqual(decision, command)
         self.assertEqual(state['previous_state'], previous_state)
         assert is_almost_equal(reverse_req(state['request_windows']), request_windows)
         assert is_almost_equal(reverse_est(state['estimate_windows']), estimate_windows)
@@ -308,11 +309,11 @@ class CoreRealData(TestCase):
         acceptable_variances = [[{30: 0.007740740740740741, 40: 0.004984375, 50: 0.003432, 60: 0.0024953703703703696, 70: 0.0018921282798833815, 80: 0.0014824218750000002, 90: 0.0011920438957475992, 100: 9.79E-4}, {30: 0.0, 40: 0.0, 50: 0.0, 60: 0.0, 70: 0.0, 80: 0.0, 90: 0.0, 100: 0.0}], [{100: 1.0, 90: 1.0, 80: 1.0, 70: 1.0, 60: 1.0, 50: 1.0, 40: 1.0, 30: 1.0}, {100: 1.0, 90: 1.0, 80: 1.0, 70: 1.0, 60: 1.0, 50: 1.0, 40: 1.0, 30: 1.0}]]
         previous_state = 0
         selected_windows = [[30, 30], [100, 100]]
-        p = [[0.3666666666666667, 0.0], [0.0, 0.0]]
+        p = [[0.3333333333333333, 0.0], [0.0, 0.0]]
 
         decision, state = c.mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
                                  time_step, migration_time, utilization, state)
-        self.assertEqual(decision, False)
+        self.assertEqual(decision, command)
         self.assertEqual(state['previous_state'], previous_state)
         assert is_almost_equal(reverse_req(state['request_windows']), request_windows)
         assert is_almost_equal(reverse_est(state['estimate_windows']), estimate_windows)
@@ -328,11 +329,11 @@ class CoreRealData(TestCase):
         acceptable_variances = [[{100: 0.001056, 90: 0.0012839506172839504, 80: 0.0015937500000000001, 70: 0.002029154518950437, 60: 0.002666666666666667, 50: 0.003648, 40: 0.0052499999999999995, 30: 0.008}, {100: 0.0, 90: 0.0, 80: 0.0, 70: 0.0, 60: 0.0, 50: 0.0, 40: 0.0, 30: 0.0}], [{100: 1.0, 90: 1.0, 80: 1.0, 70: 1.0, 60: 1.0, 50: 1.0, 40: 1.0, 30: 1.0}, {100: 1.0, 90: 1.0, 80: 1.0, 70: 1.0, 60: 1.0, 50: 1.0, 40: 1.0, 30: 1.0}]]
         previous_state = 0
         selected_windows = [[30, 30], [100, 100]]
-        p = [[0.4, 0.0], [0.0, 0.0]]
+        p = [[0.3666666666666667, 0.0], [0.0, 0.0]]
 
         decision, state = c.mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
                                  time_step, migration_time, utilization, state)
-        self.assertEqual(decision, False)
+        self.assertEqual(decision, command)
         self.assertEqual(state['previous_state'], previous_state)
         assert is_almost_equal(reverse_req(state['request_windows']), request_windows)
         assert is_almost_equal(reverse_est(state['estimate_windows']), estimate_windows)
@@ -348,11 +349,11 @@ class CoreRealData(TestCase):
         acceptable_variances = [[{30: 0.008185185185185184, 40: 0.0054843750000000005, 50: 0.0038480000000000003, 60: 0.002828703703703704, 70: 0.002160349854227405, 80: 0.0017011718750000002, 90: 0.0013731138545953357, 100: 0.001131}, {30: 0.0, 40: 0.0, 50: 0.0, 60: 0.0, 70: 0.0, 80: 0.0, 90: 0.0, 100: 0.0}], [{100: 1.0, 90: 1.0, 80: 1.0, 70: 1.0, 60: 1.0, 50: 1.0, 40: 1.0, 30: 1.0}, {100: 1.0, 90: 1.0, 80: 1.0, 70: 1.0, 60: 1.0, 50: 1.0, 40: 1.0, 30: 1.0}]]
         previous_state = 0
         selected_windows = [[30, 30], [100, 100]]
-        p = [[0.4333333333333333, 0.0], [0.0, 0.0]]
+        p = [[0.4, 0.0], [0.0, 0.0]]
 
         decision, state = c.mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
                                  time_step, migration_time, utilization, state)
-        self.assertEqual(decision, False)
+        self.assertEqual(decision, command)
         self.assertEqual(state['previous_state'], previous_state)
         assert is_almost_equal(reverse_req(state['request_windows']), request_windows)
         assert is_almost_equal(reverse_est(state['estimate_windows']), estimate_windows)
@@ -368,11 +369,11 @@ class CoreRealData(TestCase):
         acceptable_variances = [[{100: 0.001131, 90: 0.0013731138545953357, 80: 0.0017011718750000002, 70: 0.002160349854227405, 60: 0.002828703703703704, 50: 0.0038480000000000003, 40: 0.0054843750000000005, 30: 0.008185185185185184}, {100: 9.900000000000001E-5, 90: 1.220850480109739E-4, 80: 1.54296875E-4, 70: 2.0116618075801757E-4, 60: 2.731481481481482E-4, 50: 3.92E-4, 40: 6.09375E-4, 30: 0.001074074074074074}], [{100: 1.0, 90: 1.0, 80: 1.0, 70: 1.0, 60: 1.0, 50: 1.0, 40: 1.0, 30: 1.0}, {100: 1.0, 90: 1.0, 80: 1.0, 70: 1.0, 60: 1.0, 50: 1.0, 40: 1.0, 30: 1.0}]]
         previous_state = 1
         selected_windows = [[30, 30], [100, 100]]
-        p = [[0.4333333333333333, 0.03333333333333333], [0.0, 0.0]]
+        p = [[0.4333333333333333, 0.0], [0.0, 0.0]]
 
         decision, state = c.mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
                                  time_step, migration_time, utilization, state)
-        self.assertEqual(decision, False)
+        self.assertEqual(decision, command)
         self.assertEqual(state['previous_state'], previous_state)
         assert is_almost_equal(reverse_req(state['request_windows']), request_windows)
         assert is_almost_equal(reverse_est(state['estimate_windows']), estimate_windows)
@@ -387,12 +388,12 @@ class CoreRealData(TestCase):
         variances = [[{100: 1.0, 90: 1.0, 80: 1.0, 70: 1.0, 60: 1.0, 50: 1.0, 40: 1.0, 30: 1.0}, {100: 1.0, 90: 1.0, 80: 1.0, 70: 1.0, 60: 1.0, 50: 1.0, 40: 1.0, 30: 1.0}], [{30: 1.0, 40: 1.0, 50: 1.0, 60: 1.0, 70: 1.0, 80: 1.0, 90: 1.0, 100: 1.0}, {30: 1.0, 40: 1.0, 50: 1.0, 60: 1.0, 70: 1.0, 80: 1.0, 90: 1.0, 100: 1.0}]]
         acceptable_variances = [[{100: 0.001131, 90: 0.0013731138545953357, 80: 0.0017011718750000002, 70: 0.002160349854227405, 60: 0.002828703703703704, 50: 0.0038480000000000003, 40: 0.0054843750000000005, 30: 0.008185185185185184}, {100: 9.900000000000001E-5, 90: 1.220850480109739E-4, 80: 1.54296875E-4, 70: 2.0116618075801757E-4, 60: 2.731481481481482E-4, 50: 3.92E-4, 40: 6.09375E-4, 30: 0.001074074074074074}], [{30: 0.001074074074074074, 40: 6.09375E-4, 50: 3.92E-4, 60: 2.731481481481482E-4, 70: 2.0116618075801757E-4, 80: 1.54296875E-4, 90: 1.220850480109739E-4, 100: 9.900000000000001E-5}, {30: 0.0, 40: 0.0, 50: 0.0, 60: 0.0, 70: 0.0, 80: 0.0, 90: 0.0, 100: 0.0}]]
         previous_state = 0
-        selected_windows = [[30, 30], [30, 30]]
-        p = [[0.4333333333333333, 0.03333333333333333], [0.03333333333333333, 0.0]]
+        selected_windows = [[30, 30], [100, 100]]
+        p = [[0.4333333333333333, 0.03333333333333333], [0.0, 0.0]]
 
         decision, state = c.mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
                                  time_step, migration_time, utilization, state)
-        self.assertEqual(decision, False)
+        self.assertEqual(decision, command)
         self.assertEqual(state['previous_state'], previous_state)
         assert is_almost_equal(reverse_req(state['request_windows']), request_windows)
         assert is_almost_equal(reverse_est(state['estimate_windows']), estimate_windows)
@@ -408,11 +409,11 @@ class CoreRealData(TestCase):
         acceptable_variances = [[{30: 0.008296296296296296, 40: 0.0056875, 50: 0.004032, 60: 0.0029814814814814812, 70: 0.0022857142857142863, 80: 0.0018046874999999997, 90: 0.001459533607681756, 100: 0.001204}, {30: 0.001074074074074074, 40: 6.09375E-4, 50: 3.92E-4, 60: 2.731481481481482E-4, 70: 2.0116618075801757E-4, 80: 1.54296875E-4, 90: 1.220850480109739E-4, 100: 9.900000000000001E-5}], [{30: 0.001074074074074074, 40: 6.09375E-4, 50: 3.92E-4, 60: 2.731481481481482E-4, 70: 2.0116618075801757E-4, 80: 1.54296875E-4, 90: 1.220850480109739E-4, 100: 9.900000000000001E-5}, {30: 0.0, 40: 0.0, 50: 0.0, 60: 0.0, 70: 0.0, 80: 0.0, 90: 0.0, 100: 0.0}]]
         previous_state = 0
         selected_windows = [[30, 30], [30, 30]]
-        p = [[0.4666666666666667, 0.03333333333333333], [0.03333333333333333, 0.0]]
+        p = [[0.4333333333333333, 0.03333333333333333], [0.03333333333333333, 0.0]]
 
         decision, state = c.mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
                                  time_step, migration_time, utilization, state)
-        self.assertEqual(decision, False)
+        self.assertEqual(decision, command)
         self.assertEqual(state['previous_state'], previous_state)
         assert is_almost_equal(reverse_req(state['request_windows']), request_windows)
         assert is_almost_equal(reverse_est(state['estimate_windows']), estimate_windows)
@@ -428,11 +429,11 @@ class CoreRealData(TestCase):
         acceptable_variances = [[{100: 0.001275, 90: 0.0015432098765432102, 80: 0.001904296875, 70: 0.002405247813411079, 60: 0.003125, 50: 0.0042, 40: 0.005859375, 30: 0.008333333333333333}, {100: 9.900000000000001E-5, 90: 1.220850480109739E-4, 80: 1.54296875E-4, 70: 2.0116618075801757E-4, 60: 2.731481481481482E-4, 50: 3.92E-4, 40: 6.09375E-4, 30: 0.001074074074074074}], [{30: 0.001074074074074074, 40: 6.09375E-4, 50: 3.92E-4, 60: 2.731481481481482E-4, 70: 2.0116618075801757E-4, 80: 1.54296875E-4, 90: 1.220850480109739E-4, 100: 9.900000000000001E-5}, {30: 0.0, 40: 0.0, 50: 0.0, 60: 0.0, 70: 0.0, 80: 0.0, 90: 0.0, 100: 0.0}]]
         previous_state = 0
         selected_windows = [[30, 30], [30, 30]]
-        p = [[0.5, 0.03333333333333333], [0.03333333333333333, 0.0]]
+        p = [[0.4666666666666667, 0.03333333333333333], [0.03333333333333333, 0.0]]
 
         decision, state = c.mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
                                  time_step, migration_time, utilization, state)
-        self.assertEqual(decision, False)
+        self.assertEqual(decision, command)
         self.assertEqual(state['previous_state'], previous_state)
         assert is_almost_equal(reverse_req(state['request_windows']), request_windows)
         assert is_almost_equal(reverse_est(state['estimate_windows']), estimate_windows)
@@ -448,11 +449,11 @@ class CoreRealData(TestCase):
         acceptable_variances = [[{30: 0.008296296296296296, 40: 0.006, 50: 0.004352, 60: 0.00325925925925926, 70: 0.0025189504373177843, 80: 0.0020000000000000005, 90: 0.0016241426611796983, 100: 0.001344}, {30: 0.001074074074074074, 40: 6.09375E-4, 50: 3.92E-4, 60: 2.731481481481482E-4, 70: 2.0116618075801757E-4, 80: 1.54296875E-4, 90: 1.220850480109739E-4, 100: 9.900000000000001E-5}], [{30: 0.001074074074074074, 40: 6.09375E-4, 50: 3.92E-4, 60: 2.731481481481482E-4, 70: 2.0116618075801757E-4, 80: 1.54296875E-4, 90: 1.220850480109739E-4, 100: 9.900000000000001E-5}, {30: 0.0, 40: 0.0, 50: 0.0, 60: 0.0, 70: 0.0, 80: 0.0, 90: 0.0, 100: 0.0}]]
         previous_state = 0
         selected_windows = [[30, 30], [30, 30]]
-        p = [[0.5333333333333333, 0.03333333333333333], [0.03333333333333333, 0.0]]
+        p = [[0.5, 0.03333333333333333], [0.03333333333333333, 0.0]]
 
         decision, state = c.mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
                                  time_step, migration_time, utilization, state)
-        self.assertEqual(decision, False)
+        self.assertEqual(decision, command)
         self.assertEqual(state['previous_state'], previous_state)
         assert is_almost_equal(reverse_req(state['request_windows']), request_windows)
         assert is_almost_equal(reverse_est(state['estimate_windows']), estimate_windows)
@@ -468,11 +469,11 @@ class CoreRealData(TestCase):
         acceptable_variances = [[{100: 0.001411, 90: 0.001702331961591221, 80: 0.002091796875, 70: 0.0026268221574344028, 60: 0.003384259259259259, 50: 0.004488, 40: 0.006109374999999999, 30: 0.008185185185185186}, {100: 9.900000000000001E-5, 90: 1.220850480109739E-4, 80: 1.54296875E-4, 70: 2.0116618075801757E-4, 60: 2.731481481481482E-4, 50: 3.92E-4, 40: 6.09375E-4, 30: 0.001074074074074074}], [{30: 0.001074074074074074, 40: 6.09375E-4, 50: 3.92E-4, 60: 2.731481481481482E-4, 70: 2.0116618075801757E-4, 80: 1.54296875E-4, 90: 1.220850480109739E-4, 100: 9.900000000000001E-5}, {30: 0.0, 40: 0.0, 50: 0.0, 60: 0.0, 70: 0.0, 80: 0.0, 90: 0.0, 100: 0.0}]]
         previous_state = 0
         selected_windows = [[30, 30], [30, 30]]
-        p = [[0.5666666666666667, 0.03333333333333333], [0.03333333333333333, 0.0]]
+        p = [[0.5333333333333333, 0.03333333333333333], [0.03333333333333333, 0.0]]
 
         decision, state = c.mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
                                  time_step, migration_time, utilization, state)
-        self.assertEqual(decision, False)
+        self.assertEqual(decision, command)
         self.assertEqual(state['previous_state'], previous_state)
         assert is_almost_equal(reverse_req(state['request_windows']), request_windows)
         assert is_almost_equal(reverse_est(state['estimate_windows']), estimate_windows)
@@ -488,11 +489,11 @@ class CoreRealData(TestCase):
         acceptable_variances = [[{30: 0.008, 40: 0.0061875, 50: 0.004608, 60: 0.0035, 70: 0.002728862973760933, 80: 0.0021796875, 90: 0.001777777777777778, 100: 0.001476}, {30: 0.001074074074074074, 40: 6.09375E-4, 50: 3.92E-4, 60: 2.731481481481482E-4, 70: 2.0116618075801757E-4, 80: 1.54296875E-4, 90: 1.220850480109739E-4, 100: 9.900000000000001E-5}], [{30: 0.001074074074074074, 40: 6.09375E-4, 50: 3.92E-4, 60: 2.731481481481482E-4, 70: 2.0116618075801757E-4, 80: 1.54296875E-4, 90: 1.220850480109739E-4, 100: 9.900000000000001E-5}, {30: 0.0, 40: 0.0, 50: 0.0, 60: 0.0, 70: 0.0, 80: 0.0, 90: 0.0, 100: 0.0}]]
         previous_state = 0
         selected_windows = [[30, 30], [30, 30]]
-        p = [[0.6, 0.03333333333333333], [0.03333333333333333, 0.0]]
+        p = [[0.5666666666666667, 0.03333333333333333], [0.03333333333333333, 0.0]]
 
         decision, state = c.mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
                                  time_step, migration_time, utilization, state)
-        self.assertEqual(decision, False)
+        self.assertEqual(decision, command)
         self.assertEqual(state['previous_state'], previous_state)
         assert is_almost_equal(reverse_req(state['request_windows']), request_windows)
         assert is_almost_equal(reverse_est(state['estimate_windows']), estimate_windows)
@@ -508,11 +509,11 @@ class CoreRealData(TestCase):
         acceptable_variances = [[{100: 0.001476, 90: 0.001777777777777778, 80: 0.0021796875, 70: 0.002728862973760933, 60: 0.0035, 50: 0.004608, 40: 0.0061875, 30: 0.008}, {100: 1.96E-4, 90: 2.4142661179698212E-4, 80: 3.046875E-4, 70: 3.9650145772594754E-4, 60: 5.37037037037037E-4, 50: 7.679999999999999E-4, 40: 0.0011875, 30: 0.002074074074074074}], [{30: 0.001074074074074074, 40: 6.09375E-4, 50: 3.92E-4, 60: 2.731481481481482E-4, 70: 2.0116618075801757E-4, 80: 1.54296875E-4, 90: 1.220850480109739E-4, 100: 9.900000000000001E-5}, {30: 0.0, 40: 0.0, 50: 0.0, 60: 0.0, 70: 0.0, 80: 0.0, 90: 0.0, 100: 0.0}]]
         previous_state = 1
         selected_windows = [[30, 30], [30, 30]]
-        p = [[0.6, 0.06666666666666667], [0.03333333333333333, 0.0]]
+        p = [[0.6, 0.03333333333333333], [0.03333333333333333, 0.0]]
 
         decision, state = c.mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
                                  time_step, migration_time, utilization, state)
-        self.assertEqual(decision, False)
+        self.assertEqual(decision, command)
         self.assertEqual(state['previous_state'], previous_state)
         assert is_almost_equal(reverse_req(state['request_windows']), request_windows)
         assert is_almost_equal(reverse_est(state['estimate_windows']), estimate_windows)
@@ -528,11 +529,11 @@ class CoreRealData(TestCase):
         acceptable_variances = [[{100: 0.001476, 90: 0.001777777777777778, 80: 0.0021796875, 70: 0.002728862973760933, 60: 0.0035, 50: 0.004608, 40: 0.0061875, 30: 0.008}, {100: 1.96E-4, 90: 2.4142661179698212E-4, 80: 3.046875E-4, 70: 3.9650145772594754E-4, 60: 5.37037037037037E-4, 50: 7.679999999999999E-4, 40: 0.0011875, 30: 0.002074074074074074}], [{100: 1.96E-4, 90: 2.4142661179698212E-4, 80: 3.046875E-4, 70: 3.9650145772594754E-4, 60: 5.37037037037037E-4, 50: 7.679999999999999E-4, 40: 0.0011875, 30: 0.002074074074074074}, {100: 0.0, 90: 0.0, 80: 0.0, 70: 0.0, 60: 0.0, 50: 0.0, 40: 0.0, 30: 0.0}]]
         previous_state = 0
         selected_windows = [[30, 30], [30, 30]]
-        p = [[0.6, 0.06666666666666667], [0.06666666666666667, 0.0]]
+        p = [[0.6, 0.06666666666666667], [0.03333333333333333, 0.0]]
 
         decision, state = c.mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
                                  time_step, migration_time, utilization, state)
-        self.assertEqual(decision, False)
+        self.assertEqual(decision, command)
         self.assertEqual(state['previous_state'], previous_state)
         assert is_almost_equal(reverse_req(state['request_windows']), request_windows)
         assert is_almost_equal(reverse_est(state['estimate_windows']), estimate_windows)
@@ -548,11 +549,11 @@ class CoreRealData(TestCase):
         acceptable_variances = [[{30: 0.007740740740740741, 40: 0.0062343749999999995, 50: 0.004712, 60: 0.0036064814814814818, 70: 0.0028250728862973763, 80: 0.0022636718749999996, 90: 0.001850480109739369, 100: 0.001539}, {30: 0.002074074074074074, 40: 0.0011875, 50: 7.679999999999999E-4, 60: 5.37037037037037E-4, 70: 3.9650145772594754E-4, 80: 3.046875E-4, 90: 2.4142661179698212E-4, 100: 1.96E-4}], [{100: 1.96E-4, 90: 2.4142661179698212E-4, 80: 3.046875E-4, 70: 3.9650145772594754E-4, 60: 5.37037037037037E-4, 50: 7.679999999999999E-4, 40: 0.0011875, 30: 0.002074074074074074}, {100: 0.0, 90: 0.0, 80: 0.0, 70: 0.0, 60: 0.0, 50: 0.0, 40: 0.0, 30: 0.0}]]
         previous_state = 0
         selected_windows = [[30, 30], [30, 30]]
-        p = [[0.6333333333333333, 0.06666666666666667], [0.06666666666666667, 0.0]]
+        p = [[0.6, 0.06666666666666667], [0.06666666666666667, 0.0]]
 
         decision, state = c.mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
                                  time_step, migration_time, utilization, state)
-        self.assertEqual(decision, False)
+        self.assertEqual(decision, command)
         self.assertEqual(state['previous_state'], previous_state)
         assert is_almost_equal(reverse_req(state['request_windows']), request_windows)
         assert is_almost_equal(reverse_est(state['estimate_windows']), estimate_windows)
@@ -568,11 +569,11 @@ class CoreRealData(TestCase):
         acceptable_variances = [[{100: 0.0016000000000000003, 90: 0.0019204389574759943, 80: 0.00234375, 70: 0.0029154518950437317, 60: 0.003703703703703704, 50: 0.0048, 40: 0.00625, 30: 0.007407407407407407}, {100: 1.96E-4, 90: 2.4142661179698212E-4, 80: 3.046875E-4, 70: 3.9650145772594754E-4, 60: 5.37037037037037E-4, 50: 7.679999999999999E-4, 40: 0.0011875, 30: 0.002074074074074074}], [{100: 1.96E-4, 90: 2.4142661179698212E-4, 80: 3.046875E-4, 70: 3.9650145772594754E-4, 60: 5.37037037037037E-4, 50: 7.679999999999999E-4, 40: 0.0011875, 30: 0.002074074074074074}, {100: 0.0, 90: 0.0, 80: 0.0, 70: 0.0, 60: 0.0, 50: 0.0, 40: 0.0, 30: 0.0}]]
         previous_state = 0
         selected_windows = [[30, 30], [30, 30]]
-        p = [[0.6666666666666667, 0.06666666666666667], [0.06666666666666667, 0.0]]
+        p = [[0.6333333333333333, 0.06666666666666667], [0.06666666666666667, 0.0]]
 
         decision, state = c.mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
                                  time_step, migration_time, utilization, state)
-        self.assertEqual(decision, False)
+        self.assertEqual(decision, command)
         self.assertEqual(state['previous_state'], previous_state)
         assert is_almost_equal(reverse_req(state['request_windows']), request_windows)
         assert is_almost_equal(reverse_est(state['estimate_windows']), estimate_windows)
@@ -588,11 +589,11 @@ class CoreRealData(TestCase):
         acceptable_variances = [[{30: 0.007000000000000001, 40: 0.0062343749999999995, 50: 0.0048720000000000005, 60: 0.0037916666666666663, 70: 0.003, 80: 0.002419921875, 90: 0.001987654320987654, 100: 0.0016589999999999999}, {30: 0.002074074074074074, 40: 0.0011875, 50: 7.679999999999999E-4, 60: 5.37037037037037E-4, 70: 3.9650145772594754E-4, 80: 3.046875E-4, 90: 2.4142661179698212E-4, 100: 1.96E-4}], [{100: 1.96E-4, 90: 2.4142661179698212E-4, 80: 3.046875E-4, 70: 3.9650145772594754E-4, 60: 5.37037037037037E-4, 50: 7.679999999999999E-4, 40: 0.0011875, 30: 0.002074074074074074}, {100: 0.0, 90: 0.0, 80: 0.0, 70: 0.0, 60: 0.0, 50: 0.0, 40: 0.0, 30: 0.0}]]
         previous_state = 0
         selected_windows = [[30, 30], [30, 30]]
-        p = [[0.7, 0.06666666666666667], [0.06666666666666667, 0.0]]
+        p = [[0.6666666666666667, 0.06666666666666667], [0.06666666666666667, 0.0]]
 
         decision, state = c.mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
                                  time_step, migration_time, utilization, state)
-        self.assertEqual(decision, False)
+        self.assertEqual(decision, command)
         self.assertEqual(state['previous_state'], previous_state)
         assert is_almost_equal(reverse_req(state['request_windows']), request_windows)
         assert is_almost_equal(reverse_est(state['estimate_windows']), estimate_windows)
@@ -608,11 +609,11 @@ class CoreRealData(TestCase):
         acceptable_variances = [[{100: 0.001716, 90: 0.002052126200274348, 80: 0.0024921875, 70: 0.003078717201166181, 60: 0.0038703703703703704, 50: 0.004928000000000001, 40: 0.0061875, 30: 0.00651851851851852}, {100: 1.96E-4, 90: 2.4142661179698212E-4, 80: 3.046875E-4, 70: 3.9650145772594754E-4, 60: 5.37037037037037E-4, 50: 7.679999999999999E-4, 40: 0.0011875, 30: 0.002074074074074074}], [{100: 1.96E-4, 90: 2.4142661179698212E-4, 80: 3.046875E-4, 70: 3.9650145772594754E-4, 60: 5.37037037037037E-4, 50: 7.679999999999999E-4, 40: 0.0011875, 30: 0.002074074074074074}, {100: 0.0, 90: 0.0, 80: 0.0, 70: 0.0, 60: 0.0, 50: 0.0, 40: 0.0, 30: 0.0}]]
         previous_state = 0
         selected_windows = [[30, 30], [30, 30]]
-        p = [[0.7333333333333333, 0.06666666666666667], [0.06666666666666667, 0.0]]
+        p = [[0.7, 0.06666666666666667], [0.06666666666666667, 0.0]]
 
         decision, state = c.mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
                                  time_step, migration_time, utilization, state)
-        self.assertEqual(decision, False)
+        self.assertEqual(decision, command)
         self.assertEqual(state['previous_state'], previous_state)
         assert is_almost_equal(reverse_req(state['request_windows']), request_windows)
         assert is_almost_equal(reverse_est(state['estimate_windows']), estimate_windows)
@@ -628,11 +629,11 @@ class CoreRealData(TestCase):
         acceptable_variances = [[{30: 0.0059629629629629624, 40: 0.006109375, 50: 0.004968000000000001, 60: 0.003939814814814814, 70: 0.003151603498542274, 80: 0.002560546875, 90: 0.0021138545953360774, 100: 0.001771}, {30: 0.002074074074074074, 40: 0.0011875, 50: 7.679999999999999E-4, 60: 5.37037037037037E-4, 70: 3.9650145772594754E-4, 80: 3.046875E-4, 90: 2.4142661179698212E-4, 100: 1.96E-4}], [{100: 1.96E-4, 90: 2.4142661179698212E-4, 80: 3.046875E-4, 70: 3.9650145772594754E-4, 60: 5.37037037037037E-4, 50: 7.679999999999999E-4, 40: 0.0011875, 30: 0.002074074074074074}, {100: 0.0, 90: 0.0, 80: 0.0, 70: 0.0, 60: 0.0, 50: 0.0, 40: 0.0, 30: 0.0}]]
         previous_state = 0
         selected_windows = [[30, 30], [30, 30]]
-        p = [[0.7666666666666667, 0.06666666666666667], [0.06666666666666667, 0.0]]
+        p = [[0.7333333333333333, 0.06666666666666667], [0.06666666666666667, 0.0]]
 
         decision, state = c.mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
                                  time_step, migration_time, utilization, state)
-        self.assertEqual(decision, False)
+        self.assertEqual(decision, command)
         self.assertEqual(state['previous_state'], previous_state)
         assert is_almost_equal(reverse_req(state['request_windows']), request_windows)
         assert is_almost_equal(reverse_est(state['estimate_windows']), estimate_windows)
@@ -648,11 +649,11 @@ class CoreRealData(TestCase):
         acceptable_variances = [[{100: 0.001824, 90: 0.00217283950617284, 80: 0.0026249999999999997, 70: 0.00321865889212828, 60: 0.004, 50: 0.004992, 40: 0.006, 30: 0.005333333333333332}, {100: 1.96E-4, 90: 2.4142661179698212E-4, 80: 3.046875E-4, 70: 3.9650145772594754E-4, 60: 5.37037037037037E-4, 50: 7.679999999999999E-4, 40: 0.0011875, 30: 0.002074074074074074}], [{100: 1.96E-4, 90: 2.4142661179698212E-4, 80: 3.046875E-4, 70: 3.9650145772594754E-4, 60: 5.37037037037037E-4, 50: 7.679999999999999E-4, 40: 0.0011875, 30: 0.002074074074074074}, {100: 0.0, 90: 0.0, 80: 0.0, 70: 0.0, 60: 0.0, 50: 0.0, 40: 0.0, 30: 0.0}]]
         previous_state = 0
         selected_windows = [[30, 30], [30, 30]]
-        p = [[0.8, 0.06666666666666667], [0.06666666666666667, 0.0]]
+        p = [[0.7666666666666667, 0.06666666666666667], [0.06666666666666667, 0.0]]
 
         decision, state = c.mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
                                  time_step, migration_time, utilization, state)
-        self.assertEqual(decision, False)
+        self.assertEqual(decision, command)
         self.assertEqual(state['previous_state'], previous_state)
         assert is_almost_equal(reverse_req(state['request_windows']), request_windows)
         assert is_almost_equal(reverse_est(state['estimate_windows']), estimate_windows)
@@ -668,6 +669,26 @@ class CoreRealData(TestCase):
         acceptable_variances = [[{30: 0.004629629629629632, 40: 0.005859375, 50: 0.005, 60: 0.004050925925925926, 70: 0.003279883381924198, 80: 0.002685546875, 90: 0.0022290809327846365, 100: 0.001875}, {30: 0.002074074074074074, 40: 0.0011875, 50: 7.679999999999999E-4, 60: 5.37037037037037E-4, 70: 3.9650145772594754E-4, 80: 3.046875E-4, 90: 2.4142661179698212E-4, 100: 1.96E-4}], [{100: 1.96E-4, 90: 2.4142661179698212E-4, 80: 3.046875E-4, 70: 3.9650145772594754E-4, 60: 5.37037037037037E-4, 50: 7.679999999999999E-4, 40: 0.0011875, 30: 0.002074074074074074}, {100: 0.0, 90: 0.0, 80: 0.0, 70: 0.0, 60: 0.0, 50: 0.0, 40: 0.0, 30: 0.0}]]
         previous_state = 0
         selected_windows = [[30, 30], [30, 30]]
+        p = [[0.8, 0.06666666666666667], [0.06666666666666667, 0.0]]
+
+        decision, state = c.mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
+                                 time_step, migration_time, utilization, state)
+        self.assertEqual(decision, command)
+        self.assertEqual(state['previous_state'], previous_state)
+        assert is_almost_equal(reverse_req(state['request_windows']), request_windows)
+        assert is_almost_equal(reverse_est(state['estimate_windows']), estimate_windows)
+        assert is_almost_equal(state['variances'], variances)
+        assert is_almost_equal(state['acceptable_variances'], acceptable_variances)
+        assert is_almost_equal(state['selected_windows'], selected_windows)
+        assert is_almost_equal(state['p'], p)
+
+        utilization = [0.859, 0.6988333333333333, 0.811, 0.7685833333333333, 0.88, 0.79475, 0.7965, 0.7471666666666666, 0.92675, 0.8313333333333334, 0.9466666666666667, 0.7655833333333333, 0.803, 1.0415833333333333, 0.9058333333333334, 0.7433333333333333, 0.9835, 0.9040833333333333, 0.9189166666666667, 0.8335, 1.10275, 0.8660833333333333, 0.93475, 0.773, 0.91825, 0.8491666666666666, 0.7414166666666666, 0.8538333333333333, 0.8065833333333333, 0.9409166666666666]
+        request_windows = [[0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0]]
+        estimate_windows = [[{100: [0.26, 0.25, 0.24, 0.23, 0.22, 0.21, 0.2, 0.19, 0.18, 0.18, 0.17, 0.16, 0.15, 0.14, 0.13, 0.13, 0.12, 0.11, 0.1, 0.09, 0.08, 0.07, 0.06, 0.05, 0.04, 0.03, 0.02, 0.01], 90: [0.2888888888888889, 0.2777777777777778, 0.2666666666666667, 0.2555555555555556, 0.2444444444444444, 0.2333333333333333, 0.2222222222222222, 0.2111111111111111, 0.2, 0.2, 0.1888888888888889, 0.1777777777777778, 0.1666666666666667, 0.1555555555555556, 0.1444444444444444, 0.1444444444444444, 0.1333333333333333, 0.1222222222222222, 0.1111111111111111, 0.1, 0.08888888888888889, 0.07777777777777778, 0.06666666666666667, 0.05555555555555556, 0.04444444444444444, 0.03333333333333333, 0.02222222222222222, 0.01111111111111111], 80: [0.325, 0.3125, 0.3, 0.2875, 0.275, 0.2625, 0.25, 0.2375, 0.225, 0.225, 0.2125, 0.2, 0.1875, 0.175, 0.1625, 0.1625, 0.15, 0.1375, 0.125, 0.1125, 0.1, 0.0875, 0.075, 0.0625, 0.05, 0.0375, 0.025, 0.0125], 70: [0.3714285714285714, 0.3571428571428571, 0.3428571428571429, 0.3285714285714286, 0.3142857142857143, 0.3, 0.2857142857142857, 0.2714285714285714, 0.2571428571428571, 0.2571428571428571, 0.2428571428571429, 0.2285714285714286, 0.2142857142857143, 0.2, 0.1857142857142857, 0.1857142857142857, 0.1714285714285714, 0.1571428571428571, 0.1428571428571429, 0.1285714285714286, 0.1142857142857143, 0.1, 0.08571428571428572, 0.07142857142857142, 0.05714285714285714, 0.04285714285714286, 0.02857142857142857, 0.01428571428571429], 60: [0.4333333333333333, 0.4166666666666667, 0.4, 0.3833333333333333, 0.3666666666666667, 0.35, 0.3333333333333333, 0.3166666666666667, 0.3, 0.3, 0.2833333333333333, 0.2666666666666667, 0.25, 0.2333333333333333, 0.2166666666666667, 0.2166666666666667, 0.2, 0.1833333333333333, 0.1666666666666667, 0.15, 0.1333333333333333, 0.1166666666666667, 0.1, 0.08333333333333333, 0.06666666666666667, 0.05, 0.03333333333333333, 0.01666666666666667], 50: [0.52, 0.5, 0.48, 0.46, 0.44, 0.42, 0.4, 0.38, 0.36, 0.36, 0.34, 0.32, 0.3, 0.28, 0.26, 0.26, 0.24, 0.22, 0.2, 0.18, 0.16, 0.14, 0.12, 0.1, 0.08, 0.06, 0.04, 0.02], 40: [0.65, 0.625, 0.6, 0.575, 0.55, 0.525, 0.5, 0.475, 0.45, 0.45, 0.425, 0.4, 0.375, 0.35, 0.325, 0.325, 0.3, 0.275, 0.25, 0.225, 0.2, 0.175, 0.15, 0.125, 0.1, 0.075, 0.05, 0.025], 30: [0.8666666666666667, 0.8333333333333333, 0.8, 0.7666666666666667, 0.7333333333333333, 0.7, 0.6666666666666667, 0.6333333333333333, 0.6, 0.6, 0.5666666666666667, 0.5333333333333333, 0.5, 0.4666666666666667, 0.4333333333333333, 0.4333333333333333, 0.4, 0.3666666666666667, 0.3333333333333333, 0.3, 0.2666666666666667, 0.2333333333333333, 0.2, 0.1666666666666667, 0.1333333333333333, 0.1, 0.06666666666666667, 0.03333333333333333]}, {100: [0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 90: [0.02222222222222222, 0.02222222222222222, 0.02222222222222222, 0.02222222222222222, 0.02222222222222222, 0.02222222222222222, 0.02222222222222222, 0.02222222222222222, 0.02222222222222222, 0.01111111111111111, 0.01111111111111111, 0.01111111111111111, 0.01111111111111111, 0.01111111111111111, 0.01111111111111111, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 80: [0.025, 0.025, 0.025, 0.025, 0.025, 0.025, 0.025, 0.025, 0.025, 0.0125, 0.0125, 0.0125, 0.0125, 0.0125, 0.0125, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 70: [0.02857142857142857, 0.02857142857142857, 0.02857142857142857, 0.02857142857142857, 0.02857142857142857, 0.02857142857142857, 0.02857142857142857, 0.02857142857142857, 0.02857142857142857, 0.01428571428571429, 0.01428571428571429, 0.01428571428571429, 0.01428571428571429, 0.01428571428571429, 0.01428571428571429, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 60: [0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.01666666666666667, 0.01666666666666667, 0.01666666666666667, 0.01666666666666667, 0.01666666666666667, 0.01666666666666667, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 50: [0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 40: [0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.025, 0.025, 0.025, 0.025, 0.025, 0.025, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 30: [0.06666666666666667, 0.06666666666666667, 0.06666666666666667, 0.06666666666666667, 0.06666666666666667, 0.06666666666666667, 0.06666666666666667, 0.06666666666666667, 0.06666666666666667, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}], [{100: [0.02, 0.01], 90: [0.02222222222222222, 0.01111111111111111], 80: [0.025, 0.0125], 70: [0.02857142857142857, 0.01428571428571429], 60: [0.03333333333333333, 0.01666666666666667], 50: [0.04, 0.02], 40: [0.05, 0.025], 30: [0.06666666666666667, 0.03333333333333333]}, {100: [0.0, 0.0], 90: [0.0, 0.0], 80: [0.0, 0.0], 70: [0.0, 0.0], 60: [0.0, 0.0], 50: [0.0, 0.0], 40: [0.0, 0.0], 30: [0.0, 0.0]}]]
+        variances = [[{100: 1.0, 90: 1.0, 80: 1.0, 70: 1.0, 60: 1.0, 50: 1.0, 40: 1.0, 30: 1.0}, {100: 1.0, 90: 1.0, 80: 1.0, 70: 1.0, 60: 1.0, 50: 1.0, 40: 1.0, 30: 1.0}], [{100: 1.0, 90: 1.0, 80: 1.0, 70: 1.0, 60: 1.0, 50: 1.0, 40: 1.0, 30: 1.0}, {100: 1.0, 90: 1.0, 80: 1.0, 70: 1.0, 60: 1.0, 50: 1.0, 40: 1.0, 30: 1.0}]]
+        acceptable_variances = [[{100: 0.0019240000000000001, 90: 0.002282578875171468, 80: 0.0027421875000000003, 70: 0.0033352769679300285, 60: 0.004092592592592592, 50: 0.004992, 40: 0.0056875, 30: 0.003851851851851851}, {100: 1.96E-4, 90: 2.4142661179698212E-4, 80: 3.046875E-4, 70: 3.9650145772594754E-4, 60: 5.37037037037037E-4, 50: 7.679999999999999E-4, 40: 0.0011875, 30: 0.002074074074074074}], [{100: 1.96E-4, 90: 2.4142661179698212E-4, 80: 3.046875E-4, 70: 3.9650145772594754E-4, 60: 5.37037037037037E-4, 50: 7.679999999999999E-4, 40: 0.0011875, 30: 0.002074074074074074}, {100: 0.0, 90: 0.0, 80: 0.0, 70: 0.0, 60: 0.0, 50: 0.0, 40: 0.0, 30: 0.0}]]
+        previous_state = 0
+        selected_windows = [[30, 30], [30, 30]]
         p = [[0.8333333333333333, 0.06666666666666667], [0.06666666666666667, 0.0]]
         time_in_states = 30
         time_in_state_n = 2
@@ -676,9 +697,9 @@ class CoreRealData(TestCase):
 
         decision, state = c.mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
                                  time_step, migration_time, utilization, state)
-        self.assertEqual(decision, False)
+        self.assertEqual(decision, command)
         self.assertEqual(state['previous_state'], previous_state)
-        self.assertEqual(state['time_in_states'], time_in_states - 1)
+        self.assertEqual(state['time_in_states'], time_in_states)
         self.assertEqual(state['time_in_state_n'], time_in_state_n)
         self.assertEqual(decision, command)
         assert is_almost_equal(reverse_req(state['request_windows']), request_windows)
@@ -689,12 +710,12 @@ class CoreRealData(TestCase):
         assert is_almost_equal(state['p'], p)
         assert is_almost_equal(state['policy'], policy)
 
-        utilization = [0.859, 0.6988333333333333, 0.811, 0.7685833333333333, 0.88, 0.79475, 0.7965, 0.7471666666666666, 0.92675, 0.8313333333333334, 0.9466666666666667, 0.7655833333333333, 0.803, 1.0415833333333333, 0.9058333333333334, 0.7433333333333333, 0.9835, 0.9040833333333333, 0.9189166666666667, 0.8335, 1.10275, 0.8660833333333333, 0.93475, 0.773, 0.91825, 0.8491666666666666, 0.7414166666666666, 0.8538333333333333, 0.8065833333333333, 0.9409166666666666]
-        request_windows = [[0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0]]
-        estimate_windows = [[{100: [0.26, 0.25, 0.24, 0.23, 0.22, 0.21, 0.2, 0.19, 0.18, 0.18, 0.17, 0.16, 0.15, 0.14, 0.13, 0.13, 0.12, 0.11, 0.1, 0.09, 0.08, 0.07, 0.06, 0.05, 0.04, 0.03, 0.02, 0.01], 90: [0.2888888888888889, 0.2777777777777778, 0.2666666666666667, 0.2555555555555556, 0.2444444444444444, 0.2333333333333333, 0.2222222222222222, 0.2111111111111111, 0.2, 0.2, 0.1888888888888889, 0.1777777777777778, 0.1666666666666667, 0.1555555555555556, 0.1444444444444444, 0.1444444444444444, 0.1333333333333333, 0.1222222222222222, 0.1111111111111111, 0.1, 0.08888888888888889, 0.07777777777777778, 0.06666666666666667, 0.05555555555555556, 0.04444444444444444, 0.03333333333333333, 0.02222222222222222, 0.01111111111111111], 80: [0.325, 0.3125, 0.3, 0.2875, 0.275, 0.2625, 0.25, 0.2375, 0.225, 0.225, 0.2125, 0.2, 0.1875, 0.175, 0.1625, 0.1625, 0.15, 0.1375, 0.125, 0.1125, 0.1, 0.0875, 0.075, 0.0625, 0.05, 0.0375, 0.025, 0.0125], 70: [0.3714285714285714, 0.3571428571428571, 0.3428571428571429, 0.3285714285714286, 0.3142857142857143, 0.3, 0.2857142857142857, 0.2714285714285714, 0.2571428571428571, 0.2571428571428571, 0.2428571428571429, 0.2285714285714286, 0.2142857142857143, 0.2, 0.1857142857142857, 0.1857142857142857, 0.1714285714285714, 0.1571428571428571, 0.1428571428571429, 0.1285714285714286, 0.1142857142857143, 0.1, 0.08571428571428572, 0.07142857142857142, 0.05714285714285714, 0.04285714285714286, 0.02857142857142857, 0.01428571428571429], 60: [0.4333333333333333, 0.4166666666666667, 0.4, 0.3833333333333333, 0.3666666666666667, 0.35, 0.3333333333333333, 0.3166666666666667, 0.3, 0.3, 0.2833333333333333, 0.2666666666666667, 0.25, 0.2333333333333333, 0.2166666666666667, 0.2166666666666667, 0.2, 0.1833333333333333, 0.1666666666666667, 0.15, 0.1333333333333333, 0.1166666666666667, 0.1, 0.08333333333333333, 0.06666666666666667, 0.05, 0.03333333333333333, 0.01666666666666667], 50: [0.52, 0.5, 0.48, 0.46, 0.44, 0.42, 0.4, 0.38, 0.36, 0.36, 0.34, 0.32, 0.3, 0.28, 0.26, 0.26, 0.24, 0.22, 0.2, 0.18, 0.16, 0.14, 0.12, 0.1, 0.08, 0.06, 0.04, 0.02], 40: [0.65, 0.625, 0.6, 0.575, 0.55, 0.525, 0.5, 0.475, 0.45, 0.45, 0.425, 0.4, 0.375, 0.35, 0.325, 0.325, 0.3, 0.275, 0.25, 0.225, 0.2, 0.175, 0.15, 0.125, 0.1, 0.075, 0.05, 0.025], 30: [0.8666666666666667, 0.8333333333333333, 0.8, 0.7666666666666667, 0.7333333333333333, 0.7, 0.6666666666666667, 0.6333333333333333, 0.6, 0.6, 0.5666666666666667, 0.5333333333333333, 0.5, 0.4666666666666667, 0.4333333333333333, 0.4333333333333333, 0.4, 0.3666666666666667, 0.3333333333333333, 0.3, 0.2666666666666667, 0.2333333333333333, 0.2, 0.1666666666666667, 0.1333333333333333, 0.1, 0.06666666666666667, 0.03333333333333333]}, {100: [0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 90: [0.02222222222222222, 0.02222222222222222, 0.02222222222222222, 0.02222222222222222, 0.02222222222222222, 0.02222222222222222, 0.02222222222222222, 0.02222222222222222, 0.02222222222222222, 0.01111111111111111, 0.01111111111111111, 0.01111111111111111, 0.01111111111111111, 0.01111111111111111, 0.01111111111111111, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 80: [0.025, 0.025, 0.025, 0.025, 0.025, 0.025, 0.025, 0.025, 0.025, 0.0125, 0.0125, 0.0125, 0.0125, 0.0125, 0.0125, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 70: [0.02857142857142857, 0.02857142857142857, 0.02857142857142857, 0.02857142857142857, 0.02857142857142857, 0.02857142857142857, 0.02857142857142857, 0.02857142857142857, 0.02857142857142857, 0.01428571428571429, 0.01428571428571429, 0.01428571428571429, 0.01428571428571429, 0.01428571428571429, 0.01428571428571429, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 60: [0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.01666666666666667, 0.01666666666666667, 0.01666666666666667, 0.01666666666666667, 0.01666666666666667, 0.01666666666666667, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 50: [0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 40: [0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.025, 0.025, 0.025, 0.025, 0.025, 0.025, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 30: [0.06666666666666667, 0.06666666666666667, 0.06666666666666667, 0.06666666666666667, 0.06666666666666667, 0.06666666666666667, 0.06666666666666667, 0.06666666666666667, 0.06666666666666667, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}], [{100: [0.02, 0.01], 90: [0.02222222222222222, 0.01111111111111111], 80: [0.025, 0.0125], 70: [0.02857142857142857, 0.01428571428571429], 60: [0.03333333333333333, 0.01666666666666667], 50: [0.04, 0.02], 40: [0.05, 0.025], 30: [0.06666666666666667, 0.03333333333333333]}, {100: [0.0, 0.0], 90: [0.0, 0.0], 80: [0.0, 0.0], 70: [0.0, 0.0], 60: [0.0, 0.0], 50: [0.0, 0.0], 40: [0.0, 0.0], 30: [0.0, 0.0]}]]
-        variances = [[{100: 1.0, 90: 1.0, 80: 1.0, 70: 1.0, 60: 1.0, 50: 1.0, 40: 1.0, 30: 1.0}, {100: 1.0, 90: 1.0, 80: 1.0, 70: 1.0, 60: 1.0, 50: 1.0, 40: 1.0, 30: 1.0}], [{100: 1.0, 90: 1.0, 80: 1.0, 70: 1.0, 60: 1.0, 50: 1.0, 40: 1.0, 30: 1.0}, {100: 1.0, 90: 1.0, 80: 1.0, 70: 1.0, 60: 1.0, 50: 1.0, 40: 1.0, 30: 1.0}]]
-        acceptable_variances = [[{100: 0.0019240000000000001, 90: 0.002282578875171468, 80: 0.0027421875000000003, 70: 0.0033352769679300285, 60: 0.004092592592592592, 50: 0.004992, 40: 0.0056875, 30: 0.003851851851851851}, {100: 1.96E-4, 90: 2.4142661179698212E-4, 80: 3.046875E-4, 70: 3.9650145772594754E-4, 60: 5.37037037037037E-4, 50: 7.679999999999999E-4, 40: 0.0011875, 30: 0.002074074074074074}], [{100: 1.96E-4, 90: 2.4142661179698212E-4, 80: 3.046875E-4, 70: 3.9650145772594754E-4, 60: 5.37037037037037E-4, 50: 7.679999999999999E-4, 40: 0.0011875, 30: 0.002074074074074074}, {100: 0.0, 90: 0.0, 80: 0.0, 70: 0.0, 60: 0.0, 50: 0.0, 40: 0.0, 30: 0.0}]]
-        previous_state = 0
+        utilization = [0.859, 0.6988333333333333, 0.811, 0.7685833333333333, 0.88, 0.79475, 0.7965, 0.7471666666666666, 0.92675, 0.8313333333333334, 0.9466666666666667, 0.7655833333333333, 0.803, 1.0415833333333333, 0.9058333333333334, 0.7433333333333333, 0.9835, 0.9040833333333333, 0.9189166666666667, 0.8335, 1.10275, 0.8660833333333333, 0.93475, 0.773, 0.91825, 0.8491666666666666, 0.7414166666666666, 0.8538333333333333, 0.8065833333333333, 0.9409166666666666, 1.1623333333333334]
+        request_windows = [[1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0]]
+        estimate_windows = [[{30: [0.8666666666666667, 0.8666666666666667, 0.8333333333333333, 0.8, 0.7666666666666667, 0.7333333333333333, 0.7, 0.6666666666666667, 0.6333333333333333, 0.6, 0.6, 0.5666666666666667, 0.5333333333333333, 0.5, 0.4666666666666667, 0.4333333333333333, 0.4333333333333333, 0.4, 0.3666666666666667, 0.3333333333333333, 0.3, 0.2666666666666667, 0.2333333333333333, 0.2, 0.1666666666666667, 0.1333333333333333, 0.1, 0.06666666666666667, 0.03333333333333333], 40: [0.65, 0.65, 0.625, 0.6, 0.575, 0.55, 0.525, 0.5, 0.475, 0.45, 0.45, 0.425, 0.4, 0.375, 0.35, 0.325, 0.325, 0.3, 0.275, 0.25, 0.225, 0.2, 0.175, 0.15, 0.125, 0.1, 0.075, 0.05, 0.025], 50: [0.52, 0.52, 0.5, 0.48, 0.46, 0.44, 0.42, 0.4, 0.38, 0.36, 0.36, 0.34, 0.32, 0.3, 0.28, 0.26, 0.26, 0.24, 0.22, 0.2, 0.18, 0.16, 0.14, 0.12, 0.1, 0.08, 0.06, 0.04, 0.02], 60: [0.4333333333333333, 0.4333333333333333, 0.4166666666666667, 0.4, 0.3833333333333333, 0.3666666666666667, 0.35, 0.3333333333333333, 0.3166666666666667, 0.3, 0.3, 0.2833333333333333, 0.2666666666666667, 0.25, 0.2333333333333333, 0.2166666666666667, 0.2166666666666667, 0.2, 0.1833333333333333, 0.1666666666666667, 0.15, 0.1333333333333333, 0.1166666666666667, 0.1, 0.08333333333333333, 0.06666666666666667, 0.05, 0.03333333333333333, 0.01666666666666667], 70: [0.3714285714285714, 0.3714285714285714, 0.3571428571428571, 0.3428571428571429, 0.3285714285714286, 0.3142857142857143, 0.3, 0.2857142857142857, 0.2714285714285714, 0.2571428571428571, 0.2571428571428571, 0.2428571428571429, 0.2285714285714286, 0.2142857142857143, 0.2, 0.1857142857142857, 0.1857142857142857, 0.1714285714285714, 0.1571428571428571, 0.1428571428571429, 0.1285714285714286, 0.1142857142857143, 0.1, 0.08571428571428572, 0.07142857142857142, 0.05714285714285714, 0.04285714285714286, 0.02857142857142857, 0.01428571428571429], 80: [0.325, 0.325, 0.3125, 0.3, 0.2875, 0.275, 0.2625, 0.25, 0.2375, 0.225, 0.225, 0.2125, 0.2, 0.1875, 0.175, 0.1625, 0.1625, 0.15, 0.1375, 0.125, 0.1125, 0.1, 0.0875, 0.075, 0.0625, 0.05, 0.0375, 0.025, 0.0125], 90: [0.2888888888888889, 0.2888888888888889, 0.2777777777777778, 0.2666666666666667, 0.2555555555555556, 0.2444444444444444, 0.2333333333333333, 0.2222222222222222, 0.2111111111111111, 0.2, 0.2, 0.1888888888888889, 0.1777777777777778, 0.1666666666666667, 0.1555555555555556, 0.1444444444444444, 0.1444444444444444, 0.1333333333333333, 0.1222222222222222, 0.1111111111111111, 0.1, 0.08888888888888889, 0.07777777777777778, 0.06666666666666667, 0.05555555555555556, 0.04444444444444444, 0.03333333333333333, 0.02222222222222222, 0.01111111111111111], 100: [0.26, 0.26, 0.25, 0.24, 0.23, 0.22, 0.21, 0.2, 0.19, 0.18, 0.18, 0.17, 0.16, 0.15, 0.14, 0.13, 0.13, 0.12, 0.11, 0.1, 0.09, 0.08, 0.07, 0.06, 0.05, 0.04, 0.03, 0.02, 0.01]}, {30: [0.1, 0.06666666666666667, 0.06666666666666667, 0.06666666666666667, 0.06666666666666667, 0.06666666666666667, 0.06666666666666667, 0.06666666666666667, 0.06666666666666667, 0.06666666666666667, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 40: [0.075, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.025, 0.025, 0.025, 0.025, 0.025, 0.025, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 50: [0.06, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 60: [0.05, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.01666666666666667, 0.01666666666666667, 0.01666666666666667, 0.01666666666666667, 0.01666666666666667, 0.01666666666666667, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 70: [0.04285714285714286, 0.02857142857142857, 0.02857142857142857, 0.02857142857142857, 0.02857142857142857, 0.02857142857142857, 0.02857142857142857, 0.02857142857142857, 0.02857142857142857, 0.02857142857142857, 0.01428571428571429, 0.01428571428571429, 0.01428571428571429, 0.01428571428571429, 0.01428571428571429, 0.01428571428571429, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 80: [0.0375, 0.025, 0.025, 0.025, 0.025, 0.025, 0.025, 0.025, 0.025, 0.025, 0.0125, 0.0125, 0.0125, 0.0125, 0.0125, 0.0125, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 90: [0.03333333333333333, 0.02222222222222222, 0.02222222222222222, 0.02222222222222222, 0.02222222222222222, 0.02222222222222222, 0.02222222222222222, 0.02222222222222222, 0.02222222222222222, 0.02222222222222222, 0.01111111111111111, 0.01111111111111111, 0.01111111111111111, 0.01111111111111111, 0.01111111111111111, 0.01111111111111111, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 100: [0.03, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}], [{100: [0.02, 0.01], 90: [0.02222222222222222, 0.01111111111111111], 80: [0.025, 0.0125], 70: [0.02857142857142857, 0.01428571428571429], 60: [0.03333333333333333, 0.01666666666666667], 50: [0.04, 0.02], 40: [0.05, 0.025], 30: [0.06666666666666667, 0.03333333333333333]}, {100: [0.0, 0.0], 90: [0.0, 0.0], 80: [0.0, 0.0], 70: [0.0, 0.0], 60: [0.0, 0.0], 50: [0.0, 0.0], 40: [0.0, 0.0], 30: [0.0, 0.0]}]]
+        variances = [[{30: 1.0, 40: 1.0, 50: 1.0, 60: 1.0, 70: 1.0, 80: 1.0, 90: 1.0, 100: 1.0}, {30: 1.0, 40: 1.0, 50: 1.0, 60: 1.0, 70: 1.0, 80: 1.0, 90: 1.0, 100: 1.0}], [{100: 1.0, 90: 1.0, 80: 1.0, 70: 1.0, 60: 1.0, 50: 1.0, 40: 1.0, 30: 1.0}, {100: 1.0, 90: 1.0, 80: 1.0, 70: 1.0, 60: 1.0, 50: 1.0, 40: 1.0, 30: 1.0}]]
+        acceptable_variances = [[{30: 0.003851851851851851, 40: 0.0056875, 50: 0.004992, 60: 0.004092592592592592, 70: 0.0033352769679300285, 80: 0.0027421875000000003, 90: 0.002282578875171468, 100: 0.0019240000000000001}, {30: 0.0030000000000000005, 40: 0.0017343750000000002, 50: 0.0011279999999999999, 60: 7.916666666666666E-4, 70: 5.860058309037901E-4, 80: 4.51171875E-4, 90: 3.580246913580247E-4, 100: 2.9099999999999997E-4}], [{100: 1.96E-4, 90: 2.4142661179698212E-4, 80: 3.046875E-4, 70: 3.9650145772594754E-4, 60: 5.37037037037037E-4, 50: 7.679999999999999E-4, 40: 0.0011875, 30: 0.002074074074074074}, {100: 0.0, 90: 0.0, 80: 0.0, 70: 0.0, 60: 0.0, 50: 0.0, 40: 0.0, 30: 0.0}]]
+        previous_state = 1
         selected_windows = [[30, 30], [30, 30]]
         p = [[0.8666666666666667, 0.06666666666666667], [0.06666666666666667, 0.0]]
         time_in_states = 31
@@ -704,9 +725,9 @@ class CoreRealData(TestCase):
 
         decision, state = c.mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
                                  time_step, migration_time, utilization, state)
-        self.assertEqual(decision, False)
+        self.assertEqual(decision, command)
         self.assertEqual(state['previous_state'], previous_state)
-        self.assertEqual(state['time_in_states'], time_in_states - 1)
+        self.assertEqual(state['time_in_states'], time_in_states)
         self.assertEqual(state['time_in_state_n'], time_in_state_n)
         self.assertEqual(decision, command)
         assert is_almost_equal(reverse_req(state['request_windows']), request_windows)
@@ -717,22 +738,6 @@ class CoreRealData(TestCase):
         assert is_almost_equal(state['p'], p)
         assert is_almost_equal(state['policy'], policy)
 
-'''
-
-
-        utilization = [0.859, 0.6988333333333333, 0.811, 0.7685833333333333, 0.88, 0.79475, 0.7965, 0.7471666666666666, 0.92675, 0.8313333333333334, 0.9466666666666667, 0.7655833333333333, 0.803, 1.0415833333333333, 0.9058333333333334, 0.7433333333333333, 0.9835, 0.9040833333333333, 0.9189166666666667, 0.8335, 1.10275, 0.8660833333333333, 0.93475, 0.773, 0.91825, 0.8491666666666666, 0.7414166666666666, 0.8538333333333333, 0.8065833333333333, 0.9409166666666666, 1.1623333333333334]
-        request_windows = [[1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0]]
-        estimate_windows = [[{30: [0.8666666666666667, 0.8666666666666667, 0.8333333333333333, 0.8, 0.7666666666666667, 0.7333333333333333, 0.7, 0.6666666666666667, 0.6333333333333333, 0.6, 0.6, 0.5666666666666667, 0.5333333333333333, 0.5, 0.4666666666666667, 0.4333333333333333, 0.4333333333333333, 0.4, 0.3666666666666667, 0.3333333333333333, 0.3, 0.2666666666666667, 0.2333333333333333, 0.2, 0.1666666666666667, 0.1333333333333333, 0.1, 0.06666666666666667, 0.03333333333333333], 40: [0.65, 0.65, 0.625, 0.6, 0.575, 0.55, 0.525, 0.5, 0.475, 0.45, 0.45, 0.425, 0.4, 0.375, 0.35, 0.325, 0.325, 0.3, 0.275, 0.25, 0.225, 0.2, 0.175, 0.15, 0.125, 0.1, 0.075, 0.05, 0.025], 50: [0.52, 0.52, 0.5, 0.48, 0.46, 0.44, 0.42, 0.4, 0.38, 0.36, 0.36, 0.34, 0.32, 0.3, 0.28, 0.26, 0.26, 0.24, 0.22, 0.2, 0.18, 0.16, 0.14, 0.12, 0.1, 0.08, 0.06, 0.04, 0.02], 60: [0.4333333333333333, 0.4333333333333333, 0.4166666666666667, 0.4, 0.3833333333333333, 0.3666666666666667, 0.35, 0.3333333333333333, 0.3166666666666667, 0.3, 0.3, 0.2833333333333333, 0.2666666666666667, 0.25, 0.2333333333333333, 0.2166666666666667, 0.2166666666666667, 0.2, 0.1833333333333333, 0.1666666666666667, 0.15, 0.1333333333333333, 0.1166666666666667, 0.1, 0.08333333333333333, 0.06666666666666667, 0.05, 0.03333333333333333, 0.01666666666666667], 70: [0.3714285714285714, 0.3714285714285714, 0.3571428571428571, 0.3428571428571429, 0.3285714285714286, 0.3142857142857143, 0.3, 0.2857142857142857, 0.2714285714285714, 0.2571428571428571, 0.2571428571428571, 0.2428571428571429, 0.2285714285714286, 0.2142857142857143, 0.2, 0.1857142857142857, 0.1857142857142857, 0.1714285714285714, 0.1571428571428571, 0.1428571428571429, 0.1285714285714286, 0.1142857142857143, 0.1, 0.08571428571428572, 0.07142857142857142, 0.05714285714285714, 0.04285714285714286, 0.02857142857142857, 0.01428571428571429], 80: [0.325, 0.325, 0.3125, 0.3, 0.2875, 0.275, 0.2625, 0.25, 0.2375, 0.225, 0.225, 0.2125, 0.2, 0.1875, 0.175, 0.1625, 0.1625, 0.15, 0.1375, 0.125, 0.1125, 0.1, 0.0875, 0.075, 0.0625, 0.05, 0.0375, 0.025, 0.0125], 90: [0.2888888888888889, 0.2888888888888889, 0.2777777777777778, 0.2666666666666667, 0.2555555555555556, 0.2444444444444444, 0.2333333333333333, 0.2222222222222222, 0.2111111111111111, 0.2, 0.2, 0.1888888888888889, 0.1777777777777778, 0.1666666666666667, 0.1555555555555556, 0.1444444444444444, 0.1444444444444444, 0.1333333333333333, 0.1222222222222222, 0.1111111111111111, 0.1, 0.08888888888888889, 0.07777777777777778, 0.06666666666666667, 0.05555555555555556, 0.04444444444444444, 0.03333333333333333, 0.02222222222222222, 0.01111111111111111], 100: [0.26, 0.26, 0.25, 0.24, 0.23, 0.22, 0.21, 0.2, 0.19, 0.18, 0.18, 0.17, 0.16, 0.15, 0.14, 0.13, 0.13, 0.12, 0.11, 0.1, 0.09, 0.08, 0.07, 0.06, 0.05, 0.04, 0.03, 0.02, 0.01]}, {30: [0.1, 0.06666666666666667, 0.06666666666666667, 0.06666666666666667, 0.06666666666666667, 0.06666666666666667, 0.06666666666666667, 0.06666666666666667, 0.06666666666666667, 0.06666666666666667, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 40: [0.075, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.025, 0.025, 0.025, 0.025, 0.025, 0.025, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 50: [0.06, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 60: [0.05, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.01666666666666667, 0.01666666666666667, 0.01666666666666667, 0.01666666666666667, 0.01666666666666667, 0.01666666666666667, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 70: [0.04285714285714286, 0.02857142857142857, 0.02857142857142857, 0.02857142857142857, 0.02857142857142857, 0.02857142857142857, 0.02857142857142857, 0.02857142857142857, 0.02857142857142857, 0.02857142857142857, 0.01428571428571429, 0.01428571428571429, 0.01428571428571429, 0.01428571428571429, 0.01428571428571429, 0.01428571428571429, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 80: [0.0375, 0.025, 0.025, 0.025, 0.025, 0.025, 0.025, 0.025, 0.025, 0.025, 0.0125, 0.0125, 0.0125, 0.0125, 0.0125, 0.0125, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 90: [0.03333333333333333, 0.02222222222222222, 0.02222222222222222, 0.02222222222222222, 0.02222222222222222, 0.02222222222222222, 0.02222222222222222, 0.02222222222222222, 0.02222222222222222, 0.02222222222222222, 0.01111111111111111, 0.01111111111111111, 0.01111111111111111, 0.01111111111111111, 0.01111111111111111, 0.01111111111111111, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 100: [0.03, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}], [{100: [0.02, 0.01], 90: [0.02222222222222222, 0.01111111111111111], 80: [0.025, 0.0125], 70: [0.02857142857142857, 0.01428571428571429], 60: [0.03333333333333333, 0.01666666666666667], 50: [0.04, 0.02], 40: [0.05, 0.025], 30: [0.06666666666666667, 0.03333333333333333]}, {100: [0.0, 0.0], 90: [0.0, 0.0], 80: [0.0, 0.0], 70: [0.0, 0.0], 60: [0.0, 0.0], 50: [0.0, 0.0], 40: [0.0, 0.0], 30: [0.0, 0.0]}]]
-        variances = [[{30: 1.0, 40: 1.0, 50: 1.0, 60: 1.0, 70: 1.0, 80: 1.0, 90: 1.0, 100: 1.0}, {30: 1.0, 40: 1.0, 50: 1.0, 60: 1.0, 70: 1.0, 80: 1.0, 90: 1.0, 100: 1.0}], [{100: 1.0, 90: 1.0, 80: 1.0, 70: 1.0, 60: 1.0, 50: 1.0, 40: 1.0, 30: 1.0}, {100: 1.0, 90: 1.0, 80: 1.0, 70: 1.0, 60: 1.0, 50: 1.0, 40: 1.0, 30: 1.0}]]
-        acceptable_variances = [[{30: 0.003851851851851851, 40: 0.0056875, 50: 0.004992, 60: 0.004092592592592592, 70: 0.0033352769679300285, 80: 0.0027421875000000003, 90: 0.002282578875171468, 100: 0.0019240000000000001}, {30: 0.0030000000000000005, 40: 0.0017343750000000002, 50: 0.0011279999999999999, 60: 7.916666666666666E-4, 70: 5.860058309037901E-4, 80: 4.51171875E-4, 90: 3.580246913580247E-4, 100: 2.9099999999999997E-4}], [{100: 1.96E-4, 90: 2.4142661179698212E-4, 80: 3.046875E-4, 70: 3.9650145772594754E-4, 60: 5.37037037037037E-4, 50: 7.679999999999999E-4, 40: 0.0011875, 30: 0.002074074074074074}, {100: 0.0, 90: 0.0, 80: 0.0, 70: 0.0, 60: 0.0, 50: 0.0, 40: 0.0, 30: 0.0}]]
-        previous_state = 1
-        selected_windows = [[30, 30], [30, 30]]
-        p = [[0.8666666666666667, 0.1], [0.06666666666666667, 0.0]]
-        time_in_states = 32
-        time_in_state_n = 3
-        policy = [0.0 0.0]
-        command = false
-
         utilization = [0.859, 0.6988333333333333, 0.811, 0.7685833333333333, 0.88, 0.79475, 0.7965, 0.7471666666666666, 0.92675, 0.8313333333333334, 0.9466666666666667, 0.7655833333333333, 0.803, 1.0415833333333333, 0.9058333333333334, 0.7433333333333333, 0.9835, 0.9040833333333333, 0.9189166666666667, 0.8335, 1.10275, 0.8660833333333333, 0.93475, 0.773, 0.91825, 0.8491666666666666, 0.7414166666666666, 0.8538333333333333, 0.8065833333333333, 0.9409166666666666, 1.1623333333333334, 0.9215833333333333]
         request_windows = [[1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0]]
         estimate_windows = [[{30: [0.8666666666666667, 0.8666666666666667, 0.8333333333333333, 0.8, 0.7666666666666667, 0.7333333333333333, 0.7, 0.6666666666666667, 0.6333333333333333, 0.6, 0.6, 0.5666666666666667, 0.5333333333333333, 0.5, 0.4666666666666667, 0.4333333333333333, 0.4333333333333333, 0.4, 0.3666666666666667, 0.3333333333333333, 0.3, 0.2666666666666667, 0.2333333333333333, 0.2, 0.1666666666666667, 0.1333333333333333, 0.1, 0.06666666666666667, 0.03333333333333333], 40: [0.65, 0.65, 0.625, 0.6, 0.575, 0.55, 0.525, 0.5, 0.475, 0.45, 0.45, 0.425, 0.4, 0.375, 0.35, 0.325, 0.325, 0.3, 0.275, 0.25, 0.225, 0.2, 0.175, 0.15, 0.125, 0.1, 0.075, 0.05, 0.025], 50: [0.52, 0.52, 0.5, 0.48, 0.46, 0.44, 0.42, 0.4, 0.38, 0.36, 0.36, 0.34, 0.32, 0.3, 0.28, 0.26, 0.26, 0.24, 0.22, 0.2, 0.18, 0.16, 0.14, 0.12, 0.1, 0.08, 0.06, 0.04, 0.02], 60: [0.4333333333333333, 0.4333333333333333, 0.4166666666666667, 0.4, 0.3833333333333333, 0.3666666666666667, 0.35, 0.3333333333333333, 0.3166666666666667, 0.3, 0.3, 0.2833333333333333, 0.2666666666666667, 0.25, 0.2333333333333333, 0.2166666666666667, 0.2166666666666667, 0.2, 0.1833333333333333, 0.1666666666666667, 0.15, 0.1333333333333333, 0.1166666666666667, 0.1, 0.08333333333333333, 0.06666666666666667, 0.05, 0.03333333333333333, 0.01666666666666667], 70: [0.3714285714285714, 0.3714285714285714, 0.3571428571428571, 0.3428571428571429, 0.3285714285714286, 0.3142857142857143, 0.3, 0.2857142857142857, 0.2714285714285714, 0.2571428571428571, 0.2571428571428571, 0.2428571428571429, 0.2285714285714286, 0.2142857142857143, 0.2, 0.1857142857142857, 0.1857142857142857, 0.1714285714285714, 0.1571428571428571, 0.1428571428571429, 0.1285714285714286, 0.1142857142857143, 0.1, 0.08571428571428572, 0.07142857142857142, 0.05714285714285714, 0.04285714285714286, 0.02857142857142857, 0.01428571428571429], 80: [0.325, 0.325, 0.3125, 0.3, 0.2875, 0.275, 0.2625, 0.25, 0.2375, 0.225, 0.225, 0.2125, 0.2, 0.1875, 0.175, 0.1625, 0.1625, 0.15, 0.1375, 0.125, 0.1125, 0.1, 0.0875, 0.075, 0.0625, 0.05, 0.0375, 0.025, 0.0125], 90: [0.2888888888888889, 0.2888888888888889, 0.2777777777777778, 0.2666666666666667, 0.2555555555555556, 0.2444444444444444, 0.2333333333333333, 0.2222222222222222, 0.2111111111111111, 0.2, 0.2, 0.1888888888888889, 0.1777777777777778, 0.1666666666666667, 0.1555555555555556, 0.1444444444444444, 0.1444444444444444, 0.1333333333333333, 0.1222222222222222, 0.1111111111111111, 0.1, 0.08888888888888889, 0.07777777777777778, 0.06666666666666667, 0.05555555555555556, 0.04444444444444444, 0.03333333333333333, 0.02222222222222222, 0.01111111111111111], 100: [0.26, 0.26, 0.25, 0.24, 0.23, 0.22, 0.21, 0.2, 0.19, 0.18, 0.18, 0.17, 0.16, 0.15, 0.14, 0.13, 0.13, 0.12, 0.11, 0.1, 0.09, 0.08, 0.07, 0.06, 0.05, 0.04, 0.03, 0.02, 0.01]}, {30: [0.1, 0.06666666666666667, 0.06666666666666667, 0.06666666666666667, 0.06666666666666667, 0.06666666666666667, 0.06666666666666667, 0.06666666666666667, 0.06666666666666667, 0.06666666666666667, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 40: [0.075, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.025, 0.025, 0.025, 0.025, 0.025, 0.025, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 50: [0.06, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 60: [0.05, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.01666666666666667, 0.01666666666666667, 0.01666666666666667, 0.01666666666666667, 0.01666666666666667, 0.01666666666666667, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 70: [0.04285714285714286, 0.02857142857142857, 0.02857142857142857, 0.02857142857142857, 0.02857142857142857, 0.02857142857142857, 0.02857142857142857, 0.02857142857142857, 0.02857142857142857, 0.02857142857142857, 0.01428571428571429, 0.01428571428571429, 0.01428571428571429, 0.01428571428571429, 0.01428571428571429, 0.01428571428571429, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 80: [0.0375, 0.025, 0.025, 0.025, 0.025, 0.025, 0.025, 0.025, 0.025, 0.025, 0.0125, 0.0125, 0.0125, 0.0125, 0.0125, 0.0125, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 90: [0.03333333333333333, 0.02222222222222222, 0.02222222222222222, 0.02222222222222222, 0.02222222222222222, 0.02222222222222222, 0.02222222222222222, 0.02222222222222222, 0.02222222222222222, 0.02222222222222222, 0.01111111111111111, 0.01111111111111111, 0.01111111111111111, 0.01111111111111111, 0.01111111111111111, 0.01111111111111111, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 100: [0.03, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}], [{30: [0.1, 0.06666666666666667, 0.03333333333333333], 40: [0.075, 0.05, 0.025], 50: [0.06, 0.04, 0.02], 60: [0.05, 0.03333333333333333, 0.01666666666666667], 70: [0.04285714285714286, 0.02857142857142857, 0.01428571428571429], 80: [0.0375, 0.025, 0.0125], 90: [0.03333333333333333, 0.02222222222222222, 0.01111111111111111], 100: [0.03, 0.02, 0.01]}, {30: [0.0, 0.0, 0.0], 40: [0.0, 0.0, 0.0], 50: [0.0, 0.0, 0.0], 60: [0.0, 0.0, 0.0], 70: [0.0, 0.0, 0.0], 80: [0.0, 0.0, 0.0], 90: [0.0, 0.0, 0.0], 100: [0.0, 0.0, 0.0]}]]
@@ -740,11 +745,26 @@ class CoreRealData(TestCase):
         acceptable_variances = [[{30: 0.003851851851851851, 40: 0.0056875, 50: 0.004992, 60: 0.004092592592592592, 70: 0.0033352769679300285, 80: 0.0027421875000000003, 90: 0.002282578875171468, 100: 0.0019240000000000001}, {30: 0.0030000000000000005, 40: 0.0017343750000000002, 50: 0.0011279999999999999, 60: 7.916666666666666E-4, 70: 5.860058309037901E-4, 80: 4.51171875E-4, 90: 3.580246913580247E-4, 100: 2.9099999999999997E-4}], [{30: 0.0030000000000000005, 40: 0.0017343750000000002, 50: 0.0011279999999999999, 60: 7.916666666666666E-4, 70: 5.860058309037901E-4, 80: 4.51171875E-4, 90: 3.580246913580247E-4, 100: 2.9099999999999997E-4}, {30: 0.0, 40: 0.0, 50: 0.0, 60: 0.0, 70: 0.0, 80: 0.0, 90: 0.0, 100: 0.0}]]
         previous_state = 0
         selected_windows = [[30, 30], [30, 30]]
-        p = [[0.8666666666666667, 0.1], [0.1, 0.0]]
-        time_in_states = 33
+        p = [[0.8666666666666667, 0.1], [0.06666666666666667, 0.0]]
+        time_in_states = 32
         time_in_state_n = 3
-        policy = [0.0 0.0]
-        command = false
+        policy = [0.0, 0.0]
+        command = False
+
+        decision, state = c.mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
+                                 time_step, migration_time, utilization, state)
+        self.assertEqual(decision, command)
+        self.assertEqual(state['previous_state'], previous_state)
+        self.assertEqual(state['time_in_states'], time_in_states)
+        self.assertEqual(state['time_in_state_n'], time_in_state_n)
+        self.assertEqual(decision, command)
+        assert is_almost_equal(reverse_req(state['request_windows']), request_windows)
+        assert is_almost_equal(reverse_est(state['estimate_windows']), estimate_windows)
+        assert is_almost_equal(state['variances'], variances)
+        assert is_almost_equal(state['acceptable_variances'], acceptable_variances)
+        assert is_almost_equal(state['selected_windows'], selected_windows)
+        assert is_almost_equal(state['p'], p)
+        assert is_almost_equal(state['policy'], policy)
 
         utilization = [0.859, 0.6988333333333333, 0.811, 0.7685833333333333, 0.88, 0.79475, 0.7965, 0.7471666666666666, 0.92675, 0.8313333333333334, 0.9466666666666667, 0.7655833333333333, 0.803, 1.0415833333333333, 0.9058333333333334, 0.7433333333333333, 0.9835, 0.9040833333333333, 0.9189166666666667, 0.8335, 1.10275, 0.8660833333333333, 0.93475, 0.773, 0.91825, 0.8491666666666666, 0.7414166666666666, 0.8538333333333333, 0.8065833333333333, 0.9409166666666666, 1.1623333333333334, 0.9215833333333333, 0.8944166666666666]
         request_windows = [[0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0]]
@@ -753,11 +773,26 @@ class CoreRealData(TestCase):
         acceptable_variances = [[{100: 0.001971, 90: 0.002333333333333333, 80: 0.002794921875, 70: 0.0033848396501457725, 60: 0.004125, 50: 0.004968, 40: 0.005484375, 30: 0.0029999999999999996}, {100: 2.9099999999999997E-4, 90: 3.580246913580247E-4, 80: 4.51171875E-4, 70: 5.860058309037901E-4, 60: 7.916666666666666E-4, 50: 0.0011279999999999999, 40: 0.0017343750000000002, 30: 0.0030000000000000005}], [{30: 0.0030000000000000005, 40: 0.0017343750000000002, 50: 0.0011279999999999999, 60: 7.916666666666666E-4, 70: 5.860058309037901E-4, 80: 4.51171875E-4, 90: 3.580246913580247E-4, 100: 2.9099999999999997E-4}, {30: 0.0, 40: 0.0, 50: 0.0, 60: 0.0, 70: 0.0, 80: 0.0, 90: 0.0, 100: 0.0}]]
         previous_state = 0
         selected_windows = [[30, 30], [30, 30]]
-        p = [[0.9, 0.1], [0.1, 0.0]]
-        time_in_states = 34
+        p = [[0.8666666666666667, 0.1], [0.1, 0.0]]
+        time_in_states = 33
         time_in_state_n = 3
-        policy = [0.0 0.0]
-        command = false
+        policy = [0.0, 0.0]
+        command = False
+
+        decision, state = c.mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
+                                 time_step, migration_time, utilization, state)
+        self.assertEqual(decision, command)
+        self.assertEqual(state['previous_state'], previous_state)
+        self.assertEqual(state['time_in_states'], time_in_states)
+        self.assertEqual(state['time_in_state_n'], time_in_state_n)
+        self.assertEqual(decision, command)
+        assert is_almost_equal(reverse_req(state['request_windows']), request_windows)
+        assert is_almost_equal(reverse_est(state['estimate_windows']), estimate_windows)
+        assert is_almost_equal(state['variances'], variances)
+        assert is_almost_equal(state['acceptable_variances'], acceptable_variances)
+        assert is_almost_equal(state['selected_windows'], selected_windows)
+        assert is_almost_equal(state['p'], p)
+        assert is_almost_equal(state['policy'], policy)
 
         utilization = [0.859, 0.6988333333333333, 0.811, 0.7685833333333333, 0.88, 0.79475, 0.7965, 0.7471666666666666, 0.92675, 0.8313333333333334, 0.9466666666666667, 0.7655833333333333, 0.803, 1.0415833333333333, 0.9058333333333334, 0.7433333333333333, 0.9835, 0.9040833333333333, 0.9189166666666667, 0.8335, 1.10275, 0.8660833333333333, 0.93475, 0.773, 0.91825, 0.8491666666666666, 0.7414166666666666, 0.8538333333333333, 0.8065833333333333, 0.9409166666666666, 1.1623333333333334, 0.9215833333333333, 0.8944166666666666, 0.96475]
         request_windows = [[0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0]]
@@ -767,10 +802,25 @@ class CoreRealData(TestCase):
         previous_state = 0
         selected_windows = [[30, 30], [30, 30]]
         p = [[0.9, 0.1], [0.1, 0.0]]
-        time_in_states = 35
+        time_in_states = 34
         time_in_state_n = 3
-        policy = [0.0 0.0]
-        command = false
+        policy = [0.0, 0.0]
+        command = False
+
+        decision, state = c.mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
+                                 time_step, migration_time, utilization, state)
+        self.assertEqual(decision, command)
+        self.assertEqual(state['previous_state'], previous_state)
+        self.assertEqual(state['time_in_states'], time_in_states)
+        self.assertEqual(state['time_in_state_n'], time_in_state_n)
+        self.assertEqual(decision, command)
+        assert is_almost_equal(reverse_req(state['request_windows']), request_windows)
+        assert is_almost_equal(reverse_est(state['estimate_windows']), estimate_windows)
+        assert is_almost_equal(state['variances'], variances)
+        assert is_almost_equal(state['acceptable_variances'], acceptable_variances)
+        assert is_almost_equal(state['selected_windows'], selected_windows)
+        assert is_almost_equal(state['p'], p)
+        assert is_almost_equal(state['policy'], policy)
 
         utilization = [0.859, 0.6988333333333333, 0.811, 0.7685833333333333, 0.88, 0.79475, 0.7965, 0.7471666666666666, 0.92675, 0.8313333333333334, 0.9466666666666667, 0.7655833333333333, 0.803, 1.0415833333333333, 0.9058333333333334, 0.7433333333333333, 0.9835, 0.9040833333333333, 0.9189166666666667, 0.8335, 1.10275, 0.8660833333333333, 0.93475, 0.773, 0.91825, 0.8491666666666666, 0.7414166666666666, 0.8538333333333333, 0.8065833333333333, 0.9409166666666666, 1.1623333333333334, 0.9215833333333333, 0.8944166666666666, 0.96475, 0.8331666666666667]
         request_windows = [[0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0]]
@@ -780,10 +830,25 @@ class CoreRealData(TestCase):
         previous_state = 0
         selected_windows = [[30, 30], [30, 30]]
         p = [[0.9, 0.1], [0.1, 0.0]]
-        time_in_states = 36
-        time_in_state_n = 4
-        policy = [0.0 0.0]
-        command = false
+        time_in_states = 35
+        time_in_state_n = 3
+        policy = [0.0, 0.0]
+        command = False
+
+        decision, state = c.mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
+                                 time_step, migration_time, utilization, state)
+        self.assertEqual(decision, command)
+        self.assertEqual(state['previous_state'], previous_state)
+        self.assertEqual(state['time_in_states'], time_in_states)
+        self.assertEqual(state['time_in_state_n'], time_in_state_n)
+        self.assertEqual(decision, command)
+        assert is_almost_equal(reverse_req(state['request_windows']), request_windows)
+        assert is_almost_equal(reverse_est(state['estimate_windows']), estimate_windows)
+        assert is_almost_equal(state['variances'], variances)
+        assert is_almost_equal(state['acceptable_variances'], acceptable_variances)
+        assert is_almost_equal(state['selected_windows'], selected_windows)
+        assert is_almost_equal(state['p'], p)
+        assert is_almost_equal(state['policy'], policy)
 
         utilization = [0.859, 0.6988333333333333, 0.811, 0.7685833333333333, 0.88, 0.79475, 0.7965, 0.7471666666666666, 0.92675, 0.8313333333333334, 0.9466666666666667, 0.7655833333333333, 0.803, 1.0415833333333333, 0.9058333333333334, 0.7433333333333333, 0.9835, 0.9040833333333333, 0.9189166666666667, 0.8335, 1.10275, 0.8660833333333333, 0.93475, 0.773, 0.91825, 0.8491666666666666, 0.7414166666666666, 0.8538333333333333, 0.8065833333333333, 0.9409166666666666, 1.1623333333333334, 0.9215833333333333, 0.8944166666666666, 0.96475, 0.8331666666666667, 1.2955]
         request_windows = [[1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0]]
@@ -792,11 +857,26 @@ class CoreRealData(TestCase):
         acceptable_variances = [[{30: 0.003851851851851851, 40: 0.004984375, 50: 0.0048720000000000005, 60: 0.004162037037037037, 70: 0.0034664723032069972, 80: 0.0028886718749999997, 90: 0.0024266117969821673, 100: 0.0020589999999999996}, {30: 0.003851851851851851, 40: 0.0022500000000000003, 50: 0.001472, 60: 0.001037037037037037, 70: 7.696793002915452E-4, 80: 5.9375E-4, 90: 4.7187928669410143E-4, 100: 3.8399999999999996E-4}], [{30: 0.0030000000000000005, 40: 0.0017343750000000002, 50: 0.0011279999999999999, 60: 7.916666666666666E-4, 70: 5.860058309037901E-4, 80: 4.51171875E-4, 90: 3.580246913580247E-4, 100: 2.9099999999999997E-4}, {30: 0.0, 40: 0.0, 50: 0.0, 60: 0.0, 70: 0.0, 80: 0.0, 90: 0.0, 100: 0.0}]]
         previous_state = 1
         selected_windows = [[30, 30], [30, 30]]
-        p = [[0.8666666666666667, 0.1333333333333333], [0.1, 0.0]]
-        time_in_states = 37
+        p = [[0.9, 0.1], [0.1, 0.0]]
+        time_in_states = 36
         time_in_state_n = 4
-        policy = [0.0 0.0]
-        command = false
+        policy = [0.0, 0.0]
+        command = False
+
+        decision, state = c.mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
+                                 time_step, migration_time, utilization, state)
+        self.assertEqual(decision, command)
+        self.assertEqual(state['previous_state'], previous_state)
+        self.assertEqual(state['time_in_states'], time_in_states)
+        self.assertEqual(state['time_in_state_n'], time_in_state_n)
+        self.assertEqual(decision, command)
+        assert is_almost_equal(reverse_req(state['request_windows']), request_windows)
+        assert is_almost_equal(reverse_est(state['estimate_windows']), estimate_windows)
+        assert is_almost_equal(state['variances'], variances)
+        assert is_almost_equal(state['acceptable_variances'], acceptable_variances)
+        assert is_almost_equal(state['selected_windows'], selected_windows)
+        assert is_almost_equal(state['p'], p)
+        assert is_almost_equal(state['policy'], policy)
 
         utilization = [0.859, 0.6988333333333333, 0.811, 0.7685833333333333, 0.88, 0.79475, 0.7965, 0.7471666666666666, 0.92675, 0.8313333333333334, 0.9466666666666667, 0.7655833333333333, 0.803, 1.0415833333333333, 0.9058333333333334, 0.7433333333333333, 0.9835, 0.9040833333333333, 0.9189166666666667, 0.8335, 1.10275, 0.8660833333333333, 0.93475, 0.773, 0.91825, 0.8491666666666666, 0.7414166666666666, 0.8538333333333333, 0.8065833333333333, 0.9409166666666666, 1.1623333333333334, 0.9215833333333333, 0.8944166666666666, 0.96475, 0.8331666666666667, 1.2955, 0.8536666666666667]
         request_windows = [[1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0]]
@@ -805,11 +885,26 @@ class CoreRealData(TestCase):
         acceptable_variances = [[{30: 0.003851851851851851, 40: 0.004984375, 50: 0.0048720000000000005, 60: 0.004162037037037037, 70: 0.0034664723032069972, 80: 0.0028886718749999997, 90: 0.0024266117969821673, 100: 0.0020589999999999996}, {30: 0.003851851851851851, 40: 0.0022500000000000003, 50: 0.001472, 60: 0.001037037037037037, 70: 7.696793002915452E-4, 80: 5.9375E-4, 90: 4.7187928669410143E-4, 100: 3.8399999999999996E-4}], [{100: 3.8399999999999996E-4, 90: 4.7187928669410143E-4, 80: 5.9375E-4, 70: 7.696793002915452E-4, 60: 0.001037037037037037, 50: 0.001472, 40: 0.0022500000000000003, 30: 0.003851851851851851}, {100: 0.0, 90: 0.0, 80: 0.0, 70: 0.0, 60: 0.0, 50: 0.0, 40: 0.0, 30: 0.0}]]
         previous_state = 0
         selected_windows = [[30, 30], [30, 30]]
-        p = [[0.8666666666666667, 0.1333333333333333], [0.1333333333333333, 0.0]]
-        time_in_states = 38
+        p = [[0.8666666666666667, 0.1333333333333333], [0.1, 0.0]]
+        time_in_states = 37
         time_in_state_n = 4
-        policy = [0.0 0.0]
-        command = false
+        policy = [0.0, 0.0]
+        command = False
+
+        decision, state = c.mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
+                                 time_step, migration_time, utilization, state)
+        self.assertEqual(decision, command)
+        self.assertEqual(state['previous_state'], previous_state)
+        self.assertEqual(state['time_in_states'], time_in_states)
+        self.assertEqual(state['time_in_state_n'], time_in_state_n)
+        self.assertEqual(decision, command)
+        assert is_almost_equal(reverse_req(state['request_windows']), request_windows)
+        assert is_almost_equal(reverse_est(state['estimate_windows']), estimate_windows)
+        assert is_almost_equal(state['variances'], variances)
+        assert is_almost_equal(state['acceptable_variances'], acceptable_variances)
+        assert is_almost_equal(state['selected_windows'], selected_windows)
+        assert is_almost_equal(state['p'], p)
+        assert is_almost_equal(state['policy'], policy)
 
         utilization = [0.859, 0.6988333333333333, 0.811, 0.7685833333333333, 0.88, 0.79475, 0.7965, 0.7471666666666666, 0.92675, 0.8313333333333334, 0.9466666666666667, 0.7655833333333333, 0.803, 1.0415833333333333, 0.9058333333333334, 0.7433333333333333, 0.9835, 0.9040833333333333, 0.9189166666666667, 0.8335, 1.10275, 0.8660833333333333, 0.93475, 0.773, 0.91825, 0.8491666666666666, 0.7414166666666666, 0.8538333333333333, 0.8065833333333333, 0.9409166666666666, 1.1623333333333334, 0.9215833333333333, 0.8944166666666666, 0.96475, 0.8331666666666667, 1.2955, 0.8536666666666667, 0.9679166666666666]
         request_windows = [[0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0]]
@@ -819,10 +914,25 @@ class CoreRealData(TestCase):
         previous_state = 0
         selected_windows = [[30, 30], [30, 30]]
         p = [[0.8666666666666667, 0.1333333333333333], [0.1333333333333333, 0.0]]
-        time_in_states = 39
-        time_in_state_n = 5
-        policy = [0.0 0.0]
-        command = false
+        time_in_states = 38
+        time_in_state_n = 4
+        policy = [0.0, 0.0]
+        command = False
+
+        decision, state = c.mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
+                                 time_step, migration_time, utilization, state)
+        self.assertEqual(decision, command)
+        self.assertEqual(state['previous_state'], previous_state)
+        self.assertEqual(state['time_in_states'], time_in_states)
+        self.assertEqual(state['time_in_state_n'], time_in_state_n)
+        self.assertEqual(decision, command)
+        assert is_almost_equal(reverse_req(state['request_windows']), request_windows)
+        assert is_almost_equal(reverse_est(state['estimate_windows']), estimate_windows)
+        assert is_almost_equal(state['variances'], variances)
+        assert is_almost_equal(state['acceptable_variances'], acceptable_variances)
+        assert is_almost_equal(state['selected_windows'], selected_windows)
+        assert is_almost_equal(state['p'], p)
+        assert is_almost_equal(state['policy'], policy)
 
         utilization = [0.859, 0.6988333333333333, 0.811, 0.7685833333333333, 0.88, 0.79475, 0.7965, 0.7471666666666666, 0.92675, 0.8313333333333334, 0.9466666666666667, 0.7655833333333333, 0.803, 1.0415833333333333, 0.9058333333333334, 0.7433333333333333, 0.9835, 0.9040833333333333, 0.9189166666666667, 0.8335, 1.10275, 0.8660833333333333, 0.93475, 0.773, 0.91825, 0.8491666666666666, 0.7414166666666666, 0.8538333333333333, 0.8065833333333333, 0.9409166666666666, 1.1623333333333334, 0.9215833333333333, 0.8944166666666666, 0.96475, 0.8331666666666667, 1.2955, 0.8536666666666667, 0.9679166666666666, 1.197]
         request_windows = [[1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0]]
@@ -831,11 +941,26 @@ class CoreRealData(TestCase):
         acceptable_variances = [[{30: 0.004629629629629632, 40: 0.0046875, 50: 0.0048, 60: 0.004166666666666667, 70: 0.003498542274052478, 80: 0.0029296875, 90: 0.002469135802469136, 100: 0.0021}, {30: 0.004629629629629631, 40: 0.002734375, 50: 0.0018000000000000002, 60: 0.001273148148148148, 70: 9.475218658892129E-4, 80: 7.32421875E-4, 90: 5.829903978052126E-4, 100: 4.75E-4}], [{100: 3.8399999999999996E-4, 90: 4.7187928669410143E-4, 80: 5.9375E-4, 70: 7.696793002915452E-4, 60: 0.001037037037037037, 50: 0.001472, 40: 0.0022500000000000003, 30: 0.003851851851851851}, {100: 0.0, 90: 0.0, 80: 0.0, 70: 0.0, 60: 0.0, 50: 0.0, 40: 0.0, 30: 0.0}]]
         previous_state = 1
         selected_windows = [[30, 30], [30, 30]]
-        p = [[0.8333333333333333, 0.1666666666666667], [0.1333333333333333, 0.0]]
-        time_in_states = 40
+        p = [[0.8666666666666667, 0.1333333333333333], [0.1333333333333333, 0.0]]
+        time_in_states = 39
         time_in_state_n = 5
-        policy = [0.0 0.0]
-        command = false
+        policy = [0.0, 0.0]
+        command = False
+
+        decision, state = c.mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
+                                 time_step, migration_time, utilization, state)
+        self.assertEqual(decision, command)
+        self.assertEqual(state['previous_state'], previous_state)
+        self.assertEqual(state['time_in_states'], time_in_states)
+        self.assertEqual(state['time_in_state_n'], time_in_state_n)
+        self.assertEqual(decision, command)
+        assert is_almost_equal(reverse_req(state['request_windows']), request_windows)
+        assert is_almost_equal(reverse_est(state['estimate_windows']), estimate_windows)
+        assert is_almost_equal(state['variances'], variances)
+        assert is_almost_equal(state['acceptable_variances'], acceptable_variances)
+        assert is_almost_equal(state['selected_windows'], selected_windows)
+        assert is_almost_equal(state['p'], p)
+        assert is_almost_equal(state['policy'], policy)
 
         utilization = [0.859, 0.6988333333333333, 0.811, 0.7685833333333333, 0.88, 0.79475, 0.7965, 0.7471666666666666, 0.92675, 0.8313333333333334, 0.9466666666666667, 0.7655833333333333, 0.803, 1.0415833333333333, 0.9058333333333334, 0.7433333333333333, 0.9835, 0.9040833333333333, 0.9189166666666667, 0.8335, 1.10275, 0.8660833333333333, 0.93475, 0.773, 0.91825, 0.8491666666666666, 0.7414166666666666, 0.8538333333333333, 0.8065833333333333, 0.9409166666666666, 1.1623333333333334, 0.9215833333333333, 0.8944166666666666, 0.96475, 0.8331666666666667, 1.2955, 0.8536666666666667, 0.9679166666666666, 1.197, 0.9381666666666667]
         request_windows = [[1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
@@ -844,11 +969,26 @@ class CoreRealData(TestCase):
         acceptable_variances = [[{30: 0.004629629629629632, 40: 0.0046875, 50: 0.0048, 60: 0.004166666666666667, 70: 0.003498542274052478, 80: 0.0029296875, 90: 0.002469135802469136, 100: 0.0021}, {30: 0.004629629629629631, 40: 0.002734375, 50: 0.0018000000000000002, 60: 0.001273148148148148, 70: 9.475218658892129E-4, 80: 7.32421875E-4, 90: 5.829903978052126E-4, 100: 4.75E-4}], [{30: 0.004629629629629631, 40: 0.002734375, 50: 0.0018000000000000002, 60: 0.001273148148148148, 70: 9.475218658892129E-4, 80: 7.32421875E-4, 90: 5.829903978052126E-4, 100: 4.75E-4}, {30: 0.0, 40: 0.0, 50: 0.0, 60: 0.0, 70: 0.0, 80: 0.0, 90: 0.0, 100: 0.0}]]
         previous_state = 0
         selected_windows = [[30, 30], [30, 30]]
-        p = [[0.8333333333333333, 0.1666666666666667], [0.1666666666666667, 0.0]]
-        time_in_states = 41
+        p = [[0.8333333333333333, 0.1666666666666667], [0.1333333333333333, 0.0]]
+        time_in_states = 40
         time_in_state_n = 5
-        policy = [0.0 0.0]
-        command = false
+        policy = [0.0, 0.0]
+        command = False
+
+        decision, state = c.mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
+                                 time_step, migration_time, utilization, state)
+        self.assertEqual(decision, command)
+        self.assertEqual(state['previous_state'], previous_state)
+        self.assertEqual(state['time_in_states'], time_in_states)
+        self.assertEqual(state['time_in_state_n'], time_in_state_n)
+        self.assertEqual(decision, command)
+        assert is_almost_equal(reverse_req(state['request_windows']), request_windows)
+        assert is_almost_equal(reverse_est(state['estimate_windows']), estimate_windows)
+        assert is_almost_equal(state['variances'], variances)
+        assert is_almost_equal(state['acceptable_variances'], acceptable_variances)
+        assert is_almost_equal(state['selected_windows'], selected_windows)
+        assert is_almost_equal(state['p'], p)
+        assert is_almost_equal(state['policy'], policy)
 
         utilization = [0.859, 0.6988333333333333, 0.811, 0.7685833333333333, 0.88, 0.79475, 0.7965, 0.7471666666666666, 0.92675, 0.8313333333333334, 0.9466666666666667, 0.7655833333333333, 0.803, 1.0415833333333333, 0.9058333333333334, 0.7433333333333333, 0.9835, 0.9040833333333333, 0.9189166666666667, 0.8335, 1.10275, 0.8660833333333333, 0.93475, 0.773, 0.91825, 0.8491666666666666, 0.7414166666666666, 0.8538333333333333, 0.8065833333333333, 0.9409166666666666, 1.1623333333333334, 0.9215833333333333, 0.8944166666666666, 0.96475, 0.8331666666666667, 1.2955, 0.8536666666666667, 0.9679166666666666, 1.197, 0.9381666666666667, 0.98875]
         request_windows = [[0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
@@ -858,10 +998,25 @@ class CoreRealData(TestCase):
         previous_state = 0
         selected_windows = [[30, 30], [30, 30]]
         p = [[0.8333333333333333, 0.1666666666666667], [0.1666666666666667, 0.0]]
-        time_in_states = 42
-        time_in_state_n = 6
-        policy = [0.0 0.0]
-        command = false
+        time_in_states = 41
+        time_in_state_n = 5
+        policy = [0.0, 0.0]
+        command = False
+
+        decision, state = c.mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
+                                 time_step, migration_time, utilization, state)
+        self.assertEqual(decision, command)
+        self.assertEqual(state['previous_state'], previous_state)
+        self.assertEqual(state['time_in_states'], time_in_states)
+        self.assertEqual(state['time_in_state_n'], time_in_state_n)
+        self.assertEqual(decision, command)
+        assert is_almost_equal(reverse_req(state['request_windows']), request_windows)
+        assert is_almost_equal(reverse_est(state['estimate_windows']), estimate_windows)
+        assert is_almost_equal(state['variances'], variances)
+        assert is_almost_equal(state['acceptable_variances'], acceptable_variances)
+        assert is_almost_equal(state['selected_windows'], selected_windows)
+        assert is_almost_equal(state['p'], p)
+        assert is_almost_equal(state['policy'], policy)
 
         utilization = [0.859, 0.6988333333333333, 0.811, 0.7685833333333333, 0.88, 0.79475, 0.7965, 0.7471666666666666, 0.92675, 0.8313333333333334, 0.9466666666666667, 0.7655833333333333, 0.803, 1.0415833333333333, 0.9058333333333334, 0.7433333333333333, 0.9835, 0.9040833333333333, 0.9189166666666667, 0.8335, 1.10275, 0.8660833333333333, 0.93475, 0.773, 0.91825, 0.8491666666666666, 0.7414166666666666, 0.8538333333333333, 0.8065833333333333, 0.9409166666666666, 1.1623333333333334, 0.9215833333333333, 0.8944166666666666, 0.96475, 0.8331666666666667, 1.2955, 0.8536666666666667, 0.9679166666666666, 1.197, 0.9381666666666667, 0.98875, 1.0150833333333333]
         request_windows = [[1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [0, 0, 0, 0, 0]]
@@ -870,11 +1025,26 @@ class CoreRealData(TestCase):
         acceptable_variances = [[{30: 0.005333333333333332, 40: 0.0043593749999999995, 50: 0.004712, 60: 0.004162037037037037, 70: 0.003524781341107872, 80: 0.0029667968750000002, 90: 0.0025089163237311386, 100: 0.002139}, {30: 0.005333333333333334, 40: 0.0031875000000000002, 50: 0.002112, 60: 0.0015000000000000002, 70: 0.001119533527696793, 80: 8.671875000000001E-4, 90: 6.91358024691358E-4, 100: 5.639999999999999E-4}], [{30: 0.004629629629629631, 40: 0.002734375, 50: 0.0018000000000000002, 60: 0.001273148148148148, 70: 9.475218658892129E-4, 80: 7.32421875E-4, 90: 5.829903978052126E-4, 100: 4.75E-4}, {30: 0.0, 40: 0.0, 50: 0.0, 60: 0.0, 70: 0.0, 80: 0.0, 90: 0.0, 100: 0.0}]]
         previous_state = 1
         selected_windows = [[30, 30], [30, 30]]
-        p = [[0.8, 0.2], [0.1666666666666667, 0.0]]
-        time_in_states = 43
-        time_in_state_n = 7
-        policy = [0.0 0.0]
-        command = false
+        p = [[0.8333333333333333, 0.1666666666666667], [0.1666666666666667, 0.0]]
+        time_in_states = 42
+        time_in_state_n = 6
+        policy = [0.0, 0.0]
+        command = False
+
+        decision, state = c.mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
+                                 time_step, migration_time, utilization, state)
+        self.assertEqual(decision, command)
+        self.assertEqual(state['previous_state'], previous_state)
+        self.assertEqual(state['time_in_states'], time_in_states)
+        self.assertEqual(state['time_in_state_n'], time_in_state_n)
+        self.assertEqual(decision, command)
+        assert is_almost_equal(reverse_req(state['request_windows']), request_windows)
+        assert is_almost_equal(reverse_est(state['estimate_windows']), estimate_windows)
+        assert is_almost_equal(state['variances'], variances)
+        assert is_almost_equal(state['acceptable_variances'], acceptable_variances)
+        assert is_almost_equal(state['selected_windows'], selected_windows)
+        assert is_almost_equal(state['p'], p)
+        assert is_almost_equal(state['policy'], policy)
 
         utilization = [0.859, 0.6988333333333333, 0.811, 0.7685833333333333, 0.88, 0.79475, 0.7965, 0.7471666666666666, 0.92675, 0.8313333333333334, 0.9466666666666667, 0.7655833333333333, 0.803, 1.0415833333333333, 0.9058333333333334, 0.7433333333333333, 0.9835, 0.9040833333333333, 0.9189166666666667, 0.8335, 1.10275, 0.8660833333333333, 0.93475, 0.773, 0.91825, 0.8491666666666666, 0.7414166666666666, 0.8538333333333333, 0.8065833333333333, 0.9409166666666666, 1.1623333333333334, 0.9215833333333333, 0.8944166666666666, 0.96475, 0.8331666666666667, 1.2955, 0.8536666666666667, 0.9679166666666666, 1.197, 0.9381666666666667, 0.98875, 1.0150833333333333, 1.1393333333333333]
         request_windows = [[1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [1, 0, 0, 0, 0, 0]]
@@ -883,11 +1053,51 @@ class CoreRealData(TestCase):
         acceptable_variances = [[{30: 0.005333333333333332, 40: 0.0043593749999999995, 50: 0.004712, 60: 0.004162037037037037, 70: 0.003524781341107872, 80: 0.0029667968750000002, 90: 0.0025089163237311386, 100: 0.002139}, {30: 0.005333333333333334, 40: 0.0031875000000000002, 50: 0.002112, 60: 0.0015000000000000002, 70: 0.001119533527696793, 80: 8.671875000000001E-4, 90: 6.91358024691358E-4, 100: 5.639999999999999E-4}], [{100: 4.75E-4, 90: 5.829903978052126E-4, 80: 7.32421875E-4, 70: 9.475218658892129E-4, 60: 0.001273148148148148, 50: 0.0018000000000000002, 40: 0.002734375, 30: 0.004629629629629631}, {100: 9.900000000000001E-5, 90: 1.220850480109739E-4, 80: 1.54296875E-4, 70: 2.0116618075801757E-4, 60: 2.731481481481482E-4, 50: 3.92E-4, 40: 6.09375E-4, 30: 0.001074074074074074}]]
         previous_state = 1
         selected_windows = [[30, 30], [30, 30]]
+        p = [[0.8, 0.2], [0.1666666666666667, 0.0]]
+        time_in_states = 43
+        time_in_state_n = 7
+        policy = [0.0, 0.0]
+        command = False
+
+        decision, state = c.mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
+                                 time_step, migration_time, utilization, state)
+        self.assertEqual(decision, command)
+        self.assertEqual(state['previous_state'], previous_state)
+        self.assertEqual(state['time_in_states'], time_in_states)
+        self.assertEqual(state['time_in_state_n'], time_in_state_n)
+        self.assertEqual(decision, command)
+        assert is_almost_equal(reverse_req(state['request_windows']), request_windows)
+        assert is_almost_equal(reverse_est(state['estimate_windows']), estimate_windows)
+        assert is_almost_equal(state['variances'], variances)
+        assert is_almost_equal(state['acceptable_variances'], acceptable_variances)
+        assert is_almost_equal(state['selected_windows'], selected_windows)
+        assert is_almost_equal(state['p'], p)
+        assert is_almost_equal(state['policy'], policy)
+
+        utilization = [0.859, 0.6988333333333333, 0.811, 0.7685833333333333, 0.88, 0.79475, 0.7965, 0.7471666666666666, 0.92675, 0.8313333333333334, 0.9466666666666667, 0.7655833333333333, 0.803, 1.0415833333333333, 0.9058333333333334, 0.7433333333333333, 0.9835, 0.9040833333333333, 0.9189166666666667, 0.8335, 1.10275, 0.8660833333333333, 0.93475, 0.773, 0.91825, 0.8491666666666666, 0.7414166666666666, 0.8538333333333333, 0.8065833333333333, 0.9409166666666666, 1.1623333333333334, 0.9215833333333333, 0.8944166666666666, 0.96475, 0.8331666666666667, 1.2955, 0.8536666666666667, 0.9679166666666666, 1.197, 0.9381666666666667, 0.98875, 1.0150833333333333, 1.1393333333333333, 1.0570833333333334]
+        request_windows = [[1, 0, 1, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], [1, 1, 0, 0, 0, 0, 0]]
+        estimate_windows = [[{30: [0.8, 0.8333333333333333, 0.8333333333333333, 0.8666666666666667, 0.8666666666666667, 0.9, 0.9, 0.9, 0.8666666666666667, 0.8666666666666667, 0.8333333333333333, 0.8, 0.7666666666666667, 0.7333333333333333, 0.7, 0.6666666666666667, 0.6333333333333333, 0.6, 0.6, 0.5666666666666667, 0.5333333333333333, 0.5, 0.4666666666666667, 0.4333333333333333, 0.4333333333333333, 0.4, 0.3666666666666667, 0.3333333333333333, 0.3, 0.2666666666666667], 40: [0.775, 0.775, 0.75, 0.75, 0.725, 0.725, 0.7, 0.675, 0.65, 0.65, 0.625, 0.6, 0.575, 0.55, 0.525, 0.5, 0.475, 0.45, 0.45, 0.425, 0.4, 0.375, 0.35, 0.325, 0.325, 0.3, 0.275, 0.25, 0.225, 0.2, 0.175, 0.15, 0.125, 0.1, 0.075, 0.05, 0.025], 50: [0.62, 0.62, 0.6, 0.6, 0.58, 0.58, 0.56, 0.54, 0.52, 0.52, 0.5, 0.48, 0.46, 0.44, 0.42, 0.4, 0.38, 0.36, 0.36, 0.34, 0.32, 0.3, 0.28, 0.26, 0.26, 0.24, 0.22, 0.2, 0.18, 0.16, 0.14, 0.12, 0.1, 0.08, 0.06, 0.04, 0.02], 60: [0.5166666666666667, 0.5166666666666667, 0.5, 0.5, 0.4833333333333333, 0.4833333333333333, 0.4666666666666667, 0.45, 0.4333333333333333, 0.4333333333333333, 0.4166666666666667, 0.4, 0.3833333333333333, 0.3666666666666667, 0.35, 0.3333333333333333, 0.3166666666666667, 0.3, 0.3, 0.2833333333333333, 0.2666666666666667, 0.25, 0.2333333333333333, 0.2166666666666667, 0.2166666666666667, 0.2, 0.1833333333333333, 0.1666666666666667, 0.15, 0.1333333333333333, 0.1166666666666667, 0.1, 0.08333333333333333, 0.06666666666666667, 0.05, 0.03333333333333333, 0.01666666666666667], 70: [0.4428571428571429, 0.4428571428571429, 0.4285714285714286, 0.4285714285714286, 0.4142857142857143, 0.4142857142857143, 0.4, 0.3857142857142857, 0.3714285714285714, 0.3714285714285714, 0.3571428571428571, 0.3428571428571429, 0.3285714285714286, 0.3142857142857143, 0.3, 0.2857142857142857, 0.2714285714285714, 0.2571428571428571, 0.2571428571428571, 0.2428571428571429, 0.2285714285714286, 0.2142857142857143, 0.2, 0.1857142857142857, 0.1857142857142857, 0.1714285714285714, 0.1571428571428571, 0.1428571428571429, 0.1285714285714286, 0.1142857142857143, 0.1, 0.08571428571428572, 0.07142857142857142, 0.05714285714285714, 0.04285714285714286, 0.02857142857142857, 0.01428571428571429], 80: [0.3875, 0.3875, 0.375, 0.375, 0.3625, 0.3625, 0.35, 0.3375, 0.325, 0.325, 0.3125, 0.3, 0.2875, 0.275, 0.2625, 0.25, 0.2375, 0.225, 0.225, 0.2125, 0.2, 0.1875, 0.175, 0.1625, 0.1625, 0.15, 0.1375, 0.125, 0.1125, 0.1, 0.0875, 0.075, 0.0625, 0.05, 0.0375, 0.025, 0.0125], 90: [0.3444444444444444, 0.3444444444444444, 0.3333333333333333, 0.3333333333333333, 0.3222222222222222, 0.3222222222222222, 0.3111111111111111, 0.3, 0.2888888888888889, 0.2888888888888889, 0.2777777777777778, 0.2666666666666667, 0.2555555555555556, 0.2444444444444444, 0.2333333333333333, 0.2222222222222222, 0.2111111111111111, 0.2, 0.2, 0.1888888888888889, 0.1777777777777778, 0.1666666666666667, 0.1555555555555556, 0.1444444444444444, 0.1444444444444444, 0.1333333333333333, 0.1222222222222222, 0.1111111111111111, 0.1, 0.08888888888888889, 0.07777777777777778, 0.06666666666666667, 0.05555555555555556, 0.04444444444444444, 0.03333333333333333, 0.02222222222222222, 0.01111111111111111], 100: [0.31, 0.31, 0.3, 0.3, 0.29, 0.29, 0.28, 0.27, 0.26, 0.26, 0.25, 0.24, 0.23, 0.22, 0.21, 0.2, 0.19, 0.18, 0.18, 0.17, 0.16, 0.15, 0.14, 0.13, 0.13, 0.12, 0.11, 0.1, 0.09, 0.08, 0.07, 0.06, 0.05, 0.04, 0.03, 0.02, 0.01]}, {30: [0.2, 0.1666666666666667, 0.1666666666666667, 0.1333333333333333, 0.1333333333333333, 0.1, 0.1, 0.1, 0.1, 0.06666666666666667, 0.06666666666666667, 0.06666666666666667, 0.06666666666666667, 0.06666666666666667, 0.06666666666666667, 0.06666666666666667, 0.06666666666666667, 0.06666666666666667, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 40: [0.15, 0.125, 0.125, 0.1, 0.1, 0.075, 0.075, 0.075, 0.075, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.05, 0.025, 0.025, 0.025, 0.025, 0.025, 0.025, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 50: [0.12, 0.1, 0.1, 0.08, 0.08, 0.06, 0.06, 0.06, 0.06, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.04, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 60: [0.1, 0.08333333333333333, 0.08333333333333333, 0.06666666666666667, 0.06666666666666667, 0.05, 0.05, 0.05, 0.05, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.01666666666666667, 0.01666666666666667, 0.01666666666666667, 0.01666666666666667, 0.01666666666666667, 0.01666666666666667, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 70: [0.08571428571428572, 0.07142857142857142, 0.07142857142857142, 0.05714285714285714, 0.05714285714285714, 0.04285714285714286, 0.04285714285714286, 0.04285714285714286, 0.04285714285714286, 0.02857142857142857, 0.02857142857142857, 0.02857142857142857, 0.02857142857142857, 0.02857142857142857, 0.02857142857142857, 0.02857142857142857, 0.02857142857142857, 0.02857142857142857, 0.01428571428571429, 0.01428571428571429, 0.01428571428571429, 0.01428571428571429, 0.01428571428571429, 0.01428571428571429, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 80: [0.075, 0.0625, 0.0625, 0.05, 0.05, 0.0375, 0.0375, 0.0375, 0.0375, 0.025, 0.025, 0.025, 0.025, 0.025, 0.025, 0.025, 0.025, 0.025, 0.0125, 0.0125, 0.0125, 0.0125, 0.0125, 0.0125, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 90: [0.06666666666666667, 0.05555555555555556, 0.05555555555555556, 0.04444444444444444, 0.04444444444444444, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.03333333333333333, 0.02222222222222222, 0.02222222222222222, 0.02222222222222222, 0.02222222222222222, 0.02222222222222222, 0.02222222222222222, 0.02222222222222222, 0.02222222222222222, 0.02222222222222222, 0.01111111111111111, 0.01111111111111111, 0.01111111111111111, 0.01111111111111111, 0.01111111111111111, 0.01111111111111111, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0], 100: [0.06, 0.05, 0.05, 0.04, 0.04, 0.03, 0.03, 0.03, 0.03, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.02, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]}], [{30: [0.1666666666666667, 0.1666666666666667, 0.1666666666666667, 0.1333333333333333, 0.1, 0.06666666666666667, 0.03333333333333333], 40: [0.125, 0.125, 0.125, 0.1, 0.075, 0.05, 0.025], 50: [0.1, 0.1, 0.1, 0.08, 0.06, 0.04, 0.02], 60: [0.08333333333333333, 0.08333333333333333, 0.08333333333333333, 0.06666666666666667, 0.05, 0.03333333333333333, 0.01666666666666667], 70: [0.07142857142857142, 0.07142857142857142, 0.07142857142857142, 0.05714285714285714, 0.04285714285714286, 0.02857142857142857, 0.01428571428571429], 80: [0.0625, 0.0625, 0.0625, 0.05, 0.0375, 0.025, 0.0125], 90: [0.05555555555555556, 0.05555555555555556, 0.05555555555555556, 0.04444444444444444, 0.03333333333333333, 0.02222222222222222, 0.01111111111111111], 100: [0.05, 0.05, 0.05, 0.04, 0.03, 0.02, 0.01]}, {30: [0.06666666666666667, 0.03333333333333333, 0.0, 0.0, 0.0, 0.0, 0.0], 40: [0.05, 0.025, 0.0, 0.0, 0.0, 0.0, 0.0], 50: [0.04, 0.02, 0.0, 0.0, 0.0, 0.0, 0.0], 60: [0.03333333333333333, 0.01666666666666667, 0.0, 0.0, 0.0, 0.0, 0.0], 70: [0.02857142857142857, 0.01428571428571429, 0.0, 0.0, 0.0, 0.0, 0.0], 80: [0.025, 0.0125, 0.0, 0.0, 0.0, 0.0, 0.0], 90: [0.02222222222222222, 0.01111111111111111, 0.0, 0.0, 0.0, 0.0, 0.0], 100: [0.02, 0.01, 0.0, 0.0, 0.0, 0.0, 0.0]}]]
+        variances = [[{30: 0.042504469987228614, 40: 1.0, 50: 1.0, 60: 1.0, 70: 1.0, 80: 1.0, 90: 1.0, 100: 1.0}, {30: 0.002911877394636016, 40: 1.0, 50: 1.0, 60: 1.0, 70: 1.0, 80: 1.0, 90: 1.0, 100: 1.0}], [{30: 1.0, 40: 1.0, 50: 1.0, 60: 1.0, 70: 1.0, 80: 1.0, 90: 1.0, 100: 1.0}, {30: 1.0, 40: 1.0, 50: 1.0, 60: 1.0, 70: 1.0, 80: 1.0, 90: 1.0, 100: 1.0}]]
+        acceptable_variances = [[{30: 0.005333333333333332, 40: 0.0043593749999999995, 50: 0.004712, 60: 0.004162037037037037, 70: 0.003524781341107872, 80: 0.0029667968750000002, 90: 0.0025089163237311386, 100: 0.002139}, {30: 0.005333333333333334, 40: 0.0031875000000000002, 50: 0.002112, 60: 0.0015000000000000002, 70: 0.001119533527696793, 80: 8.671875000000001E-4, 90: 6.91358024691358E-4, 100: 5.639999999999999E-4}], [{30: 0.004629629629629631, 40: 0.002734375, 50: 0.0018000000000000002, 60: 0.001273148148148148, 70: 9.475218658892129E-4, 80: 7.32421875E-4, 90: 5.829903978052126E-4, 100: 4.75E-4}, {30: 0.002074074074074074, 40: 0.0011875, 50: 7.679999999999999E-4, 60: 5.37037037037037E-4, 70: 3.9650145772594754E-4, 80: 3.046875E-4, 90: 2.4142661179698212E-4, 100: 1.96E-4}]]
+        previous_state = 1
+        selected_windows = [[30, 30], [30, 30]]
         p = [[0.8, 0.2], [0.1666666666666667, 0.03333333333333333]]
         time_in_states = 44
         time_in_state_n = 8
         policy = []
-        command = true
+        command = True
 
-utilization = [0.859, 0.6988333333333333, 0.811, 0.7685833333333333, 0.88, 0.79475, 0.7965, 0.7471666666666666, 0.92675, 0.8313333333333334, 0.9466666666666667, 0.7655833333333333, 0.803, 1.0415833333333333, 0.9058333333333334, 0.7433333333333333, 0.9835, 0.9040833333333333, 0.9189166666666667, 0.8335, 1.10275, 0.8660833333333333, 0.93475, 0.773, 0.91825, 0.8491666666666666, 0.7414166666666666, 0.8538333333333333, 0.8065833333333333, 0.9409166666666666, 1.1623333333333334, 0.9215833333333333, 0.8944166666666666, 0.96475, 0.8331666666666667, 1.2955, 0.8536666666666667, 0.9679166666666666, 1.197, 0.9381666666666667, 0.98875, 1.0150833333333333, 1.1393333333333333, 1.0570833333333334]
-        '''
+        decision, state = c.mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
+                                 time_step, migration_time, utilization, state)
+        self.assertEqual(decision, command)
+        self.assertEqual(state['previous_state'], previous_state)
+        self.assertEqual(state['time_in_states'], time_in_states)
+        self.assertEqual(state['time_in_state_n'], time_in_state_n)
+        self.assertEqual(decision, command)
+        assert is_almost_equal(reverse_req(state['request_windows']), request_windows)
+        assert is_almost_equal(reverse_est(state['estimate_windows']), estimate_windows)
+        assert is_almost_equal(state['variances'], variances)
+        assert is_almost_equal(state['acceptable_variances'], acceptable_variances)
+        assert is_almost_equal(state['selected_windows'], selected_windows)
+        assert is_almost_equal(state['p'], p)
+        assert is_almost_equal(state['policy'], policy)
