@@ -23,6 +23,15 @@ logging.disable(logging.CRITICAL)
 
 class Trivial(TestCase):
 
+    @qc(10)
+    def always_underloaded_factory(
+        time_step=int_(min=0, max=10),
+        migration_time=float_(min=0, max=10),
+        utilization=list_(of=float)
+    ):
+        alg = trivial.always_underloaded_factory(time_step, migration_time, {})
+        assert alg(utilization) == (True, {})
+
     def test_threshold_factory(self):
         alg = trivial.threshold_factory(300, 20., {'threshold': 0.5})
         self.assertEqual(alg([]), (False, {}))
@@ -31,7 +40,6 @@ class Trivial(TestCase):
         self.assertEqual(alg([0.0, 0.5]), (True, {}))
         self.assertEqual(alg([0.0, 0.6]), (False, {}))
         self.assertEqual(alg([0.0, 1.0]), (False, {}))
-
 
     def test_last_n_average_threshold_factory(self):
         alg = trivial.last_n_average_threshold_factory(
@@ -47,7 +55,7 @@ class Trivial(TestCase):
         self.assertEqual(alg([0.0, 0.2, 1.0]), (False, {}))
         self.assertEqual(alg([0.0, 1.0, 1.0]), (False, {}))
         self.assertEqual(alg([0.0, 0.6, 0.6]), (False, {}))
-        
+
         alg = trivial.last_n_average_threshold_factory(
             300, 20., {'threshold': 0.5,
                        'n': 3})
