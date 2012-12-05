@@ -271,7 +271,7 @@ def get_time_in_state_n(state_config, state_history):
     :return: The total time the system has been in the state N.
      :rtype: int
     """
-    return state_history.count(len(state_config))
+    return list(state_history).count(len(state_config))
 
 
 @contract
