@@ -173,7 +173,7 @@ def minimum_migration_time_max_cpu(last_n, vms_cpu, vms_ram):
         if vms_ram[vm] > min_ram:
             continue
         vals = cpu[-last_n:]
-        avg = sum(vals) / len(vals)
+        avg = float(sum(vals)) / len(vals)
         if max_cpu < avg:
             max_cpu = avg
             selected_vm = vm
