@@ -22,8 +22,12 @@ import logging
 logging.disable(logging.CRITICAL)
 
 
-# The code of the is_almost_equal and internal functions is from
+# The code of the is_almost_equal and its internal functions is
+# developed by Yonatan Nakar and available from:
 # https://github.com/snakile/approximate_comparator/
+# The code is used from the author's allowance given on:
+# https://github.com/snakile/approximate_comparator/issues/1
+
 def is_almost_equal(first, second, places=7, log=False):
     '''returns False if first and second aren't equal up to a desired precision.
     Given two data structures, returns True if all elements of these structures
