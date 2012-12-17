@@ -122,42 +122,57 @@ def mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
     :return: The updated state and decision of the algorithm.
      :rtype: tuple(bool, dict)
     """
+    number_of_states = len(state_config) + 1
+    previous_state = 0
+    state['request_windows'] = estimation.init_request_windows(
+        number_of_states, max(window_sizes))
+    state['estimate_windows'] = estimation.init_deque_structure(
+        window_sizes, number_of_states)
+    state['variances'] = estimation.init_variances(
+        window_sizes, number_of_states)
+    state['acceptable_variances'] = estimation.init_variances(
+        window_sizes, number_of_states)
+
     total_time = len(utilization)
+    for i, current_state in enumerate(utilization_to_states(state_config, utilization)):
+        if i == total_time - 1:
+            selected_windows = estimation.select_window(
+                state['variances'],
+                state['acceptable_variances'],
+                window_sizes)
+            p = estimation.select_best_estimates(
+                state['estimate_windows'],
+                selected_windows)
+            # These two are saved for testing purposes
+            state['selected_windows'] = selected_windows
+            state['p'] = p
+
+        state['request_windows'] = estimation.update_request_windows(
+            state['request_windows'],
+            previous_state,
+            current_state)
+        state['estimate_windows'] = estimation.update_estimate_windows(
+            state['estimate_windows'],
+            state['request_windows'],
+            previous_state)
+        state['variances'] = estimation.update_variances(
+            state['variances'],
+            state['estimate_windows'],
+            previous_state)
+        state['acceptable_variances'] = estimation.update_acceptable_variances(
+            state['acceptable_variances'],
+            state['estimate_windows'],
+            previous_state)
+        previous_state = current_state
+
     state_vector = build_state_vector(state_config, utilization)
     current_state = get_current_state(state_vector)
     state['state_history'].append(current_state)
-
-    selected_windows = estimation.select_window(
-        state['variances'],
-        state['acceptable_variances'],
-        window_sizes)
-    p = estimation.select_best_estimates(
-        state['estimate_windows'],
-        selected_windows)
-
-    # These two are saved for testing purposes
-    state['selected_windows'] = selected_windows
-    state['p'] = p
-
-    state['request_windows'] = estimation.update_request_windows(
-        state['request_windows'],
-        state['previous_state'],
-        current_state)
-    state['estimate_windows'] = estimation.update_estimate_windows(
-        state['estimate_windows'],
-        state['request_windows'],
-        state['previous_state'])
-    state['variances'] = estimation.update_variances(
-        state['variances'],
-        state['estimate_windows'],
-        state['previous_state'])
-    state['acceptable_variances'] = estimation.update_acceptable_variances(
-        state['acceptable_variances'],
-        state['estimate_windows'],
-        state['previous_state'])
     state['previous_state'] = current_state
 
-    log.debug('MHOD utilization:' + str(utilization))
+    if log.isEnabledFor(logging.DEBUG):
+        log.debug('MHOD utilization:' + str(utilization))
+
     if len(utilization) >= learning_steps:
         #state_history = utilization_to_states(state_config, utilization)
         time_in_states = total_time
@@ -166,12 +181,14 @@ def mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
         state['time_in_states'] = time_in_states
         state['time_in_state_n'] = time_in_state_n
 
-        log.debug('MHOD state_history:' + str(state['state_history']))
-        log.debug('MHOD time_in_states:' + str(time_in_states))
-        log.debug('MHOD time_in_state_n:' + str(time_in_state_n))
-        log.debug('MHOD p:' + str(p))
-        log.debug('MHOD current_state:' + str(current_state))
-        log.debug('MHOD p[current_state]:' + str(p[current_state]))
+        if log.isEnabledFor(logging.DEBUG):
+            log.debug('MHOD state_history:' + str(state['state_history']))
+            log.debug('MHOD time_in_states:' + str(time_in_states))
+            log.debug('MHOD time_in_state_n:' + str(time_in_state_n))
+            log.debug('MHOD p:' + str(p))
+            log.debug('MHOD current_state:' + str(current_state))
+            log.debug('MHOD p[current_state]:' + str(p[current_state]))
+
         tmp = set(p[current_state])
         if len(tmp) != 1 or 0 not in tmp:
             policy = bruteforce.optimize(
@@ -179,9 +196,11 @@ def mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
                 ls, p, state_vector, time_in_states, time_in_state_n)
             # This is saved for testing purposes
             state['policy'] = policy
-            log.debug('MHOD policy:' + str(policy))
+            if log.isEnabledFor(logging.DEBUG):
+                log.debug('MHOD policy:' + str(policy))
             command = issue_command_deterministic(policy)
-            log.debug('MHOD command:' + str(command))
+            if log.isEnabledFor(logging.DEBUG):
+                log.debug('MHOD command:' + str(command))
             return command, state
     return False, state
 
