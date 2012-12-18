@@ -200,7 +200,7 @@ def mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
             log.debug('MHOD current_state:' + str(current_state))
             log.debug('MHOD p[current_state]:' + str(p[current_state]))
 
-        state_n = len(state_config) - 1
+        state_n = len(state_config)
         tmp = set(p[current_state])
         #if len(tmp) != 1 or 0 not in tmp:
         if p[current_state][state_n] != 0 and not (len(tmp) == 1 and 0 in tmp):
