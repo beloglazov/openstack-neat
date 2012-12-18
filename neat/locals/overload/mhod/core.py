@@ -133,19 +133,19 @@ def mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
     state['acceptable_variances'] = estimation.init_variances(
         window_sizes, number_of_states)
 
-    n = len(utilization)
+    #n = len(utilization)
     for i, current_state in enumerate(utilization_to_states(state_config, utilization)):
-        if i == n - 1:
-            selected_windows = estimation.select_window(
-                state['variances'],
-                state['acceptable_variances'],
-                window_sizes)
-            p = estimation.select_best_estimates(
-                state['estimate_windows'],
-                selected_windows)
-            # These two are saved for testing purposes
-            state['selected_windows'] = selected_windows
-            state['p'] = p
+        # if i == n - 1:
+        #     selected_windows = estimation.select_window(
+        #         state['variances'],
+        #         state['acceptable_variances'],
+        #         window_sizes)
+        #     p = estimation.select_best_estimates(
+        #         state['estimate_windows'],
+        #         selected_windows)
+        #     # These two are saved for testing purposes
+        #     state['selected_windows'] = selected_windows
+        #     state['p'] = p
 
         state['request_windows'] = estimation.update_request_windows(
             state['request_windows'],
@@ -164,6 +164,17 @@ def mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
             state['estimate_windows'],
             previous_state)
         previous_state = current_state
+
+    selected_windows = estimation.select_window(
+        state['variances'],
+        state['acceptable_variances'],
+        window_sizes)
+    p = estimation.select_best_estimates(
+        state['estimate_windows'],
+        selected_windows)
+    # These two are saved for testing purposes
+    state['selected_windows'] = selected_windows
+    state['p'] = p
 
     state_vector = build_state_vector(state_config, utilization)
     current_state = get_current_state(state_vector)
