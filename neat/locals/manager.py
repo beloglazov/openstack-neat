@@ -278,17 +278,26 @@ def execute(config, state):
         overload_detection = state['overload_detection']
         vm_selection = state['vm_selection']
 
-    log.info('Started underload detection')
+    if log.isEnabledFor(logging.INFO):
+        log.info('Started underload detection')
     underload, state['underload_detection_state'] = underload_detection(
         host_cpu_utilization, state['underload_detection_state'])
-    log.info('Completed underload detection')
+    if log.isEnabledFor(logging.INFO):
+        log.info('Completed underload detection')
+
+    if log.isEnabledFor(logging.INFO):
+        log.info('Started overload detection')
+    overload, state['overload_detection_state'] = overload_detection(
+        host_cpu_utilization, state['overload_detection_state'])
+    if log.isEnabledFor(logging.INFO):
+        log.info('Completed overload detection')
 
     if underload:
         if log.isEnabledFor(logging.INFO):
             log.info('Underload detected')
         try:
-            r = requests.put('http://' + config['global_manager_host'] + \
-                                 ':' + config['global_manager_port'],
+            r = requests.put('http://' + config['global_manager_host'] +
+                             ':' + config['global_manager_port'],
                              {'username': state['hashed_username'],
                               'password': state['hashed_password'],
                               'time': time.time(),
@@ -301,11 +310,6 @@ def execute(config, state):
             log.exception('Exception at underload request:')
 
     else:
-        log.info('Started overload detection')
-        overload, state['overload_detection_state'] = overload_detection(
-            host_cpu_utilization, state['overload_detection_state'])
-        log.info('Completed overload detection')
-
         if overload:
             if log.isEnabledFor(logging.INFO):
                 log.info('Overload detected')
@@ -318,8 +322,8 @@ def execute(config, state):
             if log.isEnabledFor(logging.INFO):
                 log.info('Selected VMs to migrate: %s', str(vm_uuids))
             try:
-                r = requests.put('http://' + config['global_manager_host'] + \
-                                     ':' + config['global_manager_port'],
+                r = requests.put('http://' + config['global_manager_host'] +
+                                 ':' + config['global_manager_port'],
                                  {'username': state['hashed_username'],
                                   'password': state['hashed_password'],
                                   'time': time.time(),
@@ -335,7 +339,9 @@ def execute(config, state):
             if log.isEnabledFor(logging.INFO):
                 log.info('No underload or overload detected')
 
-    log.info('Completed an iteration')
+    if log.isEnabledFor(logging.INFO):
+        log.info('Completed an iteration')
+
     return state
 
 
