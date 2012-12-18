@@ -133,9 +133,9 @@ def mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
     state['acceptable_variances'] = estimation.init_variances(
         window_sizes, number_of_states)
 
-    total_time = len(utilization)
+    n = len(utilization)
     for i, current_state in enumerate(utilization_to_states(state_config, utilization)):
-        if i == total_time - 1:
+        if i == n - 1:
             selected_windows = estimation.select_window(
                 state['variances'],
                 state['acceptable_variances'],
@@ -176,7 +176,7 @@ def mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
 
     if len(utilization) >= learning_steps:
         #state_history = utilization_to_states(state_config, utilization)
-        time_in_states = total_time
+        time_in_states = len(state['state_history'])
         time_in_state_n = get_time_in_state_n(state_config, state['state_history'])
         # These two are saved for testing purposes
         state['time_in_states'] = time_in_states
