@@ -189,8 +189,10 @@ def mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
             log.debug('MHOD current_state:' + str(current_state))
             log.debug('MHOD p[current_state]:' + str(p[current_state]))
 
+        state_n = len(state_config) - 1
         tmp = set(p[current_state])
-        if len(tmp) != 1 or 0 not in tmp:
+        #if len(tmp) != 1 or 0 not in tmp:
+        if p[current_state][state_n] != 0 and not (len(tmp) == 1 and 0 in tmp):
             policy = bruteforce.optimize(
                 bruteforce_step, 1.0, otf, (migration_time / time_step),
                 ls, p, state_vector, time_in_states, time_in_state_n)
