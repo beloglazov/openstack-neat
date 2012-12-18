@@ -229,6 +229,9 @@ def execute(config, state):
         host_cpu_mhz,
         state['physical_cpu_mhz_total'])
     if log.isEnabledFor(logging.DEBUG):
+        log.debug('The total physical CPU Mhz: %s', str(state['physical_cpu_mhz_total']))
+        log.debug('VM CPU MHz: %s', str(vm_cpu_mhz))
+        log.debug('Host CPU MHz: %s', str(host_cpu_mhz))
         log.debug('CPU utilization: %s', str(host_cpu_utilization))
 
     if not host_cpu_utilization:
