@@ -172,6 +172,7 @@ def mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
 
     if log.isEnabledFor(logging.DEBUG):
         log.debug('MHOD utilization:' + str(utilization))
+        log.debug('MHOD state_history:' + str(state['state_history']))
 
     if len(utilization) >= learning_steps:
         #state_history = utilization_to_states(state_config, utilization)
@@ -182,7 +183,6 @@ def mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
         state['time_in_state_n'] = time_in_state_n
 
         if log.isEnabledFor(logging.DEBUG):
-            log.debug('MHOD state_history:' + str(state['state_history']))
             log.debug('MHOD time_in_states:' + str(time_in_states))
             log.debug('MHOD time_in_state_n:' + str(time_in_state_n))
             log.debug('MHOD p:' + str(p))
