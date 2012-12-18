@@ -161,7 +161,7 @@ class Db(TestCase):
                 db.insert_host_cpu_mhz(hostname, value)
             if data:
                 res[hostname] = data[-1]
-            else: 
+            else:
                 res[hostname] = 0
         assert db.select_last_cpu_mhz_for_hosts() == res
 
@@ -200,7 +200,7 @@ class Db(TestCase):
             hostname='host2',
             cpu_mhz=1,
             cpu_cores=1,
-            ram=1).inserted_primary_key[0]       
+            ram=1).inserted_primary_key[0]
         assert db.select_host_id('host1') == host1_id
         assert db.select_host_id('host2') == host2_id
 
@@ -256,13 +256,13 @@ class Db(TestCase):
         db.insert_host_states({'host1': 1, 'host2': 1})
         result = db.host_states.select().execute().fetchall()
         host1 = [x[3] for x in sorted(filter(
-                    lambda x: x[1] == hosts['host1'], 
+                    lambda x: x[1] == hosts['host1'],
                     result), key=lambda x: x[0])]
         self.assertEqual(host1, [0, 0, 1])
         host2 = [x[3] for x in sorted(filter(
-                    lambda x: x[1] == hosts['host2'], 
+                    lambda x: x[1] == hosts['host2'],
                     result), key=lambda x: x[0])]
-        self.assertEqual(host2, [1, 0, 1])        
+        self.assertEqual(host2, [1, 0, 1])
 
     @qc(10)
     def select_host_states(
@@ -313,6 +313,7 @@ class Db(TestCase):
             min_length=0, max_length=3
         )
     ):
+        hosts = {'1ab': [0], '3222': [0, 0, 1, 1, 1, 1, 0, 0], 'b222b': [0, 0, 1, 1, 1, 0, 1]}
         db = db_utils.init_db('sqlite:///:memory:')
         res = []
         for host, data in hosts.items():
@@ -321,7 +322,7 @@ class Db(TestCase):
                 db.insert_host_states({host: state})
             if data and data[-1] == 0:
                 res.append(host)
-        assert db.select_inactive_hosts() == res
+        assert set(db.select_inactive_hosts()) == set(res)
 
     def test_insert_host_overload(self):
         db = db_utils.init_db('sqlite:///:memory:')
@@ -334,13 +335,13 @@ class Db(TestCase):
         db.insert_host_overload('host2', True)
         result = db.host_overload.select().execute().fetchall()
         host1 = [x[3] for x in sorted(filter(
-                    lambda x: x[1] == hosts['host1'], 
+                    lambda x: x[1] == hosts['host1'],
                     result), key=lambda x: x[0])]
         self.assertEqual(host1, [1, 0])
         host2 = [x[3] for x in sorted(filter(
-                    lambda x: x[1] == hosts['host2'], 
+                    lambda x: x[1] == hosts['host2'],
                     result), key=lambda x: x[0])]
-        self.assertEqual(host2, [0, 1])        
+        self.assertEqual(host2, [0, 1])
 
     @qc(1)
     def insert_select():
