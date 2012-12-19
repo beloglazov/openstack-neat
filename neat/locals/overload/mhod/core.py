@@ -172,8 +172,8 @@ def mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
 
     if log.isEnabledFor(logging.DEBUG):
         log.debug('MHOD utilization:' + str(utilization))
-        log.debug('MHOD time_in_states:' + str(time_in_states))
-        log.debug('MHOD time_in_state_n:' + str(time_in_state_n))
+        log.debug('MHOD time_in_states:' + str(state['time_in_states']))
+        log.debug('MHOD time_in_state_n:' + str(state['time_in_state_n']))
         log.debug('MHOD p:' + str(p))
         log.debug('MHOD current_state:' + str(current_state))
         log.debug('MHOD p[current_state]:' + str(p[current_state]))
