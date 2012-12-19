@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="OpenStack Neat : A Framework for Dynamic Consolidation of Virtual Machines in OpenStack Clouds" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>OpenStack Neat</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/beloglazov/openstack-neat">View on GitHub</a>
+
+          <h1 id="project_title">OpenStack Neat</h1>
+          <h2 id="project_tagline">A Framework for Dynamic Consolidation of Virtual Machines in OpenStack Clouds</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/beloglazov/openstack-neat/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/beloglazov/openstack-neat/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h3>Dynamic VM consolidation in OpenStack</h3>
+
+<p>OpenStack Neat is a project intended to provide an extension to OpenStack implementing dynamic consolidation of Virtual Machines (VMs) using live migration. The major objective of dynamic VM consolidation is to improve the utilization of physical resources and reduce energy consumption by re-allocating VMs using live migration according to their real-time resource demand and switching idle hosts to the sleep mode. </p>
+
+<p>For example, assume that two VMs are placed on two different hosts, but the combined resource capacity required by the VMs to serve the current load can be provided by just one of the hosts. Then, one of the VMs can be migrated to the host serving the other VM, and the idle host can be switched to a low power mode to save energy.</p>
+
+<p>Apart from consolidating VMs, the system should be able to react to increases in the resource demand and deconsolidate VMs when necessary to avoid performance degradation. In general, the problem of dynamic VM consolidation can be split into 4 sub-problems:</p>
+
+<ol>
+<li>Deciding when a host is considered to be underloaded, so that all the VMs should be migrated from it, and the host should be switched to a low power mode, such as the sleep mode.</li>
+<li>Deciding when a host is considered to be overloaded, so that some VMs should be migrated from the host to other hosts to avoid performance degradation.</li>
+<li>Selecting VMs to migrate from an overloaded host out of the full set of the VMs currently served by the host.</li>
+<li>Placing VMs selected for migration to other active or re-activated hosts.</li>
+</ol><p>The aim of the OpenStack Neat project is to provide an extensible framework for dynamic consolidation of VMs based on the OpenStack platform. The framework will provide an infrastructure enabling the interaction of components implementing the 4 decision-making algorithms listed above. The framework will allow configuration-driven switching of different implementations of the decision-making algorithms. The implementation of the framework will include the algorithms proposed in our previous works [1], [2].</p>
+
+<p>The project is currently under active development.</p>
+
+<h3>More details</h3>
+
+<p>There is a blueprint describing the architecture and implementation of OpenStack Neat. The full version of the blueprint can be downloaded as a PDF: </p>
+
+<p><a href="https://github.com/beloglazov/openstack-neat/raw/master/doc/blueprint/openstack-neat-blueprint.pdf">https://github.com/beloglazov/openstack-neat/raw/master/doc/blueprint/openstack-neat-blueprint.pdf</a></p>
+
+<h3>Who we are</h3>
+
+<p>This work is conducted within the Cloud Computing and Distributed Systems (CLOUDS) Laboratory at the 
+University of Melbourne: <a href="http://www.cloudbus.org/">http://www.cloudbus.org/</a> </p>
+
+<p>The problem of dynamic VM consolidation considering Quality of Service (QoS) constraints has been studied from the theoretical perspective and algorithms addressing the sub-problems listed above have been proposed [1], [2]. The algorithms have been evaluated using CloudSim and real-world workload traces collected from more than a thousand PlanetLab VMs hosted on servers located in more than 500 places around the world.</p>
+
+<h3>Discussion group / mailing list:</h3>
+
+<p>Please feel free to post any questions or suggestions in the project's discussion group: <a href="http://groups.google.com/group/openstack-neat">http://groups.google.com/group/openstack-neat</a></p>
+
+<h3>Publications</h3>
+
+<p>[1] Anton Beloglazov and Rajkumar Buyya, "Optimal Online Deterministic Algorithms and Adaptive Heuristics for Energy and Performance Efficient Dynamic Consolidation of Virtual Machines in Cloud Data Centers", Concurrency and Computation: Practice and Experience (CCPE), Wiley Press, New York, USA, 2012 (in press, accepted on September 2, 2011).</p>
+
+<p>Download: <a href="http://beloglazov.info/papers/2012-optimal-algorithms-ccpe.pdf">http://beloglazov.info/papers/2012-optimal-algorithms-ccpe.pdf</a></p>
+
+<p>[2] Anton Beloglazov and Rajkumar Buyya, "Managing Overloaded Hosts for Dynamic Consolidation of Virtual Machines in Cloud Data Centers Under Quality of Service Constraints", IEEE Transactions on Parallel and Distributed Systems (TPDS), IEEE CS Press, USA, 2012 (in press, accepted on August 2, 2012).</p>
+
+<p>Download: <a href="http://beloglazov.info/papers/2012-host-overload-detection-tpds.pdf">http://beloglazov.info/papers/2012-host-overload-detection-tpds.pdf</a></p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">OpenStack Neat maintained by <a href="https://github.com/beloglazov">beloglazov</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
