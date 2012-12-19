@@ -77,6 +77,7 @@ def init_state(history_size, window_sizes, number_of_states):
     """
     return {
         'previous_state': 0,
+        'previous_utilization': [],
         'time_in_states': 0,
         'time_in_state_n': 0,
         'request_windows': estimation.init_request_windows(
@@ -121,8 +122,14 @@ def mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
     :return: The updated state and decision of the algorithm.
      :rtype: tuple(bool, dict)
     """
+    if len(utilization) == state['time_in_states'] and \
+      utilization == state['previous_utilization']:
+        # No new utilization values
+        return False, state
+
     number_of_states = len(state_config) + 1
     previous_state = 0
+    state['previous_utilization'] = utilization
     state['request_windows'] = estimation.init_request_windows(
         number_of_states, max(window_sizes))
     state['estimate_windows'] = estimation.init_deque_structure(

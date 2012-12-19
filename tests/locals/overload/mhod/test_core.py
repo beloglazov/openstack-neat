@@ -27,6 +27,7 @@ class Core(TestCase):
     def test_init_state(self):
         state = c.init_state(100, [20, 40], 2)
         self.assertEquals(state['previous_state'], 0)
+        self.assertEquals(state['previous_utilization'], [])
         self.assertEquals(state['time_in_states'], 0)
         self.assertEquals(state['time_in_state_n'], 0)
         self.assertTrue('request_windows' in state)
@@ -120,6 +121,7 @@ class Core(TestCase):
         state = c.init_state(10, window_sizes, 2)
 
         with MockTransaction:
+            state['previous_utilization'] = []
             expect(estimation).select_best_estimates.and_return([[0., 0.], [0., 0.]])
             expect(c).get_current_state.and_return(1).once()
             decision, _ = c.mhod(state_config, otf, window_sizes, bruteforce_step,
@@ -127,6 +129,7 @@ class Core(TestCase):
             self.assertFalse(decision)
 
         with MockTransaction:
+            state['previous_utilization'] = []
             expect(estimation).select_best_estimates.and_return([[0., 0.], [0., 0.]])
             expect(c).get_current_state.and_return(0).once()
             decision, _ = c.mhod(state_config, otf, window_sizes, bruteforce_step,
@@ -134,6 +137,7 @@ class Core(TestCase):
             self.assertFalse(decision)
 
         with MockTransaction:
+            state['previous_utilization'] = []
             expect(estimation).select_best_estimates.and_return([[0., 1.], [0., 1.]])
             expect(c).get_current_state.and_return(0).once()
             decision, _ = c.mhod(state_config, otf, window_sizes, bruteforce_step,
@@ -141,11 +145,21 @@ class Core(TestCase):
             self.assertFalse(decision)
 
         with MockTransaction:
+            state['previous_utilization'] = []
             expect(estimation).select_best_estimates.and_return([[0., 1.], [0., 1.]])
             expect(c).get_current_state.and_return(1).once()
             decision, _ = c.mhod(state_config, otf, window_sizes, bruteforce_step,
                                  learning_steps, time_step, migration_time, utilization, state)
             self.assertTrue(decision)
+
+        with MockTransaction:
+            utilization = [1.0, 1.0]
+            state['previous_utilization'] = [1.0, 1.0]
+            state['time_in_states'] = 2
+            expect(estimation).select_best_estimates.never()
+            decision, _ = c.mhod(state_config, otf, window_sizes, bruteforce_step,
+                                 learning_steps, time_step, migration_time, utilization, state)
+            self.assertFalse(decision)
 
 
 def deque_maxlen(coll):
