@@ -16,6 +16,7 @@ from mocktest import *
 from pyqcy import *
 
 from collections import deque
+import neat.locals.overload.mhod.multisize_estimation as estimation
 import neat.locals.overload.mhod.core as c
 
 import logging
@@ -112,6 +113,45 @@ class Core(TestCase):
     def test_issue_command_deterministic(self):
         self.assertEqual(c.issue_command_deterministic([1]), False)
         self.assertEqual(c.issue_command_deterministic([]), True)
+
+    def test_mhod(self):
+        state_config = [1.0]
+        otf = 0.1
+        window_sizes = [30, 40]
+        bruteforce_step = 0.5
+        learning_steps = 0
+        time_step = 300
+        migration_time = 20.
+        utilization = [1.0]
+        state = c.init_state(10, window_sizes, 2)
+
+        with MockTransaction:
+            expect(estimation).select_best_estimates.and_return([[0., 0.], [0., 0.]])
+            expect(c).get_current_state.and_return(1).once()
+            decision, _ = c.mhod(state_config, otf, window_sizes, bruteforce_step,
+                                 learning_steps, time_step, migration_time, utilization, state)
+            self.assertFalse(decision)
+
+        with MockTransaction:
+            expect(estimation).select_best_estimates.and_return([[0., 0.], [0., 0.]])
+            expect(c).get_current_state.and_return(0).once()
+            decision, _ = c.mhod(state_config, otf, window_sizes, bruteforce_step,
+                                 learning_steps, time_step, migration_time, utilization, state)
+            self.assertFalse(decision)
+
+        with MockTransaction:
+            expect(estimation).select_best_estimates.and_return([[0., 1.], [0., 1.]])
+            expect(c).get_current_state.and_return(0).once()
+            decision, _ = c.mhod(state_config, otf, window_sizes, bruteforce_step,
+                                 learning_steps, time_step, migration_time, utilization, state)
+            self.assertFalse(decision)
+
+        with MockTransaction:
+            expect(estimation).select_best_estimates.and_return([[0., 1.], [0., 1.]])
+            expect(c).get_current_state.and_return(1).once()
+            decision, _ = c.mhod(state_config, otf, window_sizes, bruteforce_step,
+                                 learning_steps, time_step, migration_time, utilization, state)
+            self.assertTrue(decision)
 
 
 def deque_maxlen(coll):
