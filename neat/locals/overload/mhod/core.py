@@ -122,7 +122,8 @@ def mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
     :return: The updated state and decision of the algorithm.
      :rtype: tuple(bool, dict)
     """
-    if len(utilization) == state['time_in_states'] and \
+    utilization_length = len(utilization)
+    if utilization_length == state['time_in_states'] and \
       utilization == state['previous_utilization']:
         # No new utilization values
         return False, state
@@ -172,10 +173,19 @@ def mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
     state_vector = build_state_vector(state_config, utilization)
     current_state = get_current_state(state_vector)
     state['previous_state'] = current_state
-    state['time_in_states'] += 1
+
     state_n = len(state_config)
-    if current_state == state_n:
-        state['time_in_state_n'] += 1
+    if utilization_length > state['time_in_states'] + 1:
+        for s in utilization_to_states(
+                state_config,
+                utilization[-(utilization_length - state['time_in_states']):]):
+            state['time_in_states'] += 1
+            if s == state_n:
+                state['time_in_state_n'] += 1
+    else:
+        state['time_in_states'] += 1
+        if current_state == state_n:
+            state['time_in_state_n'] += 1
 
     if log.isEnabledFor(logging.DEBUG):
         log.debug('MHOD utilization:' + str(utilization))
@@ -185,7 +195,7 @@ def mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
         log.debug('MHOD current_state:' + str(current_state))
         log.debug('MHOD p[current_state]:' + str(p[current_state]))
 
-    if len(utilization) >= learning_steps:
+    if utilization_length >= learning_steps:
         if current_state == state_n and p[state_n][state_n] > 0:
             policy = bruteforce.optimize(
                 bruteforce_step, 1.0, otf, (migration_time / time_step), ls, p,
