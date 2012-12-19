@@ -18,8 +18,6 @@
 from contracts import contract
 from neat.contracts_extra import *
 
-from collections import deque
-
 import neat.locals.overload.mhod.multisize_estimation as estimation
 import neat.locals.overload.mhod.bruteforce as bruteforce
 from neat.locals.overload.mhod.l_2_states import ls
@@ -79,7 +77,8 @@ def init_state(history_size, window_sizes, number_of_states):
     """
     return {
         'previous_state': 0,
-        'state_history': deque([], history_size),
+        'time_in_states': 0,
+        'time_in_state_n': 0,
         'request_windows': estimation.init_request_windows(
             number_of_states, max(window_sizes)),
         'estimate_windows': estimation.init_deque_structure(
@@ -165,32 +164,25 @@ def mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
 
     state_vector = build_state_vector(state_config, utilization)
     current_state = get_current_state(state_vector)
-    state['state_history'].append(current_state)
     state['previous_state'] = current_state
+    state['time_in_states'] += 1
+    state_n = len(state_config)
+    if current_state == state_n:
+        state['time_in_state_n'] += 1
 
     if log.isEnabledFor(logging.DEBUG):
         log.debug('MHOD utilization:' + str(utilization))
-        log.debug('MHOD state_history:' + str(state['state_history']))
+        log.debug('MHOD time_in_states:' + str(time_in_states))
+        log.debug('MHOD time_in_state_n:' + str(time_in_state_n))
+        log.debug('MHOD p:' + str(p))
+        log.debug('MHOD current_state:' + str(current_state))
+        log.debug('MHOD p[current_state]:' + str(p[current_state]))
 
     if len(utilization) >= learning_steps:
-        time_in_states = len(state['state_history'])
-        time_in_state_n = get_time_in_state_n(state_config, state['state_history'])
-        # These two are saved for testing purposes
-        state['time_in_states'] = time_in_states
-        state['time_in_state_n'] = time_in_state_n
-
-        if log.isEnabledFor(logging.DEBUG):
-            log.debug('MHOD time_in_states:' + str(time_in_states))
-            log.debug('MHOD time_in_state_n:' + str(time_in_state_n))
-            log.debug('MHOD p:' + str(p))
-            log.debug('MHOD current_state:' + str(current_state))
-            log.debug('MHOD p[current_state]:' + str(p[current_state]))
-
-        state_n = len(state_config)
         if current_state == state_n and p[state_n][state_n] > 0:
             policy = bruteforce.optimize(
-                bruteforce_step, 1.0, otf, (migration_time / time_step),
-                ls, p, state_vector, time_in_states, time_in_state_n)
+                bruteforce_step, 1.0, otf, (migration_time / time_step), ls, p,
+                state_vector, state['time_in_states'], state['time_in_state_n'])
             # This is saved for testing purposes
             state['policy'] = policy
             if log.isEnabledFor(logging.DEBUG):
@@ -272,22 +264,6 @@ def utilization_to_states(state_config, utilization):
      :rtype: list(int)
     """
     return [utilization_to_state(state_config, x) for x in utilization]
-
-
-@contract
-def get_time_in_state_n(state_config, state_history):
-    """ Get the number of time steps the system has been in the state N.
-
-    :param state_config: The state configuration.
-     :type state_config: list(float)
-
-    :param state_history: The state history.
-     :type state_history: deque
-
-    :return: The total time the system has been in the state N.
-     :rtype: int
-    """
-    return list(state_history).count(len(state_config))
 
 
 @contract

@@ -15,7 +15,6 @@
 from mocktest import *
 from pyqcy import *
 
-from collections import deque
 import neat.locals.overload.mhod.multisize_estimation as estimation
 import neat.locals.overload.mhod.core as c
 
@@ -28,7 +27,8 @@ class Core(TestCase):
     def test_init_state(self):
         state = c.init_state(100, [20, 40], 2)
         self.assertEquals(state['previous_state'], 0)
-        self.assertEquals(deque_maxlen(state['state_history']), 100)
+        self.assertEquals(state['time_in_states'], 0)
+        self.assertEquals(state['time_in_state_n'], 0)
         self.assertTrue('request_windows' in state)
         self.assertTrue('estimate_windows' in state)
         self.assertTrue('variances' in state)
@@ -103,12 +103,6 @@ class Core(TestCase):
         data = [0.5, 0.5, 1.0, 1.0, 0.5]
         states = [0, 0, 1, 1, 0]
         self.assertEqual(c.utilization_to_states(state_config, data), states)
-
-    def test_get_time_in_state_n(self):
-        state_config = [0.4, 0.7]
-        states = deque([0, 0, 0, 1, 1, 1, 2, 2, 2, 2, 1,
-                        1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 2])
-        self.assertEqual(c.get_time_in_state_n(state_config, states), 5)
 
     def test_issue_command_deterministic(self):
         self.assertEqual(c.issue_command_deterministic([1]), False)
