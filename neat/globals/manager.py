@@ -314,6 +314,9 @@ def execute_underload(config, state, host):
             if not vm in vms_last_cpu:
                 del hosts_to_vms[host][i]
 
+    if log.isEnabledFor(logging.DEBUG):
+        log.debug('hosts_to_vms: %s', str(hosts_to_vms))
+
     hosts_cpu_usage = {}
     hosts_ram_usage = {}
     for host, vms in hosts_to_vms.items():
@@ -338,6 +341,10 @@ def execute_underload(config, state, host):
             del hosts_cpu_total[host]
             del hosts_ram_total[host]
 
+    if log.isEnabledFor(logging.DEBUG):
+        log.debug('Host CPU usage: %s', str(hosts_last_cpu))
+        log.debug('Host total CPU usage: %s', str(hosts_cpu_usage))
+
     # Exclude the underloaded host
     del hosts_cpu_usage[underloaded_host]
     del hosts_cpu_total[underloaded_host]
@@ -345,6 +352,7 @@ def execute_underload(config, state, host):
     del hosts_ram_total[underloaded_host]
 
     if log.isEnabledFor(logging.DEBUG):
+        log.debug('Excluded the underloaded host %s', underloaded_host)
         log.debug('Host CPU usage: %s', str(hosts_last_cpu))
         log.debug('Host total CPU usage: %s', str(hosts_cpu_usage))
 
