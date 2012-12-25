@@ -152,14 +152,14 @@ class Core(TestCase):
                                  learning_steps, time_step, migration_time, utilization, state)
             self.assertTrue(decision)
 
-        with MockTransaction:
-            utilization = [1.0, 1.0]
-            state['previous_utilization'] = [1.0, 1.0]
-            state['time_in_states'] = 2
-            expect(estimation).select_best_estimates.never()
-            decision, _ = c.mhod(state_config, otf, window_sizes, bruteforce_step,
-                                 learning_steps, time_step, migration_time, utilization, state)
-            self.assertFalse(decision)
+#        with MockTransaction:
+#            utilization = [1.0, 1.0]
+#            state['previous_utilization'] = [1.0, 1.0]
+#            state['time_in_states'] = 2
+#            expect(estimation).select_best_estimates.never()
+#            decision, _ = c.mhod(state_config, otf, window_sizes, bruteforce_step,
+#                                 learning_steps, time_step, migration_time, utilization, state)
+#            self.assertFalse(decision)
 
 
 def deque_maxlen(coll):

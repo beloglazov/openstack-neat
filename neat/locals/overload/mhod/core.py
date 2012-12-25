@@ -123,14 +123,14 @@ def mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
      :rtype: tuple(bool, dict)
     """
     utilization_length = len(utilization)
-    if utilization_length == state['time_in_states'] and \
-      utilization == state['previous_utilization']:
-        # No new utilization values
-        return False, state
+#    if utilization_length == state['time_in_states'] and \
+#      utilization == state['previous_utilization']:
+#        # No new utilization values
+#        return False, state
 
     number_of_states = len(state_config) + 1
     previous_state = 0
-    state['previous_utilization'] = utilization
+#    state['previous_utilization'] = utilization
     state['request_windows'] = estimation.init_request_windows(
         number_of_states, max(window_sizes))
     state['estimate_windows'] = estimation.init_deque_structure(
@@ -175,17 +175,17 @@ def mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
     state['previous_state'] = current_state
 
     state_n = len(state_config)
-    if utilization_length > state['time_in_states'] + 1:
-        for s in utilization_to_states(
-                state_config,
-                utilization[-(utilization_length - state['time_in_states']):]):
-            state['time_in_states'] += 1
-            if s == state_n:
-                state['time_in_state_n'] += 1
-    else:
-        state['time_in_states'] += 1
-        if current_state == state_n:
-            state['time_in_state_n'] += 1
+#    if utilization_length > state['time_in_states'] + 1:
+#        for s in utilization_to_states(
+#                state_config,
+#                utilization[-(utilization_length - state['time_in_states']):]):
+#            state['time_in_states'] += 1
+#            if s == state_n:
+#                state['time_in_state_n'] += 1
+#    else:
+    state['time_in_states'] += 1
+    if current_state == state_n:
+        state['time_in_state_n'] += 1
 
     if log.isEnabledFor(logging.DEBUG):
         log.debug('MHOD utilization:' + str(utilization))
