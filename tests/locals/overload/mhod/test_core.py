@@ -142,7 +142,7 @@ class Core(TestCase):
             expect(c).get_current_state.and_return(0).once()
             decision, _ = c.mhod(state_config, otf, window_sizes, bruteforce_step,
                                  learning_steps, time_step, migration_time, utilization, state)
-            self.assertTrue(decision)
+            self.assertFalse(decision)
 
         with MockTransaction:
             state['previous_utilization'] = []

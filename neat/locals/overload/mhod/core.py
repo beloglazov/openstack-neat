@@ -196,8 +196,8 @@ def mhod(state_config, otf, window_sizes, bruteforce_step, learning_steps,
         log.debug('MHOD p[current_state]:' + str(p[current_state]))
 
     if utilization_length >= learning_steps:
-        # if current_state == state_n and p[state_n][state_n] > 0:
-        if p[current_state][state_n] > 0:
+        if current_state == state_n and p[state_n][state_n] > 0:
+        # if p[current_state][state_n] > 0:
             policy = bruteforce.optimize(
                 bruteforce_step, 1.0, otf, (migration_time / time_step), ls, p,
                 state_vector, state['time_in_states'], state['time_in_state_n'])
