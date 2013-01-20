@@ -23,98 +23,73 @@ logging.disable(logging.CRITICAL)
 
 class Otf(TestCase):
 
-    @qc
-    def overloading_steps(
-        x=list_(
-            of=float_(min=0.0, max=2.0),
-            min_length=0, max_length=10
-        )
-    ):
-        assert otf.overloading_steps(x) == len(filter(lambda y: y >= 1.0, x))
-
     def test_otf(self):
-        self.assertTrue(otf.otf(0.5, [0.9, 0.8, 1.1, 1.2, 1.3]))
-        self.assertFalse(otf.otf(0.5, [0.9, 0.8, 1.1, 1.2, 0.3]))
+        state = {'overload': 0, 'total': 0}
 
-    def test_otf_limit(self):
-        self.assertFalse(otf.otf_limit(0.5, 10, [0.9, 0.8, 1.1, 1.2, 1.3]))
-        self.assertFalse(otf.otf_limit(0.5, 10, [0.9, 0.8, 1.1, 1.2, 0.3]))
-        self.assertTrue(otf.otf_limit(0.5, 5, [0.9, 0.8, 1.1, 1.2, 1.3]))
-        self.assertFalse(otf.otf_limit(0.5, 5, [0.9, 0.8, 1.1, 1.2, 0.3]))
+        decision, state = otf.otf(0.5, 1.0, 4, 1., 
+                                  [0.9], state)
+        self.assertEqual(state, {'overload': 0, 'total': 1})
+        self.assertFalse(decision)
 
-    def test_otf_migration_time(self):
-        self.assertTrue(otf.otf_migration_time(
-            0.5, 100., [0.9, 0.8, 1.1, 1.2, 1.3]))
-        self.assertTrue(otf.otf_migration_time(
-            0.5, 100., [0.9, 0.8, 1.1, 1.2, 0.3]))
-        self.assertTrue(otf.otf_migration_time(
-            0.5, 1., [0.9, 0.8, 1.1, 1.2, 1.3]))
-        self.assertFalse(otf.otf_migration_time(
-            0.5, 1., [0.9, 0.8, 1.1, 1.2, 0.3]))
+        decision, state = otf.otf(0.5, 1.0, 4, 1., 
+                                  [0.9, 1.3], state)
+        self.assertEqual(state, {'overload': 1, 'total': 2})
+        self.assertFalse(decision)
 
-    def test_otf_limit_migration_time(self):
-        self.assertFalse(otf.otf_limit_migration_time(
-            0.5, 10, 100., [0.9, 0.8, 1.1, 1.2, 1.3]))
-        self.assertFalse(otf.otf_limit_migration_time(
-            0.5, 10, 100., [0.9, 0.8, 1.1, 1.2, 0.3]))
-        self.assertFalse(otf.otf_limit_migration_time(
-            0.5, 10, 1., [0.9, 0.8, 1.1, 1.2, 1.3]))
-        self.assertFalse(otf.otf_limit_migration_time(
-            0.5, 10, 1., [0.9, 0.8, 1.1, 1.2, 0.3]))
-        self.assertTrue(otf.otf_limit_migration_time(
-            0.5, 5, 100., [0.9, 0.8, 1.1, 1.2, 1.3]))
-        self.assertTrue(otf.otf_limit_migration_time(
-            0.5, 5, 100., [0.9, 0.8, 1.1, 1.2, 0.3]))
-        self.assertTrue(otf.otf_limit_migration_time(
-            0.5, 5, 1., [0.9, 0.8, 1.1, 1.2, 1.3]))
-        self.assertFalse(otf.otf_limit_migration_time(
-            0.5, 5, 1., [0.9, 0.8, 1.1, 1.2, 0.3]))
+        decision, state = otf.otf(0.5, 1.0, 4, 1., 
+                                  [0.9, 1.3, 1.1], state)
+        self.assertEqual(state, {'overload': 2, 'total': 3})
+        self.assertFalse(decision)
+
+        decision, state = otf.otf(0.5, 1.0, 4, 1., 
+                                  [0.9, 1.3, 1.1, 1.2], state)
+        self.assertEqual(state, {'overload': 3, 'total': 4})
+        self.assertTrue(decision)
+
+        decision, state = otf.otf(0.5, 1.0, 4, 100., 
+                                  [0.9, 1.3, 1.1, 1.2, 0.3], state)
+        self.assertEqual(state, {'overload': 3, 'total': 5})
+        self.assertTrue(decision)
+
+        decision, state = otf.otf(0.5, 1.0, 4, 1., 
+                                  [0.9, 1.3, 1.1, 1.2, 0.3, 0.2], state)
+        self.assertEqual(state, {'overload': 3, 'total': 6})
+        self.assertTrue(decision)
+
+        decision, state = otf.otf(0.5, 1.0, 4, 0., 
+                                  [0.9, 1.3, 1.1, 1.2, 0.3, 0.2, 0.1], state)
+        self.assertEqual(state, {'overload': 3, 'total': 7})
+        self.assertFalse(decision)
+
 
     def test_otf_factory(self):
-        alg = otf.otf_factory(
-            300, 20., {'threshold': 0.5})
-        self.assertEqual(alg([0.9, 0.8, 1.1, 1.2, 1.3]), (True, {}))
-        self.assertEqual(alg([0.9, 0.8, 1.1, 1.2, 0.3]), (False, {}))
+        alg = otf.otf_factory(30, 0., 
+                              {'otf': 0.5, 'threshold': 1.0, 'limit': 4})
 
-    def test_otf_limit_factory(self):
-        alg = otf.otf_limit_factory(
-            300, 20., {'threshold': 0.5, 'limit': 10})
-        self.assertEqual(alg([0.9, 0.8, 1.1, 1.2, 1.3]), (False, {}))
-        self.assertEqual(alg([0.9, 0.8, 1.1, 1.2, 0.3]), (False, {}))
+        decision, state = alg([0.9], None)
+        self.assertEqual(state, {'overload': 0, 'total': 1})
+        self.assertFalse(decision)
 
-        alg = otf.otf_limit_factory(
-            300, 20., {'threshold': 0.5, 'limit': 5})
-        self.assertEqual(alg([0.9, 0.8, 1.1, 1.2, 1.3]), (True, {}))
-        self.assertEqual(alg([0.9, 0.8, 1.1, 1.2, 0.3]), (False, {}))
+        decision, state = alg([0.9, 1.3], state)
+        self.assertEqual(state, {'overload': 1, 'total': 2})
+        self.assertFalse(decision)
 
-    def test_otf_migration_time_factory(self):
-        alg = otf.otf_migration_time_factory(
-            30, 3000., {'threshold': 0.5})
-        self.assertEqual(alg([0.9, 0.8, 1.1, 1.2, 1.3]), (True, {}))
-        self.assertEqual(alg([0.9, 0.8, 1.1, 1.2, 0.3]), (True, {}))
+        decision, state = alg([0.9, 1.3, 1.1], state)
+        self.assertEqual(state, {'overload': 2, 'total': 3})
+        self.assertFalse(decision)
 
-        alg = otf.otf_migration_time_factory(
-            300, 1., {'threshold': 0.5})
-        self.assertEqual(alg([0.9, 0.8, 1.1, 1.2, 1.3]), (True, {}))
-        self.assertEqual(alg([0.9, 0.8, 1.1, 1.2, 0.3]), (False, {}))
+        decision, state = alg([0.9, 1.3, 1.1, 1.2], state)
+        self.assertEqual(state, {'overload': 3, 'total': 4})
+        self.assertTrue(decision)
 
-    def test_otf_limit_migration_time_factory(self):
-        alg = otf.otf_limit_migration_time_factory(
-            30, 3000., {'threshold': 0.5, 'limit': 10})
-        self.assertEqual(alg([0.9, 0.8, 1.1, 1.2, 1.3]), (False, {}))
-        self.assertEqual(alg([0.9, 0.8, 1.1, 1.2, 0.3]), (False, {}))
+        decision, state = alg([0.9, 1.3, 1.1, 1.2, 0.3], state)
+        self.assertEqual(state, {'overload': 3, 'total': 5})
+        self.assertTrue(decision)
 
-        alg = otf.otf_limit_migration_time_factory(
-            300, 1., {'threshold': 0.5, 'limit': 10})
-        self.assertEqual(alg([0.9, 0.8, 1.1, 1.2, 1.3]), (False, {}))
-        self.assertEqual(alg([0.9, 0.8, 1.1, 1.2, 0.3]), (False, {}))
+        decision, state = alg([0.9, 1.3, 1.1, 1.2, 0.3, 0.2], state)
+        self.assertEqual(state, {'overload': 3, 'total': 6})
+        self.assertTrue(decision)
 
-        alg = otf.otf_limit_migration_time_factory(
-            30, 3000., {'threshold': 0.5, 'limit': 5})
-        self.assertEqual(alg([0.9, 0.8, 1.1, 1.2, 1.3]), (True, {}))
-        self.assertEqual(alg([0.9, 0.8, 1.1, 1.2, 0.3]), (True, {}))
-
-        alg = otf.otf_limit_migration_time_factory(
-            300, 1., {'threshold': 0.5, 'limit': 5})
-        self.assertEqual(alg([0.9, 0.8, 1.1, 1.2, 1.3]), (True, {}))
-        self.assertEqual(alg([0.9, 0.8, 1.1, 1.2, 0.3]), (False, {}))
+        decision, state = alg([0.9, 1.3, 1.1, 1.2, 0.3, 0.2, 0.1], state)
+        self.assertEqual(state, {'overload': 3, 'total': 7})
+        self.assertFalse(decision)
