@@ -40,7 +40,7 @@ def otf_factory(time_step, migration_time, params):
     """
     migration_time_normalized = float(migration_time) / time_step
     def otf_wrapper(utilization, state=None):
-        if state == None:
+        if state is None or state == {}:
             state = {'overload': 0, 
                      'total': 0}
         return otf(params['otf'],
