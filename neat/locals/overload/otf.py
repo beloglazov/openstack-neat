@@ -85,6 +85,14 @@ def otf(otf, threshold, limit, migration_time, utilization, state):
     if len(utilization) < limit:
         decision = False
     else:
+        if log.isEnabledFor(logging.DEBUG):
+            log.debug('OTF overload steps:' + str(state['overload']))
+            log.debug('OTF overload steps:' + str(state['total']))
+            log.debug('OTF:' + str(state['overload'] / state['total']))
+            log.debug('OTF + migration time:' + 
+                      str((migration_time + state['overload']) / \
+                              (migration_time + state['total'])))
+
         decision = (migration_time + state['overload']) / \
             (migration_time + state['total']) >= otf
 
