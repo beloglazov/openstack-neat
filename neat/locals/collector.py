@@ -293,7 +293,8 @@ def execute(config, state):
 
         if log.isEnabledFor(logging.DEBUG):
             log.debug('Collected VM CPU MHz: %s', str(cpu_mhz))
-            log.debug('Collected host CPU MHz: %s', str(host_cpu_mhz_hypervisor))
+            log.debug('Collected hypervisor CPU MHz: %s', str(host_cpu_mhz_hypervisor))
+            log.debug('Collected host CPU MHz: %s', str(host_cpu_mhz))
 
         state['previous_overload'] = log_host_overload(
             state['db'],
@@ -301,7 +302,7 @@ def execute(config, state):
             state['hostname'],
             state['previous_overload'],
             state['physical_cpu_mhz'],
-            cpu_mhz.values())
+            host_cpu_mhz)
 
     state['previous_time'] = current_time
     state['previous_cpu_time'] = cpu_time
@@ -547,7 +548,7 @@ def append_host_data_remotely(db, hostname, host_cpu_mhz):
 
 @contract
 def get_cpu_mhz(vir_connection, physical_core_mhz, previous_cpu_time,
-                previous_time, current_time, current_vms, 
+                previous_time, current_time, current_vms,
                 previous_cpu_mhz, added_vm_data):
     """ Get the average CPU utilization in MHz for a set of VMs.
 
@@ -590,7 +591,7 @@ def get_cpu_mhz(vir_connection, physical_core_mhz, previous_cpu_time,
         current_cpu_time = get_cpu_time(vir_connection, uuid)
         if current_cpu_time < cpu_time:
             if log.isEnabledFor(logging.DEBUG):
-                log.debug('VM %s: current_cpu_time < cpu_time: ' + 
+                log.debug('VM %s: current_cpu_time < cpu_time: ' +
                           'previous CPU time %d, ' +
                           'current CPU time %d',
                           uuid, cpu_time, current_cpu_time)
@@ -603,7 +604,7 @@ def get_cpu_mhz(vir_connection, physical_core_mhz, previous_cpu_time,
                           'current CPU time %d, ' +
                           'previous time %.10f, ' +
                           'current time %.10f',
-                          uuid, cpu_time, current_cpu_time, 
+                          uuid, cpu_time, current_cpu_time,
                           previous_time, current_time)
             cpu_mhz[uuid] = calculate_cpu_mhz(physical_core_mhz, previous_time,
                                               current_time, cpu_time,
@@ -725,8 +726,8 @@ def get_host_characteristics(vir_connection):
 
 
 @contract()
-def log_host_overload(db, overload_threshold, hostname,
-                      previous_overload, host_mhz, vms_mhz):
+def log_host_overload(db, overload_threshold, hostname, previous_overload,
+                      host_total_mhz, host_utilization_mhz):
     """ Log to the DB whether the host is overloaded.
 
     :param db: The database object.
@@ -741,18 +742,21 @@ def log_host_overload(db, overload_threshold, hostname,
     :param previous_overload: Whether the host has been overloaded.
      :type previous_overload: int
 
-    :param host_mhz: The total frequency of the CPU in MHz.
-     :type host_mhz: int
+    :param host_total_mhz: The total frequency of the CPU in MHz.
+     :type host_total_mhz: int
 
-    :param vms_mhz: A list of CPU utilization of VMs in MHz.
-     :type vms_mhz: list(int)
+    :param host_utilization_mhz: The total CPU utilization in MHz.
+     :type host_utilization_mhz: int
 
     :return: Whether the host is overloaded.
      :rtype: int
     """
-    overload = overload_threshold * host_mhz < sum(vms_mhz)
+    overload = overload_threshold * host_total_mhz < host_utilization_mhz
     overload_int = int(overload)
     if previous_overload != -1 and previous_overload != overload_int \
             or previous_overload == -1:
         db.insert_host_overload(hostname, overload)
+        if log.isEnabledFor(logging.DEBUG):
+            log.debug('Overload state logged: %s', str(overload))
+
     return overload_int
