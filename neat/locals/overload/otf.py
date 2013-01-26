@@ -79,10 +79,12 @@ def otf(otf, threshold, limit, migration_time, utilization, state):
      :rtype: tuple(bool, dict(*: *))
     """
     state['total'] += 1
-    if utilization[-1] >= threshold:
+    overload = (utilization[-1] >= threshold)
+    if overload:
         state['overload'] += 1
 
     if log.isEnabledFor(logging.DEBUG):
+        log.debug('OTF overload:' + str(overload))
         log.debug('OTF overload steps:' + str(state['overload']))
         log.debug('OTF total steps:' + str(state['total']))
         log.debug('OTF:' + str(float(state['overload']) / state['total']))
@@ -91,10 +93,10 @@ def otf(otf, threshold, limit, migration_time, utilization, state):
                   str((migration_time + state['overload']) / \
                           (migration_time + state['total'])))
         log.debug('OTF decision:' + 
-                  str((migration_time + state['overload']) / \
+                  str(overload and (migration_time + state['overload']) / \
                           (migration_time + state['total']) >= otf))
 
-    if len(utilization) < limit:
+    if not overload or len(utilization) < limit:
         decision = False
     else:
         decision = (migration_time + state['overload']) / \

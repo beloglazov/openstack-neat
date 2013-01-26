@@ -49,16 +49,26 @@ class Otf(TestCase):
         decision, state = otf.otf(0.5, 1.0, 4, 100., 
                                   [0.9, 1.3, 1.1, 1.2, 0.3], state)
         self.assertEqual(state, {'overload': 3, 'total': 5})
+        self.assertFalse(decision)
+
+        decision, state = otf.otf(0.5, 1.0, 4, 1., 
+                                  [0.9, 1.3, 1.1, 1.2, 1.3], state)
+        self.assertEqual(state, {'overload': 4, 'total': 6})
         self.assertTrue(decision)
 
         decision, state = otf.otf(0.5, 1.0, 4, 1., 
                                   [0.9, 1.3, 1.1, 1.2, 0.3, 0.2], state)
-        self.assertEqual(state, {'overload': 3, 'total': 6})
-        self.assertTrue(decision)
+        self.assertEqual(state, {'overload': 4, 'total': 7})
+        self.assertFalse(decision)
 
         decision, state = otf.otf(0.5, 1.0, 4, 0., 
                                   [0.9, 1.3, 1.1, 1.2, 0.3, 0.2, 0.1], state)
-        self.assertEqual(state, {'overload': 3, 'total': 7})
+        self.assertEqual(state, {'overload': 4, 'total': 8})
+        self.assertFalse(decision)
+
+        decision, state = otf.otf(0.5, 1.0, 4, 0., 
+                                  [0.9, 1.3, 1.1, 1.2, 0.3, 0.2, 0.1, 0.1], state)
+        self.assertEqual(state, {'overload': 4, 'total': 9})
         self.assertFalse(decision)
 
 
@@ -84,12 +94,20 @@ class Otf(TestCase):
 
         decision, state = alg([0.9, 1.3, 1.1, 1.2, 0.3], state)
         self.assertEqual(state, {'overload': 3, 'total': 5})
+        self.assertFalse(decision)
+
+        decision, state = alg([0.9, 1.3, 1.1, 1.2, 1.3], state)
+        self.assertEqual(state, {'overload': 4, 'total': 6})
         self.assertTrue(decision)
 
         decision, state = alg([0.9, 1.3, 1.1, 1.2, 0.3, 0.2], state)
-        self.assertEqual(state, {'overload': 3, 'total': 6})
-        self.assertTrue(decision)
+        self.assertEqual(state, {'overload': 4, 'total': 7})
+        self.assertFalse(decision)
 
         decision, state = alg([0.9, 1.3, 1.1, 1.2, 0.3, 0.2, 0.1], state)
-        self.assertEqual(state, {'overload': 3, 'total': 7})
+        self.assertEqual(state, {'overload': 4, 'total': 8})
+        self.assertFalse(decision)
+
+        decision, state = alg([0.9, 1.3, 1.1, 1.2, 0.3, 0.2, 0.1, 0.1], state)
+        self.assertEqual(state, {'overload': 4, 'total': 9})
         self.assertFalse(decision)
