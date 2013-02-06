@@ -319,12 +319,14 @@ def execute_underload(config, state, host):
 
     hosts_cpu_usage = {}
     hosts_ram_usage = {}
+    hosts_to_keep_active = set()
     for host, vms in hosts_to_vms.items():
         if vms:
             host_cpu_mhz = hosts_last_cpu[host]
             for vm in vms:
                 if vm not in vms_last_cpu:
                     log.info('No data yet for VM: %s - skipping host %s', vm, host)
+                    hosts_to_keep_active.add(host)
                     del hosts_cpu_total[host]
                     del hosts_ram_total[host]
                     if host in hosts_cpu_usage:
@@ -414,7 +416,9 @@ def execute_underload(config, state, host):
     active_hosts = hosts_cpu_total.keys()
     inactive_hosts = set(state['compute_hosts']) - set(active_hosts)
     prev_inactive_hosts = set(state['db'].select_inactive_hosts())
-    hosts_to_deactivate = list(inactive_hosts - prev_inactive_hosts)
+    hosts_to_deactivate = list(inactive_hosts
+                               - prev_inactive_hosts
+                               - hosts_to_keep_active)
 
     if not placement:
         log.info('Nothing to migrate')
