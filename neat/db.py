@@ -93,7 +93,7 @@ class Database(object):
             vru1.outerjoin(vru2, and_(
                 vru1.c.vm_id == vru2.c.vm_id,
                 vru1.c.id < vru2.c.id))]). \
-             where(vru2.c.id == None)
+            where(vru2.c.id == None)
         vms_cpu_mhz = dict(self.connection.execute(sel).fetchall())
         vms_uuids = dict(self.vms.select().execute().fetchall())
 
@@ -113,16 +113,16 @@ class Database(object):
          :type uuid: str[36]
 
         :return: The ID of the VM.
-         :rtype: number
+         :rtype: int
         """
         sel = select([self.vms.c.id]).where(self.vms.c.uuid == uuid)
         row = self.connection.execute(sel).fetchone()
         if row is None:
             id = self.vms.insert().execute(uuid=uuid).inserted_primary_key[0]
             log.info('Created a new DB record for a VM %s, id=%d', uuid, id)
-            return id
+            return int(id)
         else:
-            return row['id']
+            return int(row['id'])
 
     @contract
     def insert_vm_cpu_mhz(self, data):
@@ -156,7 +156,7 @@ class Database(object):
          :type ram: int,>0
 
         :return: The ID of the host.
-         :rtype: number
+         :rtype: int
         """
         sel = select([self.hosts.c.id]). \
             where(self.hosts.c.hostname == hostname)
@@ -169,14 +169,14 @@ class Database(object):
                 ram=ram).inserted_primary_key[0]
             log.info('Created a new DB record for a host %s, id=%d',
                      hostname, id)
-            return id
+            return int(id)
         else:
             self.connection.execute(self.hosts.update().
                                     where(self.hosts.c.id == row['id']).
                                     values(cpu_mhz=cpu_mhz,
                                            cpu_cores=cpu_cores,
                                            ram=ram))
-            return row['id']
+            return int(row['id'])
 
     @contract
     def insert_host_cpu_mhz(self, hostname, cpu_mhz):
