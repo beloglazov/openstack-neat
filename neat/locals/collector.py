@@ -563,7 +563,7 @@ def get_cpu_mhz(vir_connection, physical_core_mhz, previous_cpu_time,
      :type physical_core_mhz: int
 
     :param previous_cpu_time: A dict of previous CPU times for the VMs.
-     :type previous_cpu_time: dict(str : number)
+     :type previous_cpu_time: dict(str : int)
 
     :param previous_time: The previous timestamp.
      :type previous_time: float
@@ -581,7 +581,7 @@ def get_cpu_mhz(vir_connection, physical_core_mhz, previous_cpu_time,
      :type added_vm_data: dict(str : list(int))
 
     :return: The updated CPU times and average CPU utilization in MHz.
-     :rtype: tuple(dict(str : number), dict(str : int))
+     :rtype: tuple(dict(str : int), dict(str : int))
     """
     previous_vms = previous_cpu_time.keys()
     added_vms = get_added_vms(previous_vms, current_vms)
@@ -636,13 +636,13 @@ def get_cpu_time(vir_connection, uuid):
      :type uuid: str[36]
 
     :return: The CPU time of the VM.
-     :rtype: number,>=0
+     :rtype: int,>=0
     """
     try:
         domain = vir_connection.lookupByUUIDString(uuid)
-        return domain.getCPUStats(True, 0)[0]['cpu_time']
+        return int(domain.getCPUStats(True, 0)[0]['cpu_time'])
     except libvirt.libvirtError:
-        return 0.
+        return 0
 
 
 @contract
@@ -660,10 +660,10 @@ def calculate_cpu_mhz(cpu_mhz, previous_time, current_time,
      :type current_time: float
 
     :param previous_cpu_time: The previous CPU time of the domain.
-     :type previous_cpu_time: number
+     :type previous_cpu_time: int
 
     :param current_cpu_time: The current CPU time of the domain.
-     :type current_cpu_time: number
+     :type current_cpu_time: int
 
     :return: The average CPU utilization in MHz.
      :rtype: int,>=0
