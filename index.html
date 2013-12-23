@@ -4,11 +4,11 @@
   <head>
     <meta charset='utf-8' />
     <meta http-equiv="X-UA-Compatible" content="chrome=1" />
-    <meta name="description" content="OpenStack Neat : A Framework for Dynamic Consolidation of Virtual Machines in OpenStack Clouds" />
+    <meta name="description" content="OpenStack Neat: A Framework for Dynamic Consolidation of Virtual Machines in OpenStack Clouds" />
 
     <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
 
-    <title>OpenStack Neat</title>
+    <title>OpenStack Neat: Dynamic consolidation of virtual machines in OpenStack Clouds</title>
   </head>
 
   <body>
@@ -19,7 +19,7 @@
           <a id="forkme_banner" href="https://github.com/beloglazov/openstack-neat">View on GitHub</a>
 
           <h1 id="project_title">OpenStack Neat</h1>
-          <h2 id="project_tagline">A Framework for Dynamic Consolidation of Virtual Machines in OpenStack Clouds</h2>
+          <h2 id="project_tagline">Dynamic Consolidation of Virtual Machines in OpenStack Clouds</h2>
 
             <section id="downloads">
               <a class="zip_download_link" href="https://github.com/beloglazov/openstack-neat/zipball/master">Download this project as a .zip file</a>
@@ -34,59 +34,119 @@
         <h3>
 <a name="dynamic-vm-consolidation-in-openstack-clouds" class="anchor" href="#dynamic-vm-consolidation-in-openstack-clouds"><span class="octicon octicon-link"></span></a>Dynamic VM consolidation in OpenStack Clouds</h3>
 
-<p>OpenStack Neat is a project intended to provide an extension to OpenStack implementing dynamic consolidation of Virtual Machines (VMs) using live migration. The major objective of dynamic VM consolidation is to improve the utilization of physical resources and reduce energy consumption by re-allocating VMs using live migration according to their real-time resource demand and switching idle hosts to the sleep mode. </p>
+<p>OpenStack Neat is an extension to OpenStack implementing dynamic
+consolidation of Virtual Machines (VMs) using live migration. The major
+objective of dynamic VM consolidation is to improve the utilization of physical
+resources and reduce energy consumption by re-allocating VMs using live
+migration according to their real-time resource demand and switching idle hosts
+to the sleep mode. </p>
 
-<p>For example, assume that two VMs are placed on two different hosts, but the combined resource capacity required by the VMs to serve the current load can be provided by just one of the hosts. Then, one of the VMs can be migrated to the host serving the other VM, and the idle host can be switched to a low power mode to save energy.</p>
+<p>For example, assume that two VMs are placed on two different hosts, but the
+combined resource capacity required by the VMs to serve the current load can be
+provided by just one of the hosts. Then, one of the VMs can be migrated to the
+host serving the other VM, and the idle host can be switched to a low power mode
+to save energy. When the resource demand of either of the VMs increases, they
+get deconsolidated to avoid performance degradation. This process is dynamically
+managed by OpenStack Neat.</p>
 
-<p>Apart from consolidating VMs, the system should be able to react to increases in the resource demand and deconsolidate VMs when necessary to avoid performance degradation. In general, the problem of dynamic VM consolidation can be split into 4 sub-problems:</p>
+<p>In general, the problem of dynamic VM consolidation can be split into 4
+sub-problems:</p>
 
 <ol>
-<li>Deciding when a host is considered to be underloaded, so that all the VMs should be migrated from it, and the host should be switched to a low power mode, such as the sleep mode.</li>
-<li>Deciding when a host is considered to be overloaded, so that some VMs should be migrated from the host to other hosts to avoid performance degradation.</li>
-<li>Selecting VMs to migrate from an overloaded host out of the full set of the VMs currently served by the host.</li>
-<li>Placing VMs selected for migration to other active or re-activated hosts.</li>
-</ol><p>The aim of the OpenStack Neat project is to provide an extensible framework for dynamic consolidation of VMs based on the OpenStack platform. The framework will provide an infrastructure enabling the interaction of components implementing the 4 decision-making algorithms listed above. The framework will allow configuration-driven switching of different implementations of the decision-making algorithms. The implementation of the framework will include the algorithms proposed in our previous works [1], [2].</p>
 
-<p>The project is currently under active development.</p>
+<li>Deciding when a host is considered to be underloaded, so that all the VMs
+should be migrated from it, and the host should be switched to a low power mode,
+such as the sleep mode.</li>
+
+<li>Deciding when a host is considered to be overloaded, so that some VMs should
+be migrated from the host to other hosts to avoid performance degradation.</li>
+
+<li>Selecting VMs to migrate from an overloaded host out of the full set of the
+VMs currently served by the host.</li>
+
+<li>Placing VMs selected for migration to other active or re-activated
+hosts.</li>
+
+</ol>
+
+<p>The aim of the OpenStack Neat project is to provide an extensible framework
+for dynamic consolidation of VMs based on the OpenStack platform. The framework
+provides an infrastructure enabling the interaction of components implementing
+the 4 decision-making algorithms listed above. The framework allows
+configuration-driven switching of different implementations of the
+decision-making algorithms. The implementation of the framework includes the
+algorithms proposed in our publications [1], [2].</p>
+
 
 <h3>
 <a name="more-details" class="anchor" href="#more-details"><span class="octicon octicon-link"></span></a>More details</h3>
 
-<p>There is a <a href="https://github.com/beloglazov/openstack-neat/raw/master/doc/blueprint/openstack-neat-blueprint.pdf">blueprint</a> describing the architecture and implementation of OpenStack Neat.</p>
+<p>For more information please refer to the <a
+    href="https://github.com/beloglazov/openstack-neat/raw/gh-pages/docs/openstack-neat-report.pdf">technical
+    report</a> describing the architecture and implementation of OpenStack Neat.
+    The technical report is based on Chapter 7 of <a
+        href="http://beloglazov.info/thesis.pdf">Anton Beloglazov's PhD
+    thesis</a>.</p>
 
 <h3>
 <a name="who-we-are" class="anchor" href="#who-we-are"><span class="octicon octicon-link"></span></a>Who we are</h3>
 
-<p>This work is conducted within the Cloud Computing and Distributed Systems (CLOUDS) Laboratory at the 
-University of Melbourne: <a href="http://www.cloudbus.org/">http://www.cloudbus.org/</a> </p>
+<p>This work is conducted within the Cloud Computing and Distributed Systems
+(CLOUDS) Laboratory at the University of Melbourne: <a
+href="http://www.cloudbus.org/">http://www.cloudbus.org/</a> </p>
 
-<p>The problem of dynamic VM consolidation considering Quality of Service (QoS) constraints has been studied from the theoretical perspective and algorithms addressing the sub-problems listed above have been proposed [1], [2]. The algorithms have been evaluated using CloudSim and real-world workload traces collected from more than a thousand PlanetLab VMs hosted on servers located in more than 500 places around the world.</p>
+<p>The problem of dynamic VM consolidation considering Quality of Service (QoS)
+constraints has been studied from the theoretical perspective and algorithms
+addressing the sub-problems listed above have been proposed [1], [2]. The
+algorithms have been evaluated using CloudSim and real-world workload traces
+collected from more than a thousand PlanetLab VMs hosted on servers located in
+more than 500 places around the world.</p>
 
 <h3>
 <a name="discussion-group--mailing-list" class="anchor" href="#discussion-group--mailing-list"><span class="octicon octicon-link"></span></a>Discussion group / mailing list</h3>
 
-<p>Please feel free to post any questions or suggestions in the project's discussion group: <a href="http://groups.google.com/group/openstack-neat">http://groups.google.com/group/openstack-neat</a></p>
+<p>Please feel free to post any questions or suggestions in the project's
+discussion group: <a
+href="http://groups.google.com/group/openstack-neat">http://groups.google.com/group/openstack-neat</a></p>
 
 <h3>
 <a name="issues--bugs" class="anchor" href="#issues--bugs"><span class="octicon octicon-link"></span></a>Issues / bugs</h3>
 
-<p>Please submit any bugs you encounter or suggestions for improvements to our issue tracker: <a href="http://github.com/beloglazov/openstack-neat/issues">http://github.com/beloglazov/openstack-neat/issues</a></p>
+<p>Please submit any bugs you encounter or suggestions for improvements to our
+issue tracker: <a
+href="http://github.com/beloglazov/openstack-neat/issues">http://github.com/beloglazov/openstack-neat/issues</a></p>
 
 <h3>
 <a name="publications" class="anchor" href="#publications"><span class="octicon octicon-link"></span></a>Publications</h3>
 
-<p>[1] Anton Beloglazov and Rajkumar Buyya, "Optimal Online Deterministic Algorithms and Adaptive Heuristics for Energy and Performance Efficient Dynamic Consolidation of Virtual Machines in Cloud Data Centers", Concurrency and Computation: Practice and Experience (CCPE), Volume 24, Issue 13, Pages: 1397-1420, John Wiley &amp; Sons, Ltd, New York, USA, 2012.</p>
+<p>[1] Anton Beloglazov and Rajkumar Buyya, "Optimal Online Deterministic
+Algorithms and Adaptive Heuristics for Energy and Performance Efficient Dynamic
+Consolidation of Virtual Machines in Cloud Data Centers", Concurrency and
+Computation: Practice and Experience (CCPE), Volume 24, Issue 13, Pages:
+1397-1420, John Wiley &amp; Sons, Ltd, New York, USA, 2012.</p>
 
 <p>Download: <a href="http://beloglazov.info/papers/2012-optimal-algorithms-ccpe.pdf">http://beloglazov.info/papers/2012-optimal-algorithms-ccpe.pdf</a></p>
 
-<p>[2] Anton Beloglazov and Rajkumar Buyya, "Managing Overloaded Hosts for Dynamic Consolidation of Virtual Machines in Cloud Data Centers Under Quality of Service Constraints", IEEE Transactions on Parallel and Distributed Systems (TPDS), IEEE CS Press, USA, 2012 (in press, accepted on August 2, 2012).</p>
+<p>[2] Anton Beloglazov and Rajkumar Buyya, "Managing Overloaded Hosts for
+Dynamic Consolidation of Virtual Machines in Cloud Data Centers Under Quality of
+Service Constraints", IEEE Transactions on Parallel and Distributed Systems
+(TPDS), Volume 24, Issue 7, Pages 1366-1379, IEEE CS Press, USA, 2013.</p>
 
-<p>Download: <a href="http://beloglazov.info/papers/2012-host-overload-detection-tpds.pdf">http://beloglazov.info/papers/2012-host-overload-detection-tpds.pdf</a></p>
+<p>Download: <a href="http://beloglazov.info/papers/2013-host-overload-detection-tpds.pdf">http://beloglazov.info/papers/2013-host-overload-detection-tpds.pdf</a></p>
+
+<p>[3] Anton Beloglazov, "Energy-Efficient Management of Virtual Machines in
+Data Centers for Cloud Computing", PhD Thesis, The University of Melbourne,
+2013.</p>
+
+<p>Download: <a href="http://beloglazov.info/thesis.pdf">http://beloglazov.info/thesis.pdf</a></p>
 
 <h3>
 <a name="license" class="anchor" href="#license"><span class="octicon octicon-link"></span></a>License</h3>
 
-<p>The source code is made available for academic and research exploration, but some methods implemented in the software are a part of a patent application. That means, commercial users need to obtain a license to use the IP noted in the patent.</p>
+<p>The source code is available under the Apache 2.0 license, but some methods
+implemented in the software are a part of a patent application. That means,
+commercial users need to obtain a license to use the IP noted in the patent.</p>
+
       </section>
     </div>
 
