@@ -37,9 +37,10 @@ algorithms proposed in our publications [1], [2].
 
 ## More details
 
-For more information please refer to the technical report describing the
-architecture and implementation of OpenStack Neat. The technical report is based
-on Chapter 6 of Anton Beloglazov's PhD thesis: http://beloglazov.info/thesis.pdf
+For more information please refer to the
+[paper](http://beloglazov.info/papers/2014-ccpe-openstack-neat.pdf) describing
+the architecture and implementation of OpenStack Neat and Chapter 6 of Anton
+Beloglazov's PhD thesis: http://beloglazov.info/thesis.pdf
 
 
 ## Installation
@@ -89,25 +90,33 @@ issue tracker: http://github.com/beloglazov/openstack-neat/issues
 
 ## Publications
 
-[1] "Optimal Online Deterministic Algorithms and Adaptive Heuristics for Energy
-and Performance Efficient Dynamic Consolidation of Virtual Machines in Cloud
-Data Centers", Concurrency and Computation: Practice and Experience (CCPE),
-Volume 24, Issue 13, Pages: 1397-1420, John Wiley & Sons, Ltd, New York, USA,
-2012.
+[1] Anton Beloglazov and Rajkumar Buyya, "OpenStack Neat: A Framework for
+Dynamic and Energy-Efﬁcient Consolidation of Virtual Machines in OpenStack
+Clouds", Concurrency and Computation: Practice and Experience (CCPE), John Wiley
+& Sons, Ltd, USA, 2014 (in press, accepted on 19/05/2014).
 
-Download: http://beloglazov.info/papers/2012-optimal-algorithms-ccpe.pdf
+Download: http://beloglazov.info/papers/2014-ccpe-openstack-neat.pdf
 
-[2] "Managing Overloaded Hosts for Dynamic Consolidation of Virtual Machines in
-Cloud Data Centers Under Quality of Service Constraints", IEEE Transactions on
-Parallel and Distributed Systems (TPDS), Volume 24, Issue 7, Pages 1366-1379,
-IEEE CS Press, USA, 2013.
-
-Download: http://beloglazov.info/papers/2013-host-overload-detection-tpds.pdf
-
-[3] Anton Beloglazov, "Energy-Efficient Management of Virtual Machines in Data
-Centers for Cloud Computing", PhD Thesis, The University of Melbourne, 2013.
+[2] Anton Beloglazov, "Energy-Efficient Management of Virtual Machines in
+Data Centers for Cloud Computing", PhD Thesis, The University of Melbourne,
+2013.
 
 Download: http://beloglazov.info/thesis.pdf
+
+[3] Anton Beloglazov and Rajkumar Buyya, "Managing Overloaded Hosts for
+Dynamic Consolidation of Virtual Machines in Cloud Data Centers Under Quality of
+Service Constraints", IEEE Transactions on Parallel and Distributed Systems
+(TPDS), Volume 24, Issue 7, Pages 1366-1379, IEEE CS Press, USA, 2013.
+
+Download: "http://beloglazov.info/papers/2013-tpds-managing-overloaded-hosts.pdf
+
+[4] Anton Beloglazov and Rajkumar Buyya, "Optimal Online Deterministic
+Algorithms and Adaptive Heuristics for Energy and Performance Efficient Dynamic
+Consolidation of Virtual Machines in Cloud Data Centers", Concurrency and
+Computation: Practice and Experience (CCPE), Volume 24, Issue 13, Pages:
+1397-1420, John Wiley & Sons, Ltd, New York, USA, 2012.
+
+Download: http://beloglazov.info/papers/2012-ccpe-vm-consolidation-algorithms.pdf
 
 
 ## License
