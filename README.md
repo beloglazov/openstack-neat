@@ -91,7 +91,7 @@ issue tracker: http://github.com/beloglazov/openstack-neat/issues
 ## Publications
 
 [1] Anton Beloglazov and Rajkumar Buyya, "OpenStack Neat: A Framework for
-Dynamic and Energy-Efﬁcient Consolidation of Virtual Machines in OpenStack
+Dynamic and Energy-Efficient Consolidation of Virtual Machines in OpenStack
 Clouds", Concurrency and Computation: Practice and Experience (CCPE), John Wiley
 & Sons, Ltd, USA, 2014 (in press, accepted on 19/05/2014).
 
