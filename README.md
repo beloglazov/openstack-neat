@@ -108,7 +108,7 @@ Dynamic Consolidation of Virtual Machines in Cloud Data Centers Under Quality of
 Service Constraints", IEEE Transactions on Parallel and Distributed Systems
 (TPDS), Volume 24, Issue 7, Pages 1366-1379, IEEE CS Press, USA, 2013.
 
-Download: "http://beloglazov.info/papers/2013-tpds-managing-overloaded-hosts.pdf
+Download: http://beloglazov.info/papers/2013-tpds-managing-overloaded-hosts.pdf
 
 [4] Anton Beloglazov and Rajkumar Buyya, "Optimal Online Deterministic
 Algorithms and Adaptive Heuristics for Energy and Performance Efficient Dynamic
