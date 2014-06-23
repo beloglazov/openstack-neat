@@ -121,6 +121,6 @@ Download: http://beloglazov.info/papers/2012-ccpe-vm-consolidation-algorithms.pd
 
 ## License
 
-The source code is available under the Apache 2.0 license, but some methods
-implemented in the software are a part of a patent application. That means,
-commercial users need to obtain a license to use the IP noted in the patent.
+The source code is distributed under the Apache 2.0 license.
+
+Copyright (C) 2012-2014 Anton Beloglazov.
