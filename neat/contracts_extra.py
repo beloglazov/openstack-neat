@@ -22,6 +22,7 @@ import neat.db
 # import novaclient
 
 
+new_contract('long', lambda x: isinstance(x, (int, long)))
 new_contract('deque', collections.deque)
 new_contract('function', lambda x: hasattr(x, '__call__'))
 new_contract('datetime', datetime.datetime)

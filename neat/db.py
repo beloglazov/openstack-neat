@@ -153,7 +153,7 @@ class Database(object):
          :type cpu_cores: int,>0
 
         :param ram: The total amount of RAM of the host in MB.
-         :type ram: int,>0
+         :type ram: long,>0
 
         :return: The ID of the host.
          :rtype: int

@@ -723,7 +723,7 @@ def get_host_characteristics(vir_connection):
      :type vir_connection: virConnect
 
     :return: A tuple of the total CPU MHz and RAM of the host.
-     :rtype: tuple(int, int)
+     :rtype: tuple(int, long)
     """
     info = vir_connection.getInfo()
     return info[2] * info[3], info[1]
