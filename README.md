@@ -1,5 +1,8 @@
 # OpenStack Neat: A Framework for Dynamic Consolidation of Virtual Machines in Openstack Clouds
 
+[![Build Status](https://travis-ci.org/beloglazov/openstack-neat.svg?branch=master)](https://travis-ci.org/beloglazov/openstack-neat)
+
+
 OpenStack Neat is an extension to OpenStack implementing dynamic consolidation
 of Virtual Machines (VMs) using live migration. The major objective of dynamic
 VM consolidation is to improve the utilization of physical resources and reduce
