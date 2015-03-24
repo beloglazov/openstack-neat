@@ -156,6 +156,8 @@ class Common(TestCase):
         assert common.parse_compute_hosts('') == []
         assert common.parse_compute_hosts('test1, test2') == \
             ['test1', 'test2']
+        assert common.parse_compute_hosts('test-1, test_2') == \
+            ['test-1', 'test_2']
         assert common.parse_compute_hosts('t1,,  t2 , t3') == \
             ['t1', 't2', 't3']
 

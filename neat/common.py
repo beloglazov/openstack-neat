@@ -249,7 +249,7 @@ def parse_compute_hosts(compute_hosts):
     :return: A list of host names.
      :rtype: list(str)
     """
-    return filter(None, re.split('\W+', compute_hosts))
+    return filter(None, re.split('[^a-zA-Z0-9\-_]+', compute_hosts))
 
 
 @contract
