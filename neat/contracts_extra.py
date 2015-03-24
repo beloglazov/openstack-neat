@@ -14,20 +14,22 @@
 
 from contracts import new_contract
 
-import collections
-import datetime
-import libvirt
-import sqlalchemy
-import neat.db
-# import novaclient
-
 
 new_contract('long', lambda x: isinstance(x, (int, long)))
-new_contract('deque', collections.deque)
 new_contract('function', lambda x: hasattr(x, '__call__'))
+
+import collections
+new_contract('deque', collections.deque)
+
+import datetime
 new_contract('datetime', datetime.datetime)
+
+import libvirt
 new_contract('virConnect', libvirt.virConnect)
 new_contract('virDomain', libvirt.virDomain)
+
+import sqlalchemy
 new_contract('Table', sqlalchemy.Table)
+
+import neat.db
 new_contract('Database', neat.db.Database)
-# new_contract('Client', novaclient.v1_1.client.Client)
