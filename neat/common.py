@@ -257,7 +257,7 @@ def calculate_migration_time(vms, bandwidth):
     """ Calculate the mean migration time from VM RAM usage data.
 
     :param vms: A map of VM UUIDs to the corresponding maximum RAM in MB.
-     :type vms: dict(str: int)
+     :type vms: dict(str: long)
 
     :param bandwidth: The network bandwidth in MB/s.
      :type bandwidth: float,>0

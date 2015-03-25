@@ -409,7 +409,7 @@ def get_ram(vir_connection, vms):
      :type vms: list(str)
 
     :return: The maximum RAM for the VM UUIDs.
-     :rtype: dict(str : int)
+     :rtype: dict(str : long)
     """
     vms_ram = {}
     for uuid in vms:
@@ -431,7 +431,7 @@ def get_max_ram(vir_connection, uuid):
      :type uuid: str[36]
 
     :return: The maximum RAM of the VM in MB.
-     :rtype: int|None
+     :rtype: long|None
     """
     try:
         domain = vir_connection.lookupByUUIDString(uuid)
