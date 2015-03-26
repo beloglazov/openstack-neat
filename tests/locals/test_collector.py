@@ -560,6 +560,19 @@ class Collector(TestCase):
             assert collector.get_host_characteristics(connection) == \
                 (cores * mhz, ram)
 
+    @qc(10)
+    def get_host_characteristics_long(
+        ram=int_(min=1, max=4000),
+        cores=int_(min=1, max=8),
+        mhz=int_(min=1, max=3000)
+    ):
+        with MockTransaction:
+            connection = libvirt.virConnect()
+            expect(connection).getInfo().and_return(
+                ['x86_64', long(ram), cores, mhz, 1, 1, 4, 2]).once()
+            assert collector.get_host_characteristics(connection) == \
+                (cores * mhz, long(ram))
+
     @qc(1)
     def log_host_overload():
         db = db_utils.init_db('sqlite:///:memory:')

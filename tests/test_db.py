@@ -121,14 +121,14 @@ class Db(TestCase):
         assert host['cpu_cores'] == 4
         assert host['ram'] == 4000
 
-        db.update_host('host1', 3500, 8, 8000)
+        db.update_host('host1', 3500, 8, 8000L)
         hosts = db.hosts.select().execute().fetchall()
         assert len(hosts) == 1
         host = hosts[0]
         assert host['hostname'] == 'host1'
         assert host['cpu_mhz'] == 3500
         assert host['cpu_cores'] == 8
-        assert host['ram'] == 8000
+        assert host['ram'] == 8000L
 
     @qc(10)
     def select_cpu_mhz_for_host(

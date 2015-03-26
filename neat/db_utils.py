@@ -13,6 +13,7 @@
 # limitations under the License.
 
 from contracts import contract
+from neat.contracts_primitive import *
 from neat.contracts_extra import *
 
 from sqlalchemy import *

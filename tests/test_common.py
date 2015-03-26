@@ -174,3 +174,18 @@ class Common(TestCase):
         migration_time = float(sum(ram)) / len(ram) / bandwidth
         assert common.calculate_migration_time(data, bandwidth) == \
             migration_time
+
+    @qc(10)
+    def calculate_migration_time_long(
+        data=dict_(
+            keys=str_(of='abc123-', min_length=36, max_length=36),
+            values=int_(min=1, max=1000),
+            min_length=1, max_length=10
+        ),
+        bandwidth=float_(min=1., max=100.)
+    ):
+        data = dict([(k, long(v)) for (k, v) in data.iteritems()])
+        ram = data.values()
+        migration_time = float(sum(ram)) / len(ram) / bandwidth
+        assert common.calculate_migration_time(data, bandwidth) == \
+            migration_time

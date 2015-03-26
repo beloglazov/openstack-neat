@@ -16,6 +16,7 @@
 """
 
 from contracts import contract
+from neat.contracts_primitive import *
 from neat.contracts_extra import *
 
 from random import choice

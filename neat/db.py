@@ -13,7 +13,7 @@
 # limitations under the License.
 
 from contracts import contract
-from neat.contracts_extra import *
+from neat.contracts_primitive import *
 
 import datetime
 from sqlalchemy import *

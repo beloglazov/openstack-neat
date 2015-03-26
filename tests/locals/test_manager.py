@@ -141,11 +141,26 @@ class LocalManager(TestCase):
         with MockTransaction:
             def mock_get_max_ram(vir_connection, uuid):
                 return data[uuid]
-
             connection = libvirt.virConnect()
             when(manager).get_max_ram(connection, any_string). \
                 then_call(mock_get_max_ram)
+            assert manager.get_ram(connection, data.keys()) == data
 
+    @qc(10)
+    def get_ram_long(
+        data=dict_(
+            keys=str_(of='abc123-', min_length=36, max_length=36),
+            values=int_(min=1, max=100),
+            min_length=0, max_length=10
+        )
+    ):
+        data = dict([(k, long(v)) for (k, v) in data.iteritems()])
+        with MockTransaction:
+            def mock_get_max_ram(vir_connection, uuid):
+                return data[uuid]
+            connection = libvirt.virConnect()
+            when(manager).get_max_ram(connection, any_string). \
+                then_call(mock_get_max_ram)
             assert manager.get_ram(connection, data.keys()) == data
 
     @qc(10)
@@ -159,7 +174,20 @@ class LocalManager(TestCase):
             expect(connection).lookupByUUIDString(uuid). \
                 and_return(domain).once()
             expect(domain).maxMemory().and_return(x).once()
-            assert manager.get_max_ram(connection, uuid) == int(x / 1024)
+            assert manager.get_max_ram(connection, uuid) == int(x) / 1024
+
+    @qc(10)
+    def get_max_ram_long(
+        uuid=str_(of='abc123-', min_length=36, max_length=36),
+        x=int_(min=0)
+    ):
+        with MockTransaction:
+            connection = libvirt.virConnect()
+            domain = mock('domain')
+            expect(connection).lookupByUUIDString(uuid). \
+                and_return(domain).once()
+            expect(domain).maxMemory().and_return(long(x)).once()
+            assert manager.get_max_ram(connection, uuid) == long(x) / 1024
 
     @qc(1)
     def get_max_ram_none(
@@ -167,7 +195,7 @@ class LocalManager(TestCase):
     ):
         with MockTransaction:
             def raise_libvirt_error():
-                raise libvirt.libvirtError(None)                
+                raise libvirt.libvirtError(None)
             connection = libvirt.virConnect()
             expect(connection).lookupByUUIDString(uuid). \
                 and_call(lambda _: raise_libvirt_error())

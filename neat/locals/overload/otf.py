@@ -16,6 +16,7 @@
 """
 
 from contracts import contract
+from neat.contracts_primitive import *
 from neat.contracts_extra import *
 
 import logging
@@ -41,7 +42,7 @@ def otf_factory(time_step, migration_time, params):
     migration_time_normalized = float(migration_time) / time_step
     def otf_wrapper(utilization, state=None):
         if state is None or state == {}:
-            state = {'overload': 0, 
+            state = {'overload': 0,
                      'total': 0}
         return otf(params['otf'],
                    params['threshold'],
@@ -49,9 +50,9 @@ def otf_factory(time_step, migration_time, params):
                    migration_time_normalized,
                    utilization,
                    state)
-    
+
     return otf_wrapper
-        
+
 
 @contract
 def otf(otf, threshold, limit, migration_time, utilization, state):
@@ -89,10 +90,10 @@ def otf(otf, threshold, limit, migration_time, utilization, state):
         log.debug('OTF total steps:' + str(state['total']))
         log.debug('OTF:' + str(float(state['overload']) / state['total']))
         log.debug('OTF migration time:' + str(migration_time))
-        log.debug('OTF + migration time:' + 
+        log.debug('OTF + migration time:' +
                   str((migration_time + state['overload']) / \
                           (migration_time + state['total'])))
-        log.debug('OTF decision:' + 
+        log.debug('OTF decision:' +
                   str(overload and (migration_time + state['overload']) / \
                           (migration_time + state['total']) >= otf))
 

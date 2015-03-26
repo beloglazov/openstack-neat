@@ -91,6 +91,7 @@ invoked, the component performs the following steps:
 """
 
 from contracts import contract
+from neat.contracts_primitive import *
 from neat.contracts_extra import *
 
 import os

@@ -15,18 +15,5 @@
 from contracts import new_contract
 
 
-import collections
-new_contract('deque', collections.deque)
-
-import datetime
-new_contract('datetime', datetime.datetime)
-
-import libvirt
-new_contract('virConnect', libvirt.virConnect)
-new_contract('virDomain', libvirt.virDomain)
-
-import sqlalchemy
-new_contract('Table', sqlalchemy.Table)
-
-import neat.db
-new_contract('Database', neat.db.Database)
+new_contract('long', lambda x: isinstance(x, (int, long)))
+new_contract('function', lambda x: hasattr(x, '__call__'))

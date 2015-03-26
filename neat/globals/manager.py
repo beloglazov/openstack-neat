@@ -68,6 +68,7 @@ the beginning of the global manager's execution.
 """
 
 from contracts import contract
+from neat.contracts_primitive import *
 from neat.contracts_extra import *
 
 import bottle
