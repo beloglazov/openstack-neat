@@ -84,6 +84,13 @@ from neat.db_utils import *
 import logging
 log = logging.getLogger(__name__)
 
+import platform
+dist = platform.linux_distribution(full_distribution_name=0)[0]
+if dist in ['redhat', 'centos']:
+    etherwake = 'ether-wake'
+else:
+    etherwake = 'etherwake'
+
 
 ERRORS = {
     400: 'Bad input parameter: incorrect or missing parameters',
@@ -857,7 +864,8 @@ def switch_hosts_on(db, ether_wake_interface, host_macs, hosts):
     for host in hosts:
         if host not in host_macs:
             host_macs[host] = host_mac(host)
-        command = 'ether-wake -i {0} {1}'.format(
+        command = '{0} -i {1} {2}'.format(
+            etherwake,
             ether_wake_interface,
             host_macs[host])
         if log.isEnabledFor(logging.DEBUG):

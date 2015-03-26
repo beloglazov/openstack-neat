@@ -60,7 +60,7 @@ class GlobalManager(TestCase):
             manager.validate_params('test', 'test', {})
             manager.validate_params('test', 'test', {'username': 'test'})
             manager.validate_params('test', 'test', {'password': 'test'})
-            
+
         with MockTransaction:
             expect(manager).raise_error(403).exactly(2).times()
             manager.validate_params(
@@ -141,13 +141,13 @@ class GlobalManager(TestCase):
                                                      'time': time.time() - 6,
                                                      'reason': 0,
                                                      'host': 'test'})
-            assert manager.validate_params('test', 'test', 
+            assert manager.validate_params('test', 'test',
                                            {'username': 'test',
                                             'password': 'test',
                                             'time': time.time(),
                                             'reason': 0,
                                             'host': 'test'})
-            assert manager.validate_params('test', 'test', 
+            assert manager.validate_params('test', 'test',
                                            {'username': 'test',
                                             'password': 'test',
                                             'time': time.time() - 4,
@@ -360,7 +360,7 @@ class GlobalManager(TestCase):
                 {'vm1': 512, 'vm2': 1024}
 
     def test_switch_hosts_off(self):
-        db = db_utils.init_db('sqlite:///:memory:')          
+        db = db_utils.init_db('sqlite:///:memory:')
 
         with MockTransaction:
             expect(subprocess).call('ssh h1 "sleep"', shell=True).once()
@@ -378,11 +378,15 @@ class GlobalManager(TestCase):
             manager.switch_hosts_off(db, '', ['h1', 'h2'])
 
     def test_switch_hosts_on(self):
-        db = db_utils.init_db('sqlite:///:memory:')          
+        db = db_utils.init_db('sqlite:///:memory:')
 
         with MockTransaction:
-            expect(subprocess).call('ether-wake -i eth0 mac1', shell=True).once()
-            expect(subprocess).call('ether-wake -i eth0 mac2', shell=True).once()
+            expect(subprocess).call(any_of(['ether-wake -i eth0 mac1',
+                                            'etherwake -i eth0 mac1']),
+                                    shell=True).once()
+            expect(subprocess).call(any_of(['ether-wake -i eth0 mac2',
+                                            'etherwake -i eth0 mac2']),
+                                    shell=True).once()
             expect(manager).host_mac('h1').and_return('mac1').once()
             expect(db).insert_host_states({
                     'h1': 1,
@@ -390,8 +394,12 @@ class GlobalManager(TestCase):
             manager.switch_hosts_on(db, 'eth0', {'h2': 'mac2'}, ['h1', 'h2'])
 
         with MockTransaction:
-            expect(subprocess).call('ether-wake -i eth0 mac1', shell=True).once()
-            expect(subprocess).call('ether-wake -i eth0 mac2', shell=True).once()
+            expect(subprocess).call(any_of(['ether-wake -i eth0 mac1',
+                                            'etherwake -i eth0 mac1']),
+                                    shell=True).once()
+            expect(subprocess).call(any_of(['ether-wake -i eth0 mac2',
+                                            'etherwake -i eth0 mac2']),
+                                    shell=True).once()
             expect(manager).host_mac('h1').and_return('mac1').once()
             expect(manager).host_mac('h2').and_return('mac2').once()
             expect(db).insert_host_states({
