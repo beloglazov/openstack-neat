@@ -356,10 +356,14 @@ def execute_underload(config, state, host):
         log.debug('Host total CPU usage: %s', str(hosts_cpu_usage))
 
     # Exclude the underloaded host
-    del hosts_cpu_usage[underloaded_host]
-    del hosts_cpu_total[underloaded_host]
-    del hosts_ram_usage[underloaded_host]
-    del hosts_ram_total[underloaded_host]
+    if underloaded_host in hosts_cpu_usage:
+        del hosts_cpu_usage[underloaded_host]
+    if underloaded_host in hosts_cpu_total:
+        del hosts_cpu_total[underloaded_host]
+    if underloaded_host in hosts_ram_usage:
+        del hosts_ram_usage[underloaded_host]
+    if underloaded_host in hosts_ram_total:
+        del hosts_ram_total[underloaded_host]
 
     if log.isEnabledFor(logging.DEBUG):
         log.debug('Excluded the underloaded host %s', underloaded_host)
@@ -520,10 +524,14 @@ def execute_overload(config, state, host, vm_uuids):
             del hosts_ram_total[host]
 
     # Exclude the overloaded host
-    del hosts_cpu_usage[overloaded_host]
-    del hosts_cpu_total[overloaded_host]
-    del hosts_ram_usage[overloaded_host]
-    del hosts_ram_total[overloaded_host]
+    if overloaded_host in hosts_cpu_usage:
+        del hosts_cpu_usage[overloaded_host]
+    if overloaded_host in hosts_cpu_total:
+        del hosts_cpu_total[overloaded_host]
+    if overloaded_host in hosts_ram_usage:
+        del hosts_ram_usage[overloaded_host]
+    if overloaded_host in hosts_ram_total:
+        del hosts_ram_total[overloaded_host]
 
     if log.isEnabledFor(logging.DEBUG):
         log.debug('Host CPU usage: %s', str(hosts_last_cpu))
