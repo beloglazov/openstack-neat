@@ -435,7 +435,8 @@ def execute_underload(config, state, host):
         migrate_vms(state['db'],
                     state['nova'],
                     config['vm_instance_directory'],
-                    placement)
+                    placement,
+                    bool(config['block_migration']))
         log.info('Completed underload VM migrations')
 
     if hosts_to_deactivate:
@@ -595,7 +596,8 @@ def execute_overload(config, state, host, vm_uuids):
         migrate_vms(state['db'],
                     state['nova'],
                     config['vm_instance_directory'],
-                    placement)
+                    placement,
+                    bool(config['block_migration']))
         log.info('Completed overload VM migrations')
     log.info('Completed processing an overload request')
     return state
@@ -729,7 +731,7 @@ def vm_hostname(vm):
 
 
 @contract
-def migrate_vms(db, nova, vm_instance_directory, placement):
+def migrate_vms(db, nova, vm_instance_directory, placement, block_migration):
     """ Synchronously live migrate a set of VMs.
 
     :param db: The database object.
@@ -743,6 +745,9 @@ def migrate_vms(db, nova, vm_instance_directory, placement):
 
     :param placement: A dict of VM UUIDs to host names.
      :type placement: dict(str: str)
+
+    :param block_migration: Whether to use block migration.
+     :type block_migration: bool
     """
     retry_placement = {}
     vms = placement.keys()
@@ -753,7 +758,8 @@ def migrate_vms(db, nova, vm_instance_directory, placement):
     for vm_pair in vm_pairs:
         start_time = time.time()
         for vm_uuid in vm_pair:
-            migrate_vm(nova, vm_instance_directory, vm_uuid, placement[vm_uuid])
+            migrate_vm(nova, vm_instance_directory, vm_uuid,
+                       placement[vm_uuid], block_migration)
 
         time.sleep(10)
 
@@ -790,11 +796,12 @@ def migrate_vms(db, nova, vm_instance_directory, placement):
         if log.isEnabledFor(logging.INFO):
             log.info('Retrying the following migrations: %s',
                      str(retry_placement))
-        migrate_vms(db, nova, vm_instance_directory, retry_placement)
+        migrate_vms(db, nova, vm_instance_directory,
+                    retry_placement, block_migration)
 
 
 @contract
-def migrate_vm(nova, vm_instance_directory, vm, host):
+def migrate_vm(nova, vm_instance_directory, vm, host, block_migration):
     """ Live migrate a VM.
 
     :param nova: A Nova client.
@@ -808,11 +815,14 @@ def migrate_vm(nova, vm_instance_directory, vm, host):
 
     :param host: The name of the destination host.
      :type host: str
+
+    :param block_migration: Whether to use block migration.
+     :type block_migration: bool
     """
     # To avoid problems with migration, need the following:
     subprocess.call('chown -R nova:nova ' + vm_instance_directory,
                     shell=True)
-    nova.servers.live_migrate(vm, host, False, False)
+    nova.servers.live_migrate(vm, host, block_migration, False)
     if log.isEnabledFor(logging.INFO):
         log.info('Started migration of VM %s to %s', vm, host)
 

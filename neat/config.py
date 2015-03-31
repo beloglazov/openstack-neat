@@ -60,6 +60,7 @@ REQUIRED_FIELDS = [
     'compute_password',
     'sleep_command',
     'ether_wake_interface',
+    'block_migration',
     'network_migration_bandwidth',
     'algorithm_underload_detection_factory',
     'algorithm_underload_detection_parameters',
