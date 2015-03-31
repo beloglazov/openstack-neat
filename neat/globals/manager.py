@@ -74,7 +74,7 @@ from neat.contracts_extra import *
 import bottle
 from hashlib import sha1
 import novaclient
-from novaclient.v1_1 import client
+from novaclient.v2 import client
 import time
 import subprocess
 

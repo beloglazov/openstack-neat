@@ -17,7 +17,7 @@ from pyqcy import *
 
 import bottle
 from hashlib import sha1
-from novaclient.v1_1 import client
+from novaclient.v2 import client
 import time
 import subprocess
 

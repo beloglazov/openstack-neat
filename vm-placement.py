@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from novaclient.v1_1 import client
+from novaclient.v2 import client
 import neat.common as common
 import neat.globals.manager as manager
 from neat.config import *
@@ -65,7 +65,7 @@ for host, vms in hosts_to_vms.items():
     hosts_cpu_usage[host] = hosts_cpu_usage_hypervisor[host] + \
                             sum(vms_cpu_usage[x] for x in vms)
     hosts_ram_usage[host] = manager.host_used_ram(nova, host)
-        
+
 
 first = True
 for host in sorted(hosts_to_vms.keys()):
@@ -74,8 +74,8 @@ for host in sorted(hosts_to_vms.keys()):
     first = False
     vms = hosts_to_vms[host]
     print '{0:24} {1:5d} / {2:5d} MHz {3:5d} / {4:5d} MB'. \
-        format(host, 
-               hosts_cpu_usage[host], 
+        format(host,
+               hosts_cpu_usage[host],
                hosts_cpu_total[host],
                hosts_ram_usage[host],
                hosts_ram_total[host])
@@ -88,7 +88,7 @@ for host in sorted(hosts_to_vms.keys()):
             print '    {0:10} {1:9} {2:5d} / {3:5d} MHz {4:5d} / {5:5d} MB'. \
                 format(vm,
                        vms_status[uuid],
-                       vms_cpu_usage[uuid], 
+                       vms_cpu_usage[uuid],
                        hosts_cpu_core[host],
                        vms_ram,
                        vms_ram)
