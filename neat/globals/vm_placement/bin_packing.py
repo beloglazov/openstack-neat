@@ -110,6 +110,14 @@ def best_fit_decreasing(last_n_vm_cpu, hosts_cpu, hosts_ram,
     :return: A map of VM UUIDs to host names, or {} if cannot be solved.
      :rtype: dict(str: str)
     """
+    if log.isEnabledFor(logging.DEBUG):
+        log.debug('last_n_vm_cpu: %s', str(last_n_vm_cpu))
+        log.debug('hosts_cpu: %s', str(hosts_cpu))
+        log.debug('hosts_ram: %s', str(hosts_ram))
+        log.debug('inactive_hosts_cpu: %s', str(inactive_hosts_cpu))
+        log.debug('inactive_hosts_ram: %s', str(inactive_hosts_ram))
+        log.debug('vms_cpu: %s', str(vms_cpu))
+        log.debug('vms_ram: %s', str(vms_ram))
     vms_tmp = []
     for vm, cpu in vms_cpu.items():
         last_n_cpu = cpu[-last_n_vm_cpu:]

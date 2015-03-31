@@ -611,8 +611,10 @@ def get_cpu_mhz(vir_connection, physical_core_mhz, previous_cpu_time,
                           'current time %.10f',
                           uuid, cpu_time, current_cpu_time,
                           previous_time, current_time)
-            cpu_mhz[uuid] = calculate_cpu_mhz(physical_core_mhz, previous_time,
-                                              current_time, cpu_time,
+            cpu_mhz[uuid] = calculate_cpu_mhz(physical_core_mhz,
+                                              previous_time,
+                                              current_time,
+                                              cpu_time,
                                               current_cpu_time)
         previous_cpu_time[uuid] = current_cpu_time
         if log.isEnabledFor(logging.DEBUG):

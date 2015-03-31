@@ -155,7 +155,8 @@ def validate_params(user, password, params):
     if params['time'] + 5 < time.time():
         raise_error(412)
         return False
-    log.debug('Request parameters validated')
+    if log.isEnabledFor(logging.DEBUG):
+        log.debug('Request parameters validated')
     return True
 
 
