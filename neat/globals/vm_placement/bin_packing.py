@@ -120,10 +120,14 @@ def best_fit_decreasing(last_n_vm_cpu, hosts_cpu, hosts_ram,
         log.debug('vms_ram: %s', str(vms_ram))
     vms_tmp = []
     for vm, cpu in vms_cpu.items():
-        last_n_cpu = cpu[-last_n_vm_cpu:]
-        vms_tmp.append((sum(last_n_cpu) / len(last_n_cpu),
-                        vms_ram[vm],
-                        vm))
+        if cpu:
+            last_n_cpu = cpu[-last_n_vm_cpu:]
+            vms_tmp.append((sum(last_n_cpu) / len(last_n_cpu),
+                            vms_ram[vm],
+                            vm))
+        else:
+            log.warning('No CPU data for VM: %s - skipping', vm)
+
     vms = sorted(vms_tmp, reverse=True)
     hosts = sorted(((v, hosts_ram[k], k)
                     for k, v in hosts_cpu.items()))
