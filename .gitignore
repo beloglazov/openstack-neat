@@ -4,3 +4,4 @@ openstack_neat.egg-info
 build
 dist
 distribute-*
+.idea/
