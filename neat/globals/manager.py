@@ -383,6 +383,10 @@ def execute_underload(config, state, host):
         if not vm in vms_ram:
             del vms_to_migrate[i]
 
+    if not vms_to_migrate:
+        log.info('No VMs to migrate - completed the underload request')
+        return state
+
     for vm in vms_cpu.keys():
         if not vm in vms_ram:
             del vms_cpu[vm]
@@ -544,6 +548,10 @@ def execute_overload(config, state, host, vm_uuids):
     for i, vm in enumerate(vms_to_migrate):
         if not vm in vms_ram:
             del vms_to_migrate[i]
+
+    if not vms_to_migrate:
+        log.info('No VMs to migrate - completed the overload request')
+        return state
 
     for vm in vms_cpu.keys():
         if not vm in vms_ram:
