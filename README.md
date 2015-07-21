@@ -126,4 +126,4 @@ Download: http://beloglazov.info/papers/2012-ccpe-vm-consolidation-algorithms.pd
 
 The source code is distributed under the Apache 2.0 license.
 
-Copyright (C) 2012-2014 Anton Beloglazov.
+Copyright (C) 2012-2014 Anton Beloglazov, Google Inc.
