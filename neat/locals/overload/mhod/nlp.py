@@ -32,8 +32,8 @@ def build_objective(ls, state_vector, p):
     :param ls: A list of L functions.
      :type ls: list(function)
 
-    :param state-vector: A state vector.
-     :type state-vector: list(int)
+    :param state_vector: A state vector.
+     :type state_vector: list(int)
 
     :param p: A matrix of transition probabilities.
      :type p: list(list(number))
@@ -60,8 +60,8 @@ def build_constraint(otf, migration_time, ls, state_vector,
     :param ls: A list of L functions.
      :type ls: list(function)
 
-    :param state-vector: A state vector.
-     :type state-vector: list(int)
+    :param state_vector: A state vector.
+     :type state_vector: list(int)
 
     :param p: A matrix of transition probabilities.
      :type p: list(list(number))
