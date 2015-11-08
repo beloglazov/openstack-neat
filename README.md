@@ -51,13 +51,43 @@ Beloglazov's PhD thesis: http://beloglazov.info/thesis.pdf
 Unfortunately, there is no clear installation and usage guide yet. However, the
 basic installation steps are the following:
 
-1. Clone the repository on every compute and controller node.
-2. Adjust the configuration by modifying neat.conf file in the repo directory on
-   every node.
-3. Install the package by running the following command from the repo directory
-   on every node: `sudo python setup.py install`
-4. Start the services by running the following command on the controller: `sudo
-   ./all-start.sh`
+- Clone the repository on every compute and controller node.
+- Adjust the configuration by modifying neat.conf file in the repo directory on
+   every node. In particular, you have to specify the names of your compute nodes 
+   in the `compute_hosts` field. Then, update the following three fields:
+   `admin_tenant_name`, `admin_user` and `admin_password` according to your OpenStack 
+   configuration. If you have the default values, the correct settings are:
+``` 
+admin_tenant_name: service
+admin_user: nova
+admin_password: NOVA_PASS
+```
+- [UBUNTU] Edit all the `openstack-*` files present in `/etc/init.d/`
+   replacing `/etc/rc.d/init.d/functions` with `/lib/lsb/init-functions` and 
+   `exec="/usr/bin/neat-$suffix"` with `exec="/usr/local/bin/neat-$suffix"` 
+   on every neat node.
+- [UBUNTU] Install all the dependencies with (while doing this, DO NOT remove 
+   any python related package previously installed by OpenStack, it will break 
+   your OpenStack install!):
+```
+apt-get install python-pip numpy scipy libvirt-python
+sudo pip install --upgrade pyqcy PyContracts SQLAlchemy bottle requests Sphinx python-novaclient
+sudo pip install mocktest
+```
+- Install the package by running the following command from the repo directory
+   on every node: 
+```
+sudo python setup.py install
+```
+- Start the Neat services by running the following commands on every compute node:
+```
+python2 start-data-collector.py
+python2 start-local-manager.py
+```
+- Start the global manager service by running the following command on the controller: 
+```
+python2 start-global-manager.py
+```
 
 You can monitor the current VM placement using the `./vm-placement.py` script.
 
